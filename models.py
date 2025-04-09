@@ -77,15 +77,15 @@ class User(db.Model, UserMixin):
     sent_friend_requests = relationship(
         "Friendship",
         foreign_keys="Friendship.requester_id",
-        backref="requester_user",
-        lazy="dynamic"
+        lazy="dynamic",
+        overlaps="requester"
     )
     
     received_friend_requests = relationship(
         "Friendship",
         foreign_keys="Friendship.addressee_id",
-        backref="addressee_user",
-        lazy="dynamic"
+        lazy="dynamic",
+        overlaps="addressee"
     )
     
     def __init__(self, id, email, username, water_credits=20, garden_score=0, created_at=None):
@@ -313,8 +313,19 @@ class Friendship(db.Model):
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     
     # Relationships
-    requester = relationship("User", foreign_keys=[requester_id], overlaps="requester_user,sent_friend_requests")
-    addressee = relationship("User", foreign_keys=[addressee_id], overlaps="addressee_user,received_friend_requests")
+    # Using back_populates instead of backref for more explicit relationship management
+    requester = relationship(
+        "User", 
+        foreign_keys=[requester_id], 
+        back_populates="sent_friend_requests",
+        overlaps="requester_user,sent_friend_requests"
+    )
+    addressee = relationship(
+        "User", 
+        foreign_keys=[addressee_id], 
+        back_populates="received_friend_requests",
+        overlaps="addressee_user,received_friend_requests"
+    )
     
     def __init__(self, requester_id, addressee_id, status=FriendshipStatus.PENDING, created_at=None):
         self.requester_id = requester_id
