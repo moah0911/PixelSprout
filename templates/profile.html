@@ -430,8 +430,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         sortedTypes.forEach(type => {
-            // Format name for display
-            const displayName = type.name
+            // Use the display_name from server or fallback to formatted name
+            const displayName = type.display_name || type.name
                 .replace(/_/g, ' ')
                 .replace(/\b\w/g, l => l.toUpperCase());
                 
@@ -483,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const recentActivities = recentConditions.slice(0, 10);
             
             recentActivities.forEach(condition => {
-                // Find condition type to get unit
+                // Find condition type to get unit and display name
                 const conditionType = conditionTypes.find(t => t.name === condition.type_name);
                 const unit = conditionType ? conditionType.unit : '';
                 
@@ -491,10 +491,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const date = new Date(condition.date_logged);
                 const formattedDate = date.toLocaleString();
                 
-                // Format name for display
-                const displayName = condition.type_name
-                    .replace(/_/g, ' ')
-                    .replace(/\b\w/g, l => l.toUpperCase());
+                // Get display name from condition type or format it
+                const displayName = conditionType ? 
+                    (conditionType.display_name || conditionType.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())) : 
+                    condition.type_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item';

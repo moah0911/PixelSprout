@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import func
 from app import app, db
 import logging
 import uuid
@@ -236,16 +237,33 @@ def get_condition_types():
         (ConditionType.user_id == None) | (ConditionType.user_id == current_user.id)
     ).all()
     
-    types_data = []
+    # Group by lowercase name to eliminate duplicates
+    unique_types = {}
     for ct in condition_types:
+        # Use lowercase name as key for deduplication
+        key = ct.name.lower().replace('_', ' ')
+        
+        # If we haven't seen this type yet, or if this is a custom type (prefer user types)
+        if key not in unique_types or ct.user_id is not None:
+            unique_types[key] = ct
+    
+    types_data = []
+    for ct in unique_types.values():
+        # Format the display name consistently
+        display_name = ct.name.replace('_', ' ').title()
+        
         types_data.append({
             'id': ct.id,
             'name': ct.name,
+            'display_name': display_name,  # Add a consistent display name
             'description': ct.description,
             'unit': ct.unit,
             'default_goal': ct.default_goal,
             'is_custom': ct.user_id is not None
         })
+    
+    # Sort by name for consistent display
+    types_data.sort(key=lambda x: x['display_name'])
     
     return jsonify({'success': True, 'condition_types': types_data})
 
@@ -266,6 +284,17 @@ def create_condition_type():
     except ValueError:
         return jsonify({'success': False, 'message': 'Default goal must be a number'}), 400
     
+    # Check if a condition type with this name already exists (case-insensitive)
+    existing_type = ConditionType.query.filter(
+        func.lower(ConditionType.name) == func.lower(name)
+    ).first()
+    
+    if existing_type:
+        return jsonify({
+            'success': False,
+            'message': 'A condition type with this name already exists.'
+        }), 400
+    
     # Create new condition type
     new_condition_type = ConditionType(
         id=None,  # Auto-incremented
@@ -280,11 +309,15 @@ def create_condition_type():
     db.session.add(new_condition_type)
     db.session.commit()
     
+    # Create a formatted display name
+    display_name = name.replace('_', ' ').title()
+    
     return jsonify({
         'success': True, 
         'condition_type': {
             'id': new_condition_type.id,
             'name': new_condition_type.name,
+            'display_name': display_name,
             'description': new_condition_type.description,
             'unit': new_condition_type.unit,
             'default_goal': new_condition_type.default_goal,

@@ -62,7 +62,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const sortedTypes = Object.values(uniqueTypes).sort((a, b) => {
             if (a.is_custom && !b.is_custom) return 1;
             if (!a.is_custom && b.is_custom) return -1;
-            return a.name.localeCompare(b.name);
+            
+            // Sort by display name if available
+            const aName = a.display_name || a.name;
+            const bName = b.display_name || b.name;
+            return aName.localeCompare(bName);
         });
         
         // Get icons for different condition types (for reference in data attributes)
@@ -92,8 +96,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const icon = typeIcons[type.name] || defaultIcon;
             option.setAttribute('data-icon', icon);
             
-            // Format name for display
-            const displayName = type.name
+            // Use the display_name from server or format name for display
+            const displayName = type.display_name || type.name
                 .replace(/_/g, ' ')
                 .replace(/\b\w/g, l => l.toUpperCase());
                 
@@ -203,10 +207,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const date = new Date(condition.date_logged);
             const formattedDate = date.toLocaleString();
             
-            // Format name for display
-            const displayName = condition.type_name
-                .replace(/_/g, ' ')
-                .replace(/\b\w/g, l => l.toUpperCase());
+            // Get display name from condition type if available
+            let displayName;
+            
+            if (conditionType && conditionType.display_name) {
+                displayName = conditionType.display_name;
+            } else {
+                // Fallback to formatted name
+                displayName = condition.type_name
+                    .replace(/_/g, ' ')
+                    .replace(/\b\w/g, l => l.toUpperCase());
+            }
                 
             // Get icon for this type or use default
             const icon = typeIcons[condition.type_name] || defaultIcon;
