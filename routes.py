@@ -4,9 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import func
 from app import app, db
 import logging
-import uuid
 from datetime import datetime
-from models import PlantType, User, Plant, Condition, ConditionType, PlantStage
+from models import PlantType, User, Plant, Condition, ConditionType, PlantStage, generate_uuid
 
 # Authentication routes
 @app.route('/register', methods=['GET'])
@@ -32,7 +31,7 @@ def register():
     
     try:
         # Create new user
-        user_id = str(uuid.uuid4())
+        user_id = generate_uuid()
         new_user = User(
             id=user_id,
             email=email,

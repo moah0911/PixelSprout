@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+import os
 from sqlalchemy import String, Integer, Float, ForeignKey, DateTime, Enum as SQLEnum, Table
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -7,6 +8,15 @@ import uuid
 from typing import Optional, List
 from app import db
 from flask_login import UserMixin
+
+# Check if we're using SQLite (which doesn't support UUID)
+# If DATABASE_URL is not set or doesn't contain postgresql, we're using SQLite
+using_sqlite = not os.environ.get("DATABASE_URL") or "postgresql" not in os.environ.get("DATABASE_URL", "")
+
+# Helper function to generate UUID that is compatible with both SQLite and PostgreSQL
+def generate_uuid():
+    """Generate a UUID that works with both SQLite and PostgreSQL"""
+    return str(uuid.uuid4())
 
 # Define the friendship status enum
 class FriendshipStatus(Enum):
@@ -46,7 +56,12 @@ class PlantType(Enum):
 class User(db.Model, UserMixin):
     __tablename__ = "users"
     
-    id: Mapped[str] = mapped_column(UUID, primary_key=True)
+    # Use different column type based on database
+    if using_sqlite:
+        id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    else:
+        id: Mapped[str] = mapped_column(UUID, primary_key=True)
+        
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     username: Mapped[str] = mapped_column(String(100), nullable=False)
     water_credits: Mapped[int] = mapped_column(Integer, default=20, nullable=False)
@@ -202,7 +217,11 @@ class Plant(db.Model):
     __tablename__ = "plants"
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
+    # Use different column type based on database
+    if using_sqlite:
+        user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False)
+    else:
+        user_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     plant_type: Mapped[str] = mapped_column(String(50), nullable=False)
     stage: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
@@ -231,7 +250,11 @@ class Condition(db.Model):
     __tablename__ = "conditions"
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
+    # Use different column type based on database
+    if using_sqlite:
+        user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False)
+    else:
+        user_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
     type_name: Mapped[str] = mapped_column(String(100), nullable=False)
     value: Mapped[float] = mapped_column(Float, nullable=False)
     date_logged: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
@@ -255,7 +278,11 @@ class ConditionType(db.Model):
     description: Mapped[str] = mapped_column(String, nullable=True)
     unit: Mapped[str] = mapped_column(String(50), nullable=False)
     default_goal: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    user_id: Mapped[Optional[str]] = mapped_column(UUID, ForeignKey("users.id"), nullable=True)
+    # Use different column type based on database
+    if using_sqlite:
+        user_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("users.id"), nullable=True)
+    else:
+        user_id: Mapped[Optional[str]] = mapped_column(UUID, ForeignKey("users.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     
     # Relationships
@@ -274,8 +301,13 @@ class Friendship(db.Model):
     __tablename__ = "friendships"
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    requester_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
-    addressee_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
+    # Use different column type based on database
+    if using_sqlite:
+        requester_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False)
+        addressee_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False)
+    else:
+        requester_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
+        addressee_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default=FriendshipStatus.PENDING.value)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
