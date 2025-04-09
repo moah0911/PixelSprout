@@ -237,15 +237,9 @@
     </div>
 </div>
 
-<!-- Toast Container for Notifications -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
-    <div id="notification-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-body d-flex align-items-center">
-            <i class="fas fa-info-circle me-2"></i>
-            <span id="notification-message">Notification message</span>
-            <button type="button" class="btn-close ms-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
+<!-- Garden Status Messages -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999; margin-top: 80px;">
+    <div id="status-container"></div>
 </div>
 {% endblock %}
 

@@ -3,54 +3,60 @@
  */
 
 /**
- * Show a toast notification
+ * Show a status notification
  * @param {string} message - The message to display
  * @param {string} type - The notification type (success, error, warning, info)
  */
 function showNotification(message, type = 'info') {
-    // Get the toast container
-    const toast = document.getElementById('notification-toast');
-    if (!toast) return;
+    // Get the status container
+    const statusContainer = document.getElementById('status-container');
+    if (!statusContainer) return;
     
-    // Get the message container
-    const messageContainer = document.getElementById('notification-message');
-    if (messageContainer) {
-        messageContainer.textContent = message;
+    // Create a new status alert
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+    alert.role = 'alert';
+    
+    // Add icon based on type
+    let icon = 'info-circle';
+    switch (type) {
+        case 'success':
+            icon = 'check-circle';
+            break;
+        case 'error':
+            icon = 'exclamation-circle';
+            break;
+        case 'warning':
+            icon = 'exclamation-triangle';
+            break;
     }
     
-    // Remove existing color classes
-    toast.classList.remove('toast-success', 'toast-error', 'toast-warning', 'toast-info');
+    // Set content
+    alert.innerHTML = `
+        <i class="fas fa-${icon} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
     
-    // Add the appropriate color class
-    toast.classList.add(`toast-${type}`);
+    // Add to container
+    statusContainer.appendChild(alert);
     
-    // Set icon based on type
-    const iconElement = toast.querySelector('i');
-    if (iconElement) {
-        iconElement.className = 'fas me-2';
-        
-        switch (type) {
-            case 'success':
-                iconElement.classList.add('fa-check-circle');
-                break;
-            case 'error':
-                iconElement.classList.add('fa-exclamation-circle');
-                break;
-            case 'warning':
-                iconElement.classList.add('fa-exclamation-triangle');
-                break;
-            default:
-                iconElement.classList.add('fa-info-circle');
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (alert && alert.parentNode === statusContainer) {
+            alert.classList.remove('show');
+            
+            // Remove from DOM after fade out
+            setTimeout(() => {
+                if (alert && alert.parentNode === statusContainer) {
+                    statusContainer.removeChild(alert);
+                }
+            }, 500);
         }
-    }
+    }, 5000);
     
-    // Create Bootstrap Toast object if not exists
-    const bsToast = new bootstrap.Toast(toast, {
-        delay: 3000
-    });
-    
-    // Show the toast
-    bsToast.show();
+    // Log to console for debugging
+    console.log(`Status (${type}): ${message}`);
 }
 
 /**

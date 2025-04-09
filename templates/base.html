@@ -7,7 +7,7 @@
     <title>{% block title %}Digital Zen Garden{% endblock %}</title>
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Base styles - Will be extended by specific CSS files */
         body {
@@ -15,6 +15,8 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background-color: #0a1f0a;
+            color: #e9ecef;
         }
         
         .main-content {
@@ -32,9 +34,10 @@
         
         /* Custom footer */
         .footer {
-            background-color: rgba(18, 18, 18, 0.8);
+            background-color: rgba(8, 32, 8, 0.9);
             padding: 1rem 0;
             margin-top: 2rem;
+            border-top: 1px solid rgba(76, 175, 80, 0.2);
         }
         
         /* Animated background */
@@ -45,8 +48,20 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            background: linear-gradient(to bottom, #071407, #0f2a0f);
             overflow: hidden;
+        }
+        
+        .bg-plants {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 5C15 10 15 20 20 25C25 20 25 10 20 5Z' fill='%23194d19' fill-opacity='0.1'/%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 10C22 20 22 40 30 50C38 40 38 20 30 10Z' fill='%23194d19' fill-opacity='0.1'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-position: center;
+            opacity: 0.5;
         }
         
         .bg-stars {
@@ -80,19 +95,82 @@
         
         /* App name styling */
         .app-name {
-            font-size: 1.5rem;
-            font-weight: 600;
-            background: linear-gradient(to right, #66BB6A, #43A047, #2E7D32);
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #7deb7d, #4CAF50, #2E7D32);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-left: 10px;
+            margin-left: 15px;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.8);
+            letter-spacing: 1px;
         }
         
         .logo-img {
-            height: 36px;
+            height: 50px;
             width: auto;
             margin-right: 0.5rem;
-            filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.5));
+            filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.8));
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.8));
+            }
+            50% {
+                filter: drop-shadow(0 0 15px rgba(76, 175, 80, 1));
+            }
+        }
+        
+        /* Enhanced Navbar */
+        .navbar {
+            background: rgba(8, 32, 8, 0.9) !important;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            padding: 0.8rem 0;
+        }
+        
+        .nav-link {
+            position: relative;
+            font-weight: 500;
+            color: #e9ecef !important;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: #7deb7d !important;
+        }
+        
+        .nav-link.active {
+            color: #4CAF50 !important;
+        }
+        
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #4CAF50;
+            border-radius: 10px;
+        }
+        
+        /* Glowing elements */
+        .btn-success {
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+        }
+        
+        /* Card enhancements */
+        .card {
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
     </style>
     {% endblock %}
@@ -100,15 +178,16 @@
 <body>
     <!-- Animated Background -->
     <div class="bg-animated">
+        <div class="bg-plants"></div>
         <div class="bg-stars"></div>
     </div>
     
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg sticky-top" data-bs-theme="dark">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="Digital Zen Garden Logo" class="logo-img">
-                <div class="app-name">Digital Zen Garden</div>
+                <div class="app-name">Zen Garden</div>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -166,17 +245,29 @@
     <!-- Footer -->
     <footer class="footer text-center">
         <div class="container">
-            <p class="mb-0">
-                <span class="text-muted">&copy; 2025 Digital Zen Garden</span> | 
-                <a href="#" class="text-decoration-none">
-                    <i class="fas fa-question-circle me-1"></i> Help
-                </a> | 
-                <a href="#" class="text-decoration-none">
-                    <i class="fas fa-hands-helping me-1"></i> Support
-                </a>
-            </p>
-            <div class="mt-2">
-                <small class="text-muted">Nurture virtual plants with your real-life habits</small>
+            <div class="row">
+                <div class="col-md-4 text-md-start mb-3 mb-md-0">
+                    <h5 class="text-success">Zen Garden</h5>
+                    <p class="small text-muted mb-0">Grow your virtual garden with real-life habits</p>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="text-success mx-2"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-success mx-2"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-success mx-2"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <p class="mb-0 small">
+                        <a href="#" class="text-success text-decoration-none">
+                            <i class="fas fa-question-circle me-1"></i> Help
+                        </a> | 
+                        <a href="#" class="text-success text-decoration-none">
+                            <i class="fas fa-hands-helping me-1"></i> Support
+                        </a>
+                    </p>
+                    <p class="mb-0 small text-muted">&copy; 2025 Zen Garden</p>
+                </div>
             </div>
         </div>
     </footer>
