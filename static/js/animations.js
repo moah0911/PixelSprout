@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start random plant movements for more lifelike garden
     startRandomPlantMovements();
     
-    // Create the buttons for effects when the page loads
-    createEffectButtons();
+    // Setup effects dropdown handlers
+    setupEffectsDropdownHandlers();
 });
 
 /**
@@ -483,4 +483,49 @@ function startRandomPlantMovements() {
             }, 2000);
         }
     }, 6000); // Every 6 seconds
+}
+
+/**
+ * Set up event handlers for the effects dropdown menu
+ */
+function setupEffectsDropdownHandlers() {
+    // Setup animation mode options
+    const animationModeItems = document.querySelectorAll('[data-animation-mode]');
+    animationModeItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const mode = this.getAttribute('data-animation-mode');
+            setAnimationMode(mode);
+        });
+    });
+    
+    // Setup seasonal theme options
+    const seasonItems = document.querySelectorAll('[data-season]');
+    seasonItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const season = this.getAttribute('data-season');
+            setSeason(season);
+        });
+    });
+    
+    // Setup special effect options
+    const effectItems = document.querySelectorAll('[data-effect]');
+    let activeEffects = {};
+    
+    effectItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const effect = this.getAttribute('data-effect');
+            
+            // Toggle the effect
+            if (activeEffects[effect]) {
+                activeEffects[effect] = false;
+                toggleSpecialEffect(effect, false);
+            } else {
+                activeEffects[effect] = true;
+                toggleSpecialEffect(effect, true);
+            }
+        });
+    });
 }
