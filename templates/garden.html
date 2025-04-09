@@ -24,6 +24,28 @@
             <span id="water-credits-count">0</span>
         </div>
         
+        <div class="dropdown me-2">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="animationControlsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-sliders-h me-1"></i> Animations
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="animationControlsDropdown">
+                <li><h6 class="dropdown-header">Garden Effects</h6></li>
+                <li><a class="dropdown-item animation-control" href="#" data-effect="normal">Normal Mode</a></li>
+                <li><a class="dropdown-item animation-control" href="#" data-effect="wind-blowing">Wind Effect</a></li>
+                <li><div class="dropdown-divider"></div></li>
+                <li><h6 class="dropdown-header">Seasonal Effects</h6></li>
+                <li><a class="dropdown-item animation-control" href="#" data-effect="spring-effect">Spring</a></li>
+                <li><a class="dropdown-item animation-control" href="#" data-effect="summer-effect">Summer</a></li>
+                <li><a class="dropdown-item animation-control" href="#" data-effect="autumn-effect">Autumn</a></li>
+                <li><a class="dropdown-item animation-control" href="#" data-effect="winter-effect">Winter</a></li>
+                <li><div class="dropdown-divider"></div></li>
+                <li><h6 class="dropdown-header">Special Effects</h6></li>
+                <li><a class="dropdown-item animation-control" href="#" data-effect="rainbow-mode">Rainbow Mode</a></li>
+                <li><a class="dropdown-item animation-control" href="#" data-effect="sparkle-mode">Sparkle Mode</a></li>
+                <li><a class="dropdown-item animation-control" href="#" data-effect="plant-excited">Party Mode</a></li>
+            </ul>
+        </div>
+        
         <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#log-condition-modal">
             <i class="fas fa-clipboard-list me-1"></i> Log Condition
         </button>
@@ -212,8 +234,9 @@
 <script src="{{ url_for('static', filename='js/conditions.js') }}"></script>
 
 <script>
-// Add event listener for preset plants button
+// Add event listeners for preset plants button and animation controls
 document.addEventListener('DOMContentLoaded', function() {
+    // Preset Plants Button
     const presetButton = document.getElementById('add-preset-plants-btn');
     if (presetButton) {
         presetButton.addEventListener('click', function() {
@@ -240,6 +263,67 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    // Animation Controls
+    const animationControls = document.querySelectorAll('.animation-control');
+    let currentEffect = null;
+    
+    // Add event listener to each animation control
+    animationControls.forEach(control => {
+        control.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const effect = this.getAttribute('data-effect');
+            const gardenContainer = document.getElementById('garden-container');
+            const plants = document.querySelectorAll('.plant-container');
+            
+            // Remove current effect from all plants if exists
+            if (currentEffect && currentEffect !== 'normal') {
+                if (['wind-blowing', 'plant-excited', 'plant-dancing', 'plant-bouncing', 'plant-waving', 'plant-shimmer'].includes(currentEffect)) {
+                    plants.forEach(plant => {
+                        plant.classList.remove(currentEffect);
+                    });
+                } else {
+                    // For filter effects like seasons and special modes
+                    plants.forEach(plant => {
+                        plant.classList.remove(currentEffect);
+                    });
+                }
+            }
+            
+            // Set new effect
+            currentEffect = effect;
+            
+            // Apply new effect
+            if (effect !== 'normal') {
+                if (['wind-blowing', 'plant-excited', 'plant-dancing', 'plant-bouncing', 'plant-waving', 'plant-shimmer'].includes(effect)) {
+                    // Animation effects - apply to all plants
+                    plants.forEach(plant => {
+                        plant.classList.add(effect);
+                    });
+                    showNotification(`Applied ${effect.replace('-', ' ')} to the garden!`, 'success');
+                } else {
+                    // Filter effects like seasons and special modes
+                    plants.forEach(plant => {
+                        plant.classList.add(effect);
+                    });
+                    
+                    // Show appropriate notification
+                    let message = 'Applied effect to the garden!';
+                    if (effect.includes('spring')) message = 'Spring has arrived in your garden!';
+                    else if (effect.includes('summer')) message = 'Summer heat warms your garden!';
+                    else if (effect.includes('autumn')) message = 'Autumn colors fill your garden!';
+                    else if (effect.includes('winter')) message = 'Winter chill settles on your garden!';
+                    else if (effect.includes('rainbow')) message = 'Rainbow mode activated! 🌈';
+                    else if (effect.includes('sparkle')) message = 'Sparkle mode activated! ✨';
+                    
+                    showNotification(message, 'success');
+                }
+            } else {
+                showNotification('Returned garden to normal mode', 'info');
+            }
+        });
+    });
 
     // Helper function to show notifications
     function showNotification(message, type = 'info') {

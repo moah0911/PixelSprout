@@ -22,6 +22,68 @@
     transform-origin: bottom center;
 }
 
+/* Excited plant animation - more energetic dancing */
+@keyframes plantExcited {
+    0% { transform: rotate(0deg) translateY(0); }
+    15% { transform: rotate(-5deg) translateY(-2px); }
+    30% { transform: rotate(0deg) translateY(0); }
+    45% { transform: rotate(5deg) translateY(-2px); }
+    60% { transform: rotate(0deg) translateY(0); }
+    75% { transform: rotate(-5deg) translateY(-1px); }
+    90% { transform: rotate(0deg) translateY(0); }
+    100% { transform: rotate(0deg) translateY(0); }
+}
+
+.plant-excited {
+    animation: plantExcited 1.2s ease-in-out infinite;
+    transform-origin: bottom center;
+}
+
+/* Bouncing plant animation */
+@keyframes plantBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.plant-bouncing {
+    animation: plantBounce 1.5s ease-in-out infinite;
+}
+
+/* Waving plant animation */
+@keyframes plantWave {
+    0% { transform: skewX(0deg); }
+    25% { transform: skewX(3deg); }
+    50% { transform: skewX(0deg); }
+    75% { transform: skewX(-3deg); }
+    100% { transform: skewX(0deg); }
+}
+
+.plant-waving {
+    animation: plantWave 3s ease-in-out infinite;
+}
+
+/* Shimmering plant animation - for flowering plants */
+@keyframes plantShimmer {
+    0% { filter: brightness(1) saturate(1); }
+    50% { filter: brightness(1.2) saturate(1.2); }
+    100% { filter: brightness(1) saturate(1); }
+}
+
+.plant-shimmer {
+    animation: plantShimmer 4s ease-in-out infinite;
+}
+
+/* Flower blooming animation */
+@keyframes flowerBloom {
+    0% { transform: scale(0.5); opacity: 0.7; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.flower-bloom {
+    animation: flowerBloom 4s ease-out;
+}
+
 /* Growing plant animation */
 @keyframes plantGrow {
     0% { transform: scale(0.8); opacity: 0.7; }
@@ -30,6 +92,20 @@
 
 .plant-growing {
     animation: plantGrow 3s ease-out;
+}
+
+/* Wind blowing effect */
+@keyframes windBlow {
+    0% { transform: rotate(0deg) skewX(0deg); }
+    25% { transform: rotate(-2deg) skewX(2deg); }
+    50% { transform: rotate(0deg) skewX(0deg); }
+    75% { transform: rotate(2deg) skewX(-2deg); }
+    100% { transform: rotate(0deg) skewX(0deg); }
+}
+
+.wind-blowing {
+    animation: windBlow 8s ease-in-out infinite;
+    transform-origin: bottom center;
 }
 
 /* Watering effect animation */

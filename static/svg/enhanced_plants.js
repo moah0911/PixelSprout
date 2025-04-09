@@ -273,6 +273,23 @@ document.addEventListener('DOMContentLoaded', function() {
             animation: seedPulse 2s ease infinite;
         }
         
+        .plant-flowering .plant-flower {
+            animation: flowerBloom 3s ease-out, flowerShimmer 4s ease-in-out infinite;
+            animation-delay: 0s, 3s;
+        }
+        
+        .plant-bud {
+            animation: budPulse 3s ease infinite;
+        }
+        
+        .left-leaf {
+            animation-delay: 0.3s;
+        }
+        
+        .right-leaf {
+            animation-delay: 0.7s;
+        }
+        
         @keyframes vineSway {
             0%, 100% { transform: rotate(0deg); }
             25% { transform: rotate(2deg); }
@@ -304,6 +321,104 @@ document.addEventListener('DOMContentLoaded', function() {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
+        
+        @keyframes flowerBloom {
+            0% { transform: scale(0.2); opacity: 0.5; }
+            60% { transform: scale(1.1); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes flowerShimmer {
+            0% { filter: brightness(1) saturate(1); }
+            50% { filter: brightness(1.3) saturate(1.2); }
+            100% { filter: brightness(1) saturate(1); }
+        }
+        
+        @keyframes budPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        
+        /* Seasonal animations */
+        .summer-effect {
+            filter: brightness(1.1) saturate(1.1);
+        }
+        
+        .autumn-effect {
+            filter: sepia(0.2) saturate(1.2);
+        }
+        
+        .winter-effect {
+            filter: brightness(0.95) saturate(0.9);
+        }
+        
+        .spring-effect {
+            filter: brightness(1.05) hue-rotate(5deg);
+        }
+        
+        /* Special animations for events */
+        @keyframes rainbowEffect {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        .rainbow-mode {
+            animation: rainbowEffect 8s linear infinite;
+        }
+        
+        @keyframes sparkleEffect {
+            0%, 100% { filter: brightness(1) contrast(1); }
+            50% { filter: brightness(1.5) contrast(1.2) saturate(1.3); }
+        }
+        
+        .sparkle-mode {
+            animation: sparkleEffect 2s ease-in-out infinite;
+        }
     `;
     document.head.appendChild(style);
+    
+    // Add global random animations throughout the garden
+    setTimeout(function() {
+        startRandomAnimations();
+    }, 2000);
 });
+
+// Random animations for plants throughout the garden
+function startRandomAnimations() {
+    setInterval(function() {
+        const plants = document.querySelectorAll('.plant-container');
+        if (plants.length > 0) {
+            // Pick a random plant
+            const randomPlant = plants[Math.floor(Math.random() * plants.length)];
+            
+            // Pick a random animation
+            const animations = [
+                'plant-dancing', 
+                'plant-excited', 
+                'plant-bouncing', 
+                'plant-waving',
+                'plant-shimmer',
+                'wind-blowing'
+            ];
+            
+            const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+            
+            // If plant is not already animated
+            if (!randomPlant.classList.contains('plant-dancing') && 
+                !randomPlant.classList.contains('plant-excited') &&
+                !randomPlant.classList.contains('plant-bouncing') &&
+                !randomPlant.classList.contains('plant-waving') &&
+                !randomPlant.classList.contains('plant-shimmer') &&
+                !randomPlant.classList.contains('wind-blowing')) {
+                
+                // Add animation
+                randomPlant.classList.add(randomAnimation);
+                
+                // Remove animation after a random time
+                setTimeout(function() {
+                    randomPlant.classList.remove(randomAnimation);
+                }, Math.random() * 3000 + 2000); // 2-5 seconds
+            }
+        }
+    }, Math.random() * 10000 + 5000); // 5-15 seconds interval
+}
