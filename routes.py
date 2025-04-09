@@ -149,15 +149,21 @@ def create_plant():
     db.session.add(new_plant)
     db.session.commit()
     
+    # Award garden score for creating a new plant
+    points = 100
+    current_user.increase_garden_score(points, f"Created new {plant_type_str} plant")
+    
     return jsonify({
         'success': True, 
+        'message': f'Plant created successfully! Earned {points} garden score points!',
         'plant': {
             'id': new_plant.id,
             'name': new_plant.name,
             'type': new_plant.plant_type,
             'stage': new_plant.stage,
             'health': new_plant.health
-        }
+        },
+        'garden_score': current_user.garden_score
     })
 
 @app.route('/api/conditions', methods=['GET'])
@@ -206,14 +212,20 @@ def log_condition():
     # Apply condition to plants
     apply_condition_to_plants(current_user.id, type_name, value)
     
+    # Award garden score for logging a condition (points based on value)
+    score_points = min(int(value * 5), 50)  # Cap at 50 points per condition
+    current_user.increase_garden_score(score_points, f"Logged {type_name} condition")
+    
     return jsonify({
         'success': True, 
+        'message': f'Condition logged! Earned {score_points} garden score points!',
         'condition': {
             'id': new_condition.id,
             'type_name': new_condition.type_name,
             'value': new_condition.value,
             'date_logged': new_condition.date_logged.isoformat() if hasattr(new_condition.date_logged, 'isoformat') else str(new_condition.date_logged)
-        }
+        },
+        'garden_score': current_user.garden_score
     })
 
 @app.route('/api/condition-types', methods=['GET'])
@@ -356,6 +368,18 @@ def get_water_credits():
         'success': True,
         'water_credits': current_user.water_credits
     })
+    
+@app.route('/api/garden-score', methods=['GET'])
+@login_required
+def get_garden_score():
+    """Get the current user's garden score and level"""
+    score_data = current_user.get_garden_score()
+    
+    return jsonify({
+        'success': True,
+        'garden_score': score_data['score'],
+        'level': score_data['label']
+    })
 
 @app.route('/api/water-credits/add', methods=['POST'])
 @login_required
@@ -453,9 +477,24 @@ def water_plant(plant_id):
     db.session.add(new_condition)
     db.session.commit()
     
+    # Award garden score for watering plants
+    # Extra points if plant was unhealthy or advanced to next stage
+    base_points = 10
+    bonus_points = 0
+    
+    if health_gain > 5:  # Plant was unhealthy and improved significantly
+        bonus_points += 15
+    
+    if plant.stage > 0 and plant.progress == 0:  # Just advanced to next stage
+        bonus_points += 25
+        
+    total_points = base_points + bonus_points
+    current_user.increase_garden_score(total_points, f"Watered {plant.name}")
+    
     return jsonify({
         'success': True,
         'water_credits': current_user.water_credits,
+        'garden_score': current_user.garden_score,
         'plant': {
             'id': plant.id,
             'name': plant.name,
@@ -465,7 +504,7 @@ def water_plant(plant_id):
             'progress': plant.progress,
             'last_watered': plant.last_watered.isoformat() if hasattr(plant.last_watered, 'isoformat') else str(plant.last_watered)
         },
-        'message': f'{plant.name} has been watered!'
+        'message': f'{plant.name} has been watered! Earned {total_points} garden score points!'
     })
 
 # Sample plants API routes
@@ -527,13 +566,19 @@ def add_preset_plants():
     # Commit changes
     db.session.commit()
     
+    # Award garden score for adding preset plants (50 points per plant)
+    points_per_plant = 50
+    total_points = len(plants_added) * points_per_plant
+    current_user.increase_garden_score(total_points, f"Added {len(plants_added)} preset plants")
+    
     if len(plants_added) == 1:
-        message = f'Added {plants_added[0]} to your garden!'
+        message = f'Added {plants_added[0]} to your garden! Earned {total_points} garden score points!'
     else:
-        message = f'Added {len(plants_added)} preset plants to your garden!'
+        message = f'Added {len(plants_added)} preset plants to your garden! Earned {total_points} garden score points!'
     
     return jsonify({
         'success': True,
         'plants_added': plants_added,
+        'garden_score': current_user.garden_score,
         'message': message
     })

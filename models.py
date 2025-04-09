@@ -50,6 +50,7 @@ class User(db.Model, UserMixin):
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     username: Mapped[str] = mapped_column(String(100), nullable=False)
     water_credits: Mapped[int] = mapped_column(Integer, default=20, nullable=False)
+    garden_score: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     
     # Relationships
@@ -72,11 +73,12 @@ class User(db.Model, UserMixin):
         lazy="dynamic"
     )
     
-    def __init__(self, id, email, username, water_credits=20, created_at=None):
+    def __init__(self, id, email, username, water_credits=20, garden_score=0, created_at=None):
         self.id = id
         self.email = email
         self.username = username
         self.water_credits = water_credits
+        self.garden_score = garden_score
         self.created_at = created_at or datetime.now()
         
     # Friendship methods
@@ -135,12 +137,65 @@ class User(db.Model, UserMixin):
         
         if accept:
             friendship.status = FriendshipStatus.ACCEPTED.value
+            
+            # Increase garden score for both users when accepting a friend request
+            requester = User.query.get(friendship.requester_id)
+            if requester:
+                requester.increase_garden_score(50, "Added a new friend")
+            self.increase_garden_score(50, "Added a new friend")
+            
             db.session.commit()
             return True, "Friend request accepted"
         else:
             friendship.status = FriendshipStatus.DECLINED.value
             db.session.commit()
             return True, "Friend request declined"
+            
+    def increase_garden_score(self, points, reason=""):
+        """Increase the user's garden score
+        
+        Args:
+            points: Number of points to add
+            reason: The reason for the point increase (for tracking purposes)
+        """
+        self.garden_score += points
+        db.session.add(self)
+        db.session.commit()
+        
+        # Log the score change (could be expanded to store in a table)
+        print(f"Garden score increased by {points} for user {self.username} ({reason}). New score: {self.garden_score}")
+        
+        return self.garden_score
+        
+    def get_garden_score(self):
+        """Get the user's garden score with formatted label
+        
+        Returns:
+            Dict with score and label
+        """
+        # Get score level based on score
+        levels = {
+            0: "Seed Starter",
+            100: "Sprout Nurturer",
+            500: "Growth Enthusiast",
+            1000: "Plant Master",
+            2500: "Garden Sage",
+            5000: "Nature Whisperer",
+            10000: "Botanical Legend",
+            25000: "Garden God"
+        }
+        
+        # Find appropriate level
+        level_label = "Seed Starter"  # Default
+        for threshold in sorted(levels.keys(), reverse=True):
+            if self.garden_score >= threshold:
+                level_label = levels[threshold]
+                break
+                
+        return {
+            "score": self.garden_score,
+            "label": level_label
+        }
         
 # Plant model representing a plant in the digital garden
 class Plant(db.Model):

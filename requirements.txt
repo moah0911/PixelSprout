@@ -1,0 +1,11 @@
+email-validator==2.1.0
+Flask==2.3.3
+Flask-Cors==4.0.0
+Flask-Login==0.6.3
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.1
+gunicorn==21.2.0
+psycopg2-binary==2.9.9
+SQLAlchemy==2.0.23
+supabase==1.0.4
+Werkzeug==2.3.7
