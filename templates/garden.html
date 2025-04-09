@@ -4,57 +4,70 @@
 
 {% block head %}
 {{ super() }}
-<!-- Add animation styles -->
-<link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+<!-- Add Google Font for better UI -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-md-6">
-        <h1>
-            <i class="fas fa-leaf text-success me-2"></i>
-            {{ username }}'s Garden
-        </h1>
-        <p class="text-muted">Watch your plants grow based on your daily habits</p>
-    </div>
-    <div class="col-md-6 d-flex justify-content-end align-items-center">
-        <!-- Water Credits Display -->
-        <div class="water-credits me-3">
-            <i class="fas fa-tint"></i>
-            <span id="water-credits-count">0</span>
+<!-- Garden Header with Improved UI -->
+<div class="garden-header">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h1 class="garden-title">
+                <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="Plant" class="logo-icon me-3" onerror="this.src='https://api.iconify.design/fluent-emoji-high-contrast:potted-plant.svg?width=40'">
+                {{ username }}'s Garden
+            </h1>
+            <p class="garden-subtitle">Watch your plants grow based on your daily habits</p>
         </div>
-        
-        <div class="dropdown me-2">
-            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="animationControlsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-sliders-h me-1"></i> Animations
+        <div class="col-lg-6 text-lg-end mt-3 mt-lg-0">
+            <!-- Water Credits Display - Enhanced -->
+            <div class="water-credits-display me-3 mb-2 mb-md-0 d-inline-flex">
+                <i class="fas fa-tint"></i>
+                <span id="water-credits-count" class="water-credits-count">0</span>
+            </div>
+            
+            <!-- Animations Dropdown - Enhanced Design -->
+            <div class="dropdown animations-dropdown d-inline-block me-2">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="animationControlsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-magic me-1"></i> Animations
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="animationControlsDropdown">
+                    <li><h6 class="dropdown-header">Animation Modes</h6></li>
+                    <li><a class="dropdown-item active" href="#" data-animation-mode="default">Default Mode</a></li>
+                    <li><a class="dropdown-item" href="#" data-animation-mode="dancing">Dancing Plants</a></li>
+                    <li><a class="dropdown-item" href="#" data-animation-mode="bouncing">Bouncing Plants</a></li>
+                    <li><a class="dropdown-item" href="#" data-animation-mode="shimmering">Shimmering Plants</a></li>
+                    <li><a class="dropdown-item" href="#" data-animation-mode="rainbow">Rainbow Mode</a></li>
+                    
+                    <li><div class="dropdown-divider"></div></li>
+                    <li><h6 class="dropdown-header">Seasonal Effects</h6></li>
+                    <li><a class="dropdown-item active" href="#" data-season="spring">Spring</a></li>
+                    <li><a class="dropdown-item" href="#" data-season="summer">Summer</a></li>
+                    <li><a class="dropdown-item" href="#" data-season="autumn">Autumn</a></li>
+                    <li><a class="dropdown-item" href="#" data-season="winter">Winter</a></li>
+                    
+                    <li><div class="dropdown-divider"></div></li>
+                    <li><h6 class="dropdown-header">Special Effects</h6></li>
+                    <li><a class="dropdown-item" href="#" data-effect="sparkle">Sparkle Effect</a></li>
+                    <li><a class="dropdown-item active" href="#" data-effect="glow">Plant Glow</a></li>
+                </ul>
+            </div>
+            
+            <!-- Log Condition Button -->
+            <button class="btn btn-info me-2 mb-2 mb-md-0" data-bs-toggle="modal" data-bs-target="#log-condition-modal">
+                <i class="fas fa-clipboard-list me-1"></i> Log Condition
             </button>
-            <ul class="dropdown-menu" aria-labelledby="animationControlsDropdown">
-                <li><h6 class="dropdown-header">Garden Effects</h6></li>
-                <li><a class="dropdown-item animation-control" href="#" data-effect="normal">Normal Mode</a></li>
-                <li><a class="dropdown-item animation-control" href="#" data-effect="wind-blowing">Wind Effect</a></li>
-                <li><div class="dropdown-divider"></div></li>
-                <li><h6 class="dropdown-header">Seasonal Effects</h6></li>
-                <li><a class="dropdown-item animation-control" href="#" data-effect="spring-effect">Spring</a></li>
-                <li><a class="dropdown-item animation-control" href="#" data-effect="summer-effect">Summer</a></li>
-                <li><a class="dropdown-item animation-control" href="#" data-effect="autumn-effect">Autumn</a></li>
-                <li><a class="dropdown-item animation-control" href="#" data-effect="winter-effect">Winter</a></li>
-                <li><div class="dropdown-divider"></div></li>
-                <li><h6 class="dropdown-header">Special Effects</h6></li>
-                <li><a class="dropdown-item animation-control" href="#" data-effect="rainbow-mode">Rainbow Mode</a></li>
-                <li><a class="dropdown-item animation-control" href="#" data-effect="sparkle-mode">Sparkle Mode</a></li>
-                <li><a class="dropdown-item animation-control" href="#" data-effect="plant-excited">Party Mode</a></li>
-            </ul>
+            
+            <!-- Add Plant Button -->
+            <button class="btn btn-success me-2 mb-2 mb-md-0" data-bs-toggle="modal" data-bs-target="#add-plant-modal">
+                <i class="fas fa-seedling me-1"></i> Add Plant
+            </button>
+            
+            <!-- Add Preset Plants Button -->
+            <button id="add-preset-plants-btn" class="btn btn-warning mb-2 mb-md-0">
+                <i class="fas fa-magic me-1"></i> Add Preset Plants
+            </button>
         </div>
-        
-        <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#log-condition-modal">
-            <i class="fas fa-clipboard-list me-1"></i> Log Condition
-        </button>
-        <button class="btn btn-outline-success me-2" data-bs-toggle="modal" data-bs-target="#add-plant-modal">
-            <i class="fas fa-plus me-1"></i> Add Plant
-        </button>
-        <button id="add-preset-plants-btn" class="btn btn-outline-info">
-            <i class="fas fa-magic me-1"></i> Add Preset Plants
-        </button>
     </div>
 </div>
 

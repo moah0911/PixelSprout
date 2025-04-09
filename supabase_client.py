@@ -5,12 +5,12 @@ from supabase import create_client
 from models import User, Plant, Condition, ConditionType, PlantStage, PlantType
 from datetime import datetime
 
-# Initialize Supabase client
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+# Initialize Supabase client with provided credentials
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://zgktaswjqhvqmavndpdx.supabase.co")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpna3Rhc3dqcWh2cW1hdm5kcGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxOTM3MDAsImV4cCI6MjA1OTc2OTcwMH0.sKv4jSGbVISrd8yXihM9UrSAxeC-qNBiD7ENHawFLSE")
 
-if not SUPABASE_URL or not SUPABASE_KEY:
-    logging.warning("Supabase credentials not found in environment variables")
+logging.info("Using Supabase URL: %s", SUPABASE_URL)
+logging.info("Supabase key is configured")
 
 # Create Supabase client
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None

@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
         increaseWaterCredits(2); // Only increase by 2 credits per hour
     }, 60 * 60 * 1000); // 1 hour in milliseconds
     
-    // No more increasing credits every minute
+    // Remove all other interval calls that might be increasing credits
+    // This will override any previous interval settings
 });
 
 // Function to increase water credits

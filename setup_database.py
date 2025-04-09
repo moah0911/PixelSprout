@@ -1,152 +1,179 @@
 import os
 import logging
-from supabase import create_client
+import psycopg2
+from psycopg2 import sql
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-logging.basicConfig(level=logging.INFO)
-
-# Initialize Supabase client
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
-
-if not SUPABASE_URL or not SUPABASE_KEY:
-    logging.error("Supabase credentials not found in environment variables")
-    exit(1)
-
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Configure logging
+logging.basicConfig(level=logging.INFO, 
+                   format='%(asctime)s - %(levelname)s - %(message)s')
 
 def create_tables():
     """Create all necessary tables for the digital garden application"""
-    logging.info("Creating tables in Supabase...")
+    # Get database connection string from environment variable
+    DATABASE_URL = os.environ.get("DATABASE_URL")
     
-    # SQL commands to create tables
-    create_users_table = """
-    CREATE TABLE IF NOT EXISTS users (
-        id UUID PRIMARY KEY,
-        email VARCHAR(255) NOT NULL,
-        username VARCHAR(100) NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-    """
+    if not DATABASE_URL:
+        logging.error("DATABASE_URL environment variable is not set")
+        print_manual_setup_instructions()
+        return False
     
-    create_plants_table = """
-    CREATE TABLE IF NOT EXISTS plants (
-        id SERIAL PRIMARY KEY,
-        user_id UUID NOT NULL REFERENCES users(id),
-        name VARCHAR(100) NOT NULL,
-        plant_type VARCHAR(50) NOT NULL,
-        stage INTEGER DEFAULT 0,
-        health NUMERIC DEFAULT 100,
-        progress NUMERIC DEFAULT 0,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        last_watered TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-    """
-    
-    create_condition_types_table = """
-    CREATE TABLE IF NOT EXISTS condition_types (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        description TEXT,
-        unit VARCHAR(50) NOT NULL,
-        default_goal NUMERIC,
-        user_id UUID REFERENCES users(id),
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-    """
-    
-    create_conditions_table = """
-    CREATE TABLE IF NOT EXISTS conditions (
-        id SERIAL PRIMARY KEY,
-        user_id UUID NOT NULL REFERENCES users(id),
-        type_name VARCHAR(100) NOT NULL,
-        value NUMERIC NOT NULL,
-        date_logged TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-    """
-    
-    # Execute SQL commands
     try:
-        # Using the REST API to execute SQL (requires appropriate permissions)
-        response = supabase.rpc('exec_sql', {'sql_query': create_users_table}).execute()
-        logging.info("Created users table")
+        # Connect to the database
+        logging.info("Connecting to PostgreSQL database...")
+        conn = psycopg2.connect(DATABASE_URL)
+        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cursor = conn.cursor()
         
-        response = supabase.rpc('exec_sql', {'sql_query': create_plants_table}).execute()
-        logging.info("Created plants table")
+        logging.info("Successfully connected to the database")
         
-        response = supabase.rpc('exec_sql', {'sql_query': create_condition_types_table}).execute()
-        logging.info("Created condition_types table")
+        # Create tables
+        logging.info("Creating tables...")
         
-        response = supabase.rpc('exec_sql', {'sql_query': create_conditions_table}).execute()
-        logging.info("Created conditions table")
+        # Users table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id UUID PRIMARY KEY,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            username VARCHAR(100) NOT NULL,
+            water_credits INTEGER NOT NULL DEFAULT 20,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        logging.info("Users table created or already exists")
         
-        logging.info("All tables created successfully!")
+        # Plants table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS plants (
+            id SERIAL PRIMARY KEY,
+            user_id UUID REFERENCES users(id) NOT NULL,
+            name VARCHAR(100) NOT NULL,
+            plant_type VARCHAR(50) NOT NULL,
+            stage INTEGER DEFAULT 0 NOT NULL,
+            health FLOAT DEFAULT 100 NOT NULL,
+            progress FLOAT DEFAULT 0 NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_watered TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        logging.info("Plants table created or already exists")
+        
+        # Condition Types table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS condition_types (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            description TEXT,
+            unit VARCHAR(50) NOT NULL,
+            default_goal FLOAT,
+            user_id UUID REFERENCES users(id),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        logging.info("Condition Types table created or already exists")
+        
+        # Conditions table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS conditions (
+            id SERIAL PRIMARY KEY,
+            user_id UUID REFERENCES users(id) NOT NULL,
+            type_name VARCHAR(100) NOT NULL,
+            value FLOAT NOT NULL,
+            date_logged TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        logging.info("Conditions table created or already exists")
+        
+        # Create indexes for better performance
+        cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_plants_user_id ON plants(user_id);
+        CREATE INDEX IF NOT EXISTS idx_conditions_user_id ON conditions(user_id);
+        CREATE INDEX IF NOT EXISTS idx_condition_types_user_id ON condition_types(user_id);
+        """)
+        logging.info("Indexes created or already exist")
+        
+        # Insert default condition types if they don't exist
+        cursor.execute("""
+        INSERT INTO condition_types (name, description, unit, default_goal)
+        SELECT 'Water Intake', 'Amount of water consumed', 'glasses', 8
+        WHERE NOT EXISTS (SELECT 1 FROM condition_types WHERE name = 'Water Intake');
+        
+        INSERT INTO condition_types (name, description, unit, default_goal)
+        SELECT 'Sleep', 'Hours of sleep', 'hours', 8
+        WHERE NOT EXISTS (SELECT 1 FROM condition_types WHERE name = 'Sleep');
+        
+        INSERT INTO condition_types (name, description, unit, default_goal)
+        SELECT 'Exercise', 'Time spent exercising', 'minutes', 30
+        WHERE NOT EXISTS (SELECT 1 FROM condition_types WHERE name = 'Exercise');
+        
+        INSERT INTO condition_types (name, description, unit, default_goal)
+        SELECT 'Meditation', 'Time spent meditating', 'minutes', 15
+        WHERE NOT EXISTS (SELECT 1 FROM condition_types WHERE name = 'Meditation');
+        
+        INSERT INTO condition_types (name, description, unit, default_goal)
+        SELECT 'Reading', 'Time spent reading', 'minutes', 30
+        WHERE NOT EXISTS (SELECT 1 FROM condition_types WHERE name = 'Reading');
+        
+        INSERT INTO condition_types (name, description, unit, default_goal)
+        SELECT 'Sunlight', 'Time spent outdoors in natural light', 'minutes', 20
+        WHERE NOT EXISTS (SELECT 1 FROM condition_types WHERE name = 'Sunlight');
+        
+        INSERT INTO condition_types (name, description, unit, default_goal)
+        SELECT 'Deep Work', 'Time spent in focused, deep work', 'minutes', 120
+        WHERE NOT EXISTS (SELECT 1 FROM condition_types WHERE name = 'Deep Work');
+        """)
+        logging.info("Default condition types added (if they didn't exist)")
+        
+        # Create views for convenience
+        cursor.execute("""
+        CREATE OR REPLACE VIEW plant_details AS
+        SELECT 
+            p.*,
+            u.username,
+            u.email
+        FROM 
+            plants p
+        JOIN 
+            users u ON p.user_id = u.id;
+        """)
+        
+        cursor.execute("""
+        CREATE OR REPLACE VIEW condition_details AS
+        SELECT 
+            c.*,
+            u.username,
+            ct.description AS condition_description,
+            ct.unit
+        FROM 
+            conditions c
+        JOIN 
+            users u ON c.user_id = u.id
+        LEFT JOIN
+            condition_types ct ON c.type_name = ct.name;
+        """)
+        logging.info("Views created or replaced")
+        
+        # Close the connection
+        cursor.close()
+        conn.close()
+        
+        logging.info("✅ Database setup completed successfully!")
         return True
+        
     except Exception as e:
-        logging.error(f"Error creating tables: {str(e)}")
-        logging.error("Make sure you have a stored procedure named 'exec_sql' in your Supabase database")
-        logging.error("Or create the tables manually using the Supabase SQL editor")
+        logging.error(f"Error setting up database: {str(e)}")
+        print_manual_setup_instructions()
         return False
 
 def print_manual_setup_instructions():
     """Print instructions for manual setup if the automatic setup fails"""
-    logging.info("\n==== MANUAL SETUP INSTRUCTIONS ====")
-    logging.info("If the automatic setup fails, you'll need to create these tables manually in your Supabase SQL editor:")
-    
-    logging.info("\n-- Users Table:")
-    logging.info("""
-    CREATE TABLE public.users (
-        id UUID PRIMARY KEY,
-        email VARCHAR(255) NOT NULL,
-        username VARCHAR(100) NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-    """)
-    
-    logging.info("\n-- Plants Table:")
-    logging.info("""
-    CREATE TABLE public.plants (
-        id SERIAL PRIMARY KEY,
-        user_id UUID NOT NULL REFERENCES public.users(id),
-        name VARCHAR(100) NOT NULL,
-        plant_type VARCHAR(50) NOT NULL,
-        stage INTEGER DEFAULT 0,
-        health NUMERIC DEFAULT 100,
-        progress NUMERIC DEFAULT 0,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        last_watered TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-    """)
-    
-    logging.info("\n-- Condition Types Table:")
-    logging.info("""
-    CREATE TABLE public.condition_types (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        description TEXT,
-        unit VARCHAR(50) NOT NULL,
-        default_goal NUMERIC,
-        user_id UUID REFERENCES public.users(id),
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-    """)
-    
-    logging.info("\n-- Conditions Table:")
-    logging.info("""
-    CREATE TABLE public.conditions (
-        id SERIAL PRIMARY KEY,
-        user_id UUID NOT NULL REFERENCES public.users(id),
-        type_name VARCHAR(100) NOT NULL,
-        value NUMERIC NOT NULL,
-        date_logged TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-    """)
-    
-    logging.info("\n====================================")
-    
-    logging.info("\nNow you can try running the application again.")
+    logging.info("\n" + "="*80)
+    logging.info("MANUAL SETUP INSTRUCTIONS")
+    logging.info("="*80)
+    logging.info("If you need to manually set up the database, follow these steps:")
+    logging.info("1. Connect to your PostgreSQL database")
+    logging.info("2. Run the SQL commands found in the setup_database.sql file")
+    logging.info("="*80 + "\n")
 
 if __name__ == "__main__":
-    success = create_tables()
-    
-    if not success:
-        print_manual_setup_instructions()
+    create_tables()

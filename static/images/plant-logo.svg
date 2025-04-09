@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pot -->
+  <path d="M25,60 L55,60 L60,75 L20,75 Z" fill="#8B5D3B" />
+  <path d="M28,60 L52,60 L56,72 L24,72 Z" fill="#6B4B2B" />
+  
+  <!-- Soil -->
+  <ellipse cx="40" cy="60" rx="17" ry="5" fill="#5D4037" />
+  
+  <!-- Trunk/Stem -->
+  <path d="M40,15 Q38,30 38,45 Q38,50 40,50 Q42,50 42,45 Q42,30 40,15" fill="#2E7D32" />
+  
+  <!-- Leaves -->
+  <path d="M40,20 Q30,15 25,25 Q27,30 30,30 Q35,30 40,20" fill="#4CAF50" />
+  <path d="M40,20 Q50,15 55,25 Q53,30 50,30 Q45,30 40,20" fill="#4CAF50" />
+  <path d="M40,30 Q30,25 20,30 Q25,40 30,37 Q35,35 40,30" fill="#66BB6A" />
+  <path d="M40,30 Q50,25 60,30 Q55,40 50,37 Q45,35 40,30" fill="#66BB6A" />
+  
+  <!-- Flower -->
+  <circle cx="40" cy="15" r="8" fill="#E8F5E9" />
+  <circle cx="40" cy="15" r="5" fill="#FFEB3B" />
+  
+  <!-- Dewdrops -->
+  <circle cx="28" cy="28" r="2" fill="#B3E5FC" />
+  <circle cx="52" cy="28" r="2" fill="#B3E5FC" />
+  
+  <!-- Glow effect -->
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="2" result="blur" />
+    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+  </filter>
+  
+  <!-- Apply glow to the entire plant -->
+  <g filter="url(#glow)">
+    <circle cx="40" cy="40" r="30" fill="rgba(76, 175, 80, 0.1)" />
+  </g>
+</svg>
