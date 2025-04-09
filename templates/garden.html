@@ -22,58 +22,9 @@
                 </p>
             </div>
             <div class="col-md-6 d-flex align-items-center justify-content-md-end justify-content-center">
-                <div class="water-credits-container me-3">
+                <div class="water-credits-container">
                     <div class="water-credits-display">
                         <i class="fas fa-tint fa-pulse"></i> <span id="water-credits-count">--</span> credits
-                    </div>
-                </div>
-                
-                <!-- Animation Controls Dropdown -->
-                <div class="dropdown animations-dropdown">
-                    <button class="btn btn-outline-success dropdown-toggle" type="button" id="animationControlsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-magic me-1"></i> Effects
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="animationControlsDropdown">
-                        <h6 class="dropdown-header">Animation Mode</h6>
-                        <a class="dropdown-item active" href="#" data-animation-mode="default">
-                            <i class="fas fa-leaf me-2"></i> Default
-                        </a>
-                        <a class="dropdown-item" href="#" data-animation-mode="dancing">
-                            <i class="fas fa-music me-2"></i> Dancing
-                        </a>
-                        <a class="dropdown-item" href="#" data-animation-mode="bouncing">
-                            <i class="fas fa-angle-double-up me-2"></i> Bouncing
-                        </a>
-                        <a class="dropdown-item" href="#" data-animation-mode="shimmering">
-                            <i class="fas fa-sparkles me-2"></i> Shimmering
-                        </a>
-                        <a class="dropdown-item" href="#" data-animation-mode="rainbow">
-                            <i class="fas fa-rainbow me-2"></i> Rainbow
-                        </a>
-                        
-                        <div class="dropdown-divider"></div>
-                        <h6 class="dropdown-header">Seasonal Theme</h6>
-                        <a class="dropdown-item active" href="#" data-season="spring">
-                            <i class="fas fa-seedling me-2"></i> Spring
-                        </a>
-                        <a class="dropdown-item" href="#" data-season="summer">
-                            <i class="fas fa-sun me-2"></i> Summer
-                        </a>
-                        <a class="dropdown-item" href="#" data-season="autumn">
-                            <i class="fas fa-leaf me-2"></i> Autumn
-                        </a>
-                        <a class="dropdown-item" href="#" data-season="winter">
-                            <i class="fas fa-snowflake me-2"></i> Winter
-                        </a>
-                        
-                        <div class="dropdown-divider"></div>
-                        <h6 class="dropdown-header">Special Effects</h6>
-                        <a class="dropdown-item" href="#" data-effect="sparkle">
-                            <i class="fas fa-star me-2"></i> Sparkle Effect
-                        </a>
-                        <a class="dropdown-item" href="#" data-effect="glow">
-                            <i class="fas fa-lightbulb me-2"></i> Glow Effect
-                        </a>
                     </div>
                 </div>
             </div>
@@ -105,18 +56,6 @@
             
             <!-- Quick Actions -->
             <div class="d-flex flex-wrap gap-2 mt-3">
-                <div class="dropdown">
-                    <button class="btn btn-outline-success dropdown-toggle" type="button" id="addSamplePlantDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-seedling me-1"></i> Add Sample Plant
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="addSamplePlantDropdown" id="sample-plant-options">
-                        <li><a class="dropdown-item" href="#" data-plant-type="flower">Flower (Sunflower)</a></li>
-                        <li><a class="dropdown-item" href="#" data-plant-type="vine">Vine (Ivy)</a></li>
-                        <li><a class="dropdown-item" href="#" data-plant-type="succulent">Succulent (Cactus)</a></li>
-                        <li><a class="dropdown-item" href="#" data-plant-type="herb">Herb (Basil)</a></li>
-                        <li><a class="dropdown-item" href="#" data-plant-type="tree">Tree (Bonsai)</a></li>
-                    </ul>
-                </div>
                 <button id="water-all-plants-btn" class="btn btn-outline-info">
                     <i class="fas fa-tint me-1"></i> Water All Plants
                 </button>
@@ -289,40 +228,7 @@
             showNotification(`Watering ${waterCount} plants...`, 'info');
         });
         
-        // Add event listeners for sample plant options
-        const samplePlantOptions = document.querySelectorAll('#sample-plant-options .dropdown-item');
-        samplePlantOptions.forEach(option => {
-            option.addEventListener('click', async function(e) {
-                e.preventDefault();
-                const plantType = this.getAttribute('data-plant-type');
-                
-                try {
-                    const response = await fetch('/api/preset-plants', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ type: plantType })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        showNotification(data.message, 'success');
-                        
-                        // Reload plants after a short delay
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
-                    } else {
-                        showNotification(data.message || 'Failed to add sample plant', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error adding sample plant:', error);
-                    showNotification('Error adding sample plant', 'error');
-                }
-            });
-        });
+        // Sample plant options have been removed and replaced with buttons in animations.js
     });
 </script>
 {% endblock %}

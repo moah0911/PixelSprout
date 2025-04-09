@@ -1,65 +1,202 @@
 /**
- * Enhanced Animation System for Digital Zen Garden
+ * Enhanced Animation System for PixelSprout
  * This script provides advanced animation controls and effects for plants
+ * Redesigned to use buttons instead of dropdowns
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Set up animation controls when document is loaded
-    setupAnimationControls();
-    
     // Setup automatic animations for plants
     setupPlantAnimations();
     
     // Start random plant movements for more lifelike garden
     startRandomPlantMovements();
+    
+    // Create the buttons for effects when the page loads
+    createEffectButtons();
 });
 
 /**
- * Set up animation control handlers for the dropdown menu
+ * Create effect buttons and add them to the page
  */
-function setupAnimationControls() {
-    // Animation mode controls
-    const animationModeLinks = document.querySelectorAll('[data-animation-mode]');
-    animationModeLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
+function createEffectButtons() {
+    // Get the area where we'll add the buttons
+    const quickActionsDiv = document.querySelector('.d-flex.flex-wrap.gap-2.mt-3');
+    if (!quickActionsDiv) return;
+    
+    // Create animation buttons container
+    const animationButtonsContainer = document.createElement('div');
+    animationButtonsContainer.className = 'animation-buttons-container ms-2';
+    animationButtonsContainer.innerHTML = `
+        <div class="btn-group me-2">
+            <button class="btn btn-sm btn-outline-secondary" id="toggle-animations-btn">
+                <i class="fas fa-magic me-1"></i> Toggle Effects
+            </button>
+        </div>
+        <div class="btn-group me-2">
+            <button class="btn btn-sm btn-outline-success dropdown-toggle" type="button" id="addSamplePlantBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-seedling me-1"></i> Add Sample Plant
+            </button>
+            <ul class="dropdown-menu" id="sample-plant-options">
+                <li><a class="dropdown-item" href="#" data-plant-type="flower">Flower (Sunflower)</a></li>
+                <li><a class="dropdown-item" href="#" data-plant-type="vine">Vine (Ivy)</a></li>
+                <li><a class="dropdown-item" href="#" data-plant-type="succulent">Succulent (Cactus)</a></li>
+                <li><a class="dropdown-item" href="#" data-plant-type="herb">Herb (Basil)</a></li>
+                <li><a class="dropdown-item" href="#" data-plant-type="tree">Tree (Bonsai)</a></li>
+            </ul>
+        </div>
+    `;
+    
+    // Add to the page
+    quickActionsDiv.appendChild(animationButtonsContainer);
+    
+    // Create the animation buttons panel (initially hidden)
+    const animationPanel = document.createElement('div');
+    animationPanel.id = 'animation-effects-panel';
+    animationPanel.className = 'animation-effects-panel mt-3 p-3 rounded bg-dark d-none';
+    animationPanel.innerHTML = `
+        <h5 class="mb-3">Animation Effects</h5>
+        
+        <div class="mb-3">
+            <label class="form-label">Animation Mode</label>
+            <div class="btn-group d-flex flex-wrap gap-1" role="group" aria-label="Animation modes">
+                <button type="button" class="btn btn-sm btn-outline-success active" data-animation-mode="default">
+                    <i class="fas fa-leaf me-1"></i> Default
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" data-animation-mode="dancing">
+                    <i class="fas fa-music me-1"></i> Dancing
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" data-animation-mode="bouncing">
+                    <i class="fas fa-angle-double-up me-1"></i> Bouncing
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" data-animation-mode="shimmering">
+                    <i class="fas fa-sync me-1"></i> Shimmering
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" data-animation-mode="rainbow">
+                    <i class="fas fa-rainbow me-1"></i> Rainbow
+                </button>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Seasonal Theme</label>
+            <div class="btn-group d-flex flex-wrap gap-1" role="group" aria-label="Seasonal themes">
+                <button type="button" class="btn btn-sm btn-outline-success active" data-season="spring">
+                    <i class="fas fa-seedling me-1"></i> Spring
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" data-season="summer">
+                    <i class="fas fa-sun me-1"></i> Summer
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" data-season="autumn">
+                    <i class="fas fa-leaf me-1"></i> Autumn
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" data-season="winter">
+                    <i class="fas fa-snowflake me-1"></i> Winter
+                </button>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Special Effects</label>
+            <div class="btn-group d-flex flex-wrap gap-1" role="group" aria-label="Special effects">
+                <button type="button" class="btn btn-sm btn-outline-success" data-effect="sparkle">
+                    <i class="fas fa-star me-1"></i> Sparkle
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success" data-effect="glow">
+                    <i class="fas fa-lightbulb me-1"></i> Glow
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Add the panel after the quick actions
+    quickActionsDiv.parentNode.insertBefore(animationPanel, quickActionsDiv.nextSibling);
+    
+    // Toggle effects panel when button is clicked
+    document.getElementById('toggle-animations-btn').addEventListener('click', function() {
+        const panel = document.getElementById('animation-effects-panel');
+        if (panel.classList.contains('d-none')) {
+            panel.classList.remove('d-none');
+            this.classList.add('active');
+        } else {
+            panel.classList.add('d-none');
+            this.classList.remove('active');
+        }
+    });
+    
+    // Set up animation mode buttons
+    const animationModeButtons = document.querySelectorAll('[data-animation-mode]');
+    animationModeButtons.forEach(button => {
+        button.addEventListener('click', function() {
             const mode = this.getAttribute('data-animation-mode');
             setAnimationMode(mode);
             
-            // Update active state in dropdown
-            animationModeLinks.forEach(l => l.classList.remove('active'));
+            // Update active state
+            animationModeButtons.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
         });
     });
     
-    // Seasonal controls
-    const seasonLinks = document.querySelectorAll('[data-season]');
-    seasonLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
+    // Set up seasonal theme buttons
+    const seasonButtons = document.querySelectorAll('[data-season]');
+    seasonButtons.forEach(button => {
+        button.addEventListener('click', function() {
             const season = this.getAttribute('data-season');
             setSeason(season);
             
-            // Update active state in dropdown
-            seasonLinks.forEach(l => l.classList.remove('active'));
+            // Update active state
+            seasonButtons.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
         });
     });
     
-    // Special effect controls
-    const effectLinks = document.querySelectorAll('[data-effect]');
-    effectLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
+    // Set up special effect buttons
+    const effectButtons = document.querySelectorAll('[data-effect]');
+    effectButtons.forEach(button => {
+        button.addEventListener('click', function() {
             const effect = this.getAttribute('data-effect');
             
-            // Toggle the effect (on if not active, off if active)
+            // Toggle the effect and button state
             if (this.classList.contains('active')) {
                 this.classList.remove('active');
                 toggleSpecialEffect(effect, false);
             } else {
                 this.classList.add('active');
                 toggleSpecialEffect(effect, true);
+            }
+        });
+    });
+    
+    // Set up sample plant options
+    const samplePlantOptions = document.querySelectorAll('#sample-plant-options .dropdown-item');
+    samplePlantOptions.forEach(option => {
+        option.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const plantType = this.getAttribute('data-plant-type');
+            
+            try {
+                const response = await fetch('/api/preset-plants', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ type: plantType })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    
+                    // Reload plants after a short delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showNotification(data.message || 'Failed to add sample plant', 'error');
+                }
+            } catch (error) {
+                console.error('Error adding sample plant:', error);
+                showNotification('Error adding sample plant', 'error');
             }
         });
     });
