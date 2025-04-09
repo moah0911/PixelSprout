@@ -30,7 +30,15 @@ app.config.update(
 )
 
 # Configure database connection
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+database_url = os.environ.get("DATABASE_URL")
+
+# Check if the database URL is in the Heroku/Render format and fix it if needed
+# (Heroku/Render use postgres:// but SQLAlchemy requires postgresql://)
+if database_url and database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+# Use a default SQLite database for local development if no DATABASE_URL is provided
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url or "sqlite:///pixelsprout.db"
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
     "pool_pre_ping": True,
