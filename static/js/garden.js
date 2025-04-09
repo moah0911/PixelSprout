@@ -57,16 +57,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 // Store the plant types for later use
                 plantTypes = data.plant_types;
-                
-                // Check for new selector
-                const plantTypeSelector = document.getElementById('plant-type-selector');
                 const plantTypeSelect = document.getElementById('plant-type');
                 
-                if (plantTypeSelector && plantTypeSelect) {
-                    // Using the new grid selector
-                    plantTypeSelector.innerHTML = '';
+                if (plantTypeSelect) {
+                    // Set up dropdown
+                    plantTypeSelect.innerHTML = '<option value="" selected disabled>Select plant type...</option>';
                     
-                    // Get icons for different plant types
+                    // Icons for data attributes (can be used for styling)
                     const typeIcons = {
                         'succulent': 'seedling',
                         'flower': 'spa',
@@ -84,49 +81,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         'moss': 'cloud-meatball'
                     };
                     
-                    // Default icon if type not found
-                    const defaultIcon = 'leaf';
-                    
-                    plantTypes.forEach(type => {
-                        const card = document.createElement('div');
-                        card.className = 'plant-type-card';
-                        card.setAttribute('data-plant-type', type.value);
-                        
-                        // Format for display
-                        const displayName = type.name.replace(/\b\w/g, l => l.toUpperCase());
-                        
-                        // Get icon for this type or use default
-                        const icon = typeIcons[type.value.toLowerCase()] || defaultIcon;
-                        
-                        card.innerHTML = `
-                            <div class="plant-type-icon">
-                                <i class="fas fa-${icon}"></i>
-                            </div>
-                            <div class="plant-type-name">${displayName}</div>
-                        `;
-                        
-                        // Add click event
-                        card.addEventListener('click', function() {
-                            // Remove active class from all cards
-                            document.querySelectorAll('.plant-type-card').forEach(c => c.classList.remove('active'));
-                            
-                            // Add active class to this card
-                            this.classList.add('active');
-                            
-                            // Set hidden input value
-                            plantTypeSelect.value = type.value;
-                        });
-                        
-                        plantTypeSelector.appendChild(card);
-                    });
-                } else if (plantTypeSelect) {
-                    // Fallback to traditional select
-                    plantTypeSelect.innerHTML = '<option value="" selected disabled>Select plant type...</option>';
-                    
                     plantTypes.forEach(type => {
                         const option = document.createElement('option');
                         option.value = type.value;
-                        option.textContent = type.name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        
+                        // Add icon as data attribute
+                        const icon = typeIcons[type.value.toLowerCase()] || 'leaf';
+                        option.setAttribute('data-icon', icon);
+                        
+                        // Format name for display
+                        const displayName = type.name.replace(/\b\w/g, l => l.toUpperCase());
+                        option.textContent = displayName;
+                        
                         plantTypeSelect.appendChild(option);
                     });
                 }
@@ -367,6 +333,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        if (!type) {
+            showNotification('Please select a plant type', 'warning');
+            return;
+        }
+        
         try {
             const response = await fetch('/api/plants', {
                 method: 'POST',
@@ -379,7 +350,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (data.success) {
+                // Reset form
                 nameInput.value = '';
+                typeSelect.selectedIndex = 0;
+                
+                // Refresh plants
                 await fetchPlants();
                 showNotification(`Added ${name} to your garden!`, 'success');
                 

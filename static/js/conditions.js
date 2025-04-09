@@ -47,11 +47,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function populateConditionTypeSelect() {
-        // Check for new tag-based selector
-        const tagSelector = document.getElementById('condition-tag-selector');
-        if (!tagSelector) return;
+        if (!conditionTypeSelect) return;
         
-        tagSelector.innerHTML = '';
+        // Clear existing options
+        conditionTypeSelect.innerHTML = '<option value="" selected disabled>Select condition...</option>';
         
         // First, deduplicate the array by name
         const uniqueTypes = {};
@@ -66,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return a.name.localeCompare(b.name);
         });
         
-        // Get icons for different condition types
+        // Get icons for different condition types (for reference in data attributes)
         const typeIcons = {
             'water_intake': 'tint',
             'focus_time': 'bullseye',
@@ -86,71 +85,48 @@ document.addEventListener('DOMContentLoaded', function() {
         const defaultIcon = 'check-circle';
         
         sortedTypes.forEach(type => {
-            const tag = document.createElement('div');
-            tag.className = 'condition-tag';
-            tag.setAttribute('data-condition-type', type.name);
+            const option = document.createElement('option');
+            option.value = type.name;
             
-            // Get icon for this type or use default
+            // Get icon for this type
             const icon = typeIcons[type.name] || defaultIcon;
+            option.setAttribute('data-icon', icon);
             
             // Format name for display
             const displayName = type.name
                 .replace(/_/g, ' ')
                 .replace(/\b\w/g, l => l.toUpperCase());
                 
-            tag.innerHTML = `<i class="fas fa-${icon}"></i> ${displayName}`;
+            option.textContent = displayName;
             
-            // Add click event
-            tag.addEventListener('click', function() {
-                // Remove active class from all tags
-                document.querySelectorAll('.condition-tag').forEach(t => t.classList.remove('active'));
-                
-                // Add active class to this tag
-                this.classList.add('active');
-                
-                // Set hidden input value
-                if (conditionTypeSelect) {
-                    conditionTypeSelect.value = type.name;
-                }
-                
-                // Update selected condition info
-                updateSelectedConditionInfo(type);
-            });
+            conditionTypeSelect.appendChild(option);
+        });
+        
+        // Add change event listener
+        conditionTypeSelect.addEventListener('change', function() {
+            const selectedTypeName = this.value;
+            const selectedType = conditionTypes.find(type => type.name === selectedTypeName);
             
-            tagSelector.appendChild(tag);
+            if (selectedType) {
+                updateGoalHint(selectedType);
+            }
         });
     }
     
-    function updateSelectedConditionInfo(conditionType) {
-        const infoContainer = document.getElementById('selected-condition-info');
-        const nameSpan = document.getElementById('selected-condition-name');
-        const unitLabel = document.getElementById('condition-unit-label');
+    function updateGoalHint(conditionType) {
         const goalHint = document.getElementById('condition-goal-hint');
         
-        if (!infoContainer || !nameSpan) return;
-        
-        // Show the container
-        infoContainer.classList.remove('d-none');
-        
-        // Update name
-        const displayName = conditionType.name
-            .replace(/_/g, ' ')
-            .replace(/\b\w/g, l => l.toUpperCase());
-        
-        nameSpan.textContent = displayName;
-        
-        // Update unit
-        if (unitLabel) {
-            unitLabel.textContent = `(${conditionType.unit})`;
-        }
-        
-        // Update goal hint
         if (goalHint && conditionType.default_goal) {
             goalHint.textContent = `Suggested goal: ${conditionType.default_goal} ${conditionType.unit}`;
-            goalHint.classList.remove('d-none');
+            goalHint.style.display = 'block';
         } else if (goalHint) {
-            goalHint.classList.add('d-none');
+            goalHint.style.display = 'none';
         }
+    }
+    
+    // Keep this function for backwards compatibility
+    function updateSelectedConditionInfo(conditionType) {
+        updateGoalHint(conditionType);
     }
     
     function updateUnitLabel() {
