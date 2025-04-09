@@ -1,37 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="58" fill="#0D1B12" stroke="#4CAF50" stroke-width="2" stroke-opacity="0.4" />
+  
   <!-- Pot -->
-  <path d="M25,60 L55,60 L60,75 L20,75 Z" fill="#8B5D3B" />
-  <path d="M28,60 L52,60 L56,72 L24,72 Z" fill="#6B4B2B" />
+  <path d="M40 88C40 88 45 98 60 98C75 98 80 88 80 88V78H40V88Z" fill="#5D4037" />
+  <path d="M38 78C38 78 42 74 60 74C78 74 82 78 82 78H38Z" fill="#795548" />
   
-  <!-- Soil -->
-  <ellipse cx="40" cy="60" rx="17" ry="5" fill="#5D4037" />
+  <!-- Main stem -->
+  <path d="M60 30V74" stroke="#2E7D32" stroke-width="3" stroke-linecap="round" />
+
+  <!-- First branch/leaf on the left -->
+  <path d="M60 60C50 50 40 55 38 62" stroke="#43A047" stroke-width="2" stroke-linecap="round" />
+  <path d="M38 62C38 62 42 58 45 62C48 66 42 72 38 72" stroke="#43A047" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+
+  <!-- Second branch/leaf on the right -->
+  <path d="M60 50C70 40 80 45 82 52" stroke="#43A047" stroke-width="2" stroke-linecap="round" />
+  <path d="M82 52C82 52 78 48 75 52C72 56 78 62 82 62" stroke="#43A047" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
   
-  <!-- Trunk/Stem -->
-  <path d="M40,15 Q38,30 38,45 Q38,50 40,50 Q42,50 42,45 Q42,30 40,15" fill="#2E7D32" />
+  <!-- Flower/plant top -->
+  <circle cx="60" cy="26" r="6" fill="#66BB6A" />
+  <circle cx="54" cy="22" r="5" fill="#81C784" />
+  <circle cx="66" cy="22" r="5" fill="#81C784" />
+  <circle cx="60" cy="16" r="5" fill="#A5D6A7" />
   
-  <!-- Leaves -->
-  <path d="M40,20 Q30,15 25,25 Q27,30 30,30 Q35,30 40,20" fill="#4CAF50" />
-  <path d="M40,20 Q50,15 55,25 Q53,30 50,30 Q45,30 40,20" fill="#4CAF50" />
-  <path d="M40,30 Q30,25 20,30 Q25,40 30,37 Q35,35 40,30" fill="#66BB6A" />
-  <path d="M40,30 Q50,25 60,30 Q55,40 50,37 Q45,35 40,30" fill="#66BB6A" />
+  <!-- Growing effect circles (visual enhancement) -->
+  <circle cx="60" cy="60" r="2" fill="#E8F5E9" fill-opacity="0.6" />
+  <circle cx="50" cy="47" r="1.5" fill="#E8F5E9" fill-opacity="0.6" />
+  <circle cx="70" cy="47" r="1.5" fill="#E8F5E9" fill-opacity="0.6" />
+  <circle cx="60" cy="35" r="1" fill="#E8F5E9" fill-opacity="0.6" />
   
-  <!-- Flower -->
-  <circle cx="40" cy="15" r="8" fill="#E8F5E9" />
-  <circle cx="40" cy="15" r="5" fill="#FFEB3B" />
-  
-  <!-- Dewdrops -->
-  <circle cx="28" cy="28" r="2" fill="#B3E5FC" />
-  <circle cx="52" cy="28" r="2" fill="#B3E5FC" />
-  
-  <!-- Glow effect -->
-  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-    <feGaussianBlur stdDeviation="2" result="blur" />
-    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-  </filter>
-  
-  <!-- Apply glow to the entire plant -->
-  <g filter="url(#glow)">
-    <circle cx="40" cy="40" r="30" fill="rgba(76, 175, 80, 0.1)" />
-  </g>
+  <!-- Zen circle -->
+  <circle cx="60" cy="60" r="35" stroke="#66BB6A" stroke-width="1.5" stroke-opacity="0.3" stroke-dasharray="3 3" fill="none" />
 </svg>

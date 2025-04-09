@@ -89,9 +89,7 @@ def logout():
 # Garden routes
 @app.route('/')
 def index():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login_page'))
-    return redirect(url_for('garden_page'))
+    return render_template('index.html')
 
 @app.route('/garden')
 @login_required

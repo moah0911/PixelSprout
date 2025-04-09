@@ -1,41 +1,129 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
+    {% block head %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Digital Garden{% endblock %}</title>
-    
-    <!-- Bootstrap CSS (Dark Theme) -->
-    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    
-    {% block head %}{% endblock %}
+    <title>{% block title %}Digital Zen Garden{% endblock %}</title>
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        /* Base styles - Will be extended by specific CSS files */
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-content {
+            flex: 1;
+        }
+        
+        /* Logo animation */
+        .navbar-brand {
+            transition: transform 0.3s ease;
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Custom footer */
+        .footer {
+            background-color: rgba(18, 18, 18, 0.8);
+            padding: 1rem 0;
+            margin-top: 2rem;
+        }
+        
+        /* Animated background */
+        .bg-animated {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            overflow: hidden;
+        }
+        
+        .bg-stars {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 50px 160px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 90px 40px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 130px 80px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 160px 120px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.3;
+            animation: starsAnimation 300s linear infinite;
+        }
+        
+        @keyframes starsAnimation {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-1000px);
+            }
+        }
+        
+        /* App name styling */
+        .app-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #66BB6A, #43A047, #2E7D32);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-left: 10px;
+        }
+        
+        .logo-img {
+            height: 36px;
+            width: auto;
+            margin-right: 0.5rem;
+            filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.5));
+        }
+    </style>
+    {% endblock %}
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="bg-animated">
+        <div class="bg-stars"></div>
+    </div>
+    
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-seedling me-2"></i>
-                Digital Garden
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="Digital Zen Garden Logo" class="logo-img">
+                <div class="app-name">Digital Zen Garden</div>
             </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    {% if session.user_id %}
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == '/garden' %}active{% endif %}" href="/garden">
-                            <i class="fas fa-leaf me-1"></i> My Garden
+                            <i class="fas fa-seedling me-1"></i> My Garden
                         </a>
                     </li>
                     <li class="nav-item">
@@ -49,6 +137,11 @@
                         </a>
                     </li>
                     {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == '/login' %}active{% endif %}" href="/login">
                             <i class="fas fa-sign-in-alt me-1"></i> Login
@@ -66,28 +159,30 @@
     </nav>
     
     <!-- Main Content -->
-    <main class="container py-4">
+    <main class="main-content py-4">
         {% block content %}{% endblock %}
     </main>
     
     <!-- Footer -->
-    <footer class="bg-dark text-center text-muted py-3">
+    <footer class="footer text-center">
         <div class="container">
-            <p class="mb-0">Digital Garden &copy; 2023 - Grow your virtual plants based on real-world habits</p>
+            <p class="mb-0">
+                <span class="text-muted">&copy; 2025 Digital Zen Garden</span> | 
+                <a href="#" class="text-decoration-none">
+                    <i class="fas fa-question-circle me-1"></i> Help
+                </a> | 
+                <a href="#" class="text-decoration-none">
+                    <i class="fas fa-hands-helping me-1"></i> Support
+                </a>
+            </p>
+            <div class="mt-2">
+                <small class="text-muted">Nurture virtual plants with your real-life habits</small>
+            </div>
         </div>
     </footer>
     
-    <!-- Bootstrap JS Bundle -->
+    <!-- JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Utilities and SVGs -->
-    <script src="{{ url_for('static', filename='js/utilities.js') }}"></script>
-    <script src="{{ url_for('static', filename='svg/plant_stages.js') }}"></script>
-    <script src="{{ url_for('static', filename='svg/enhanced_plants.js') }}"></script>
-    
     {% block scripts %}{% endblock %}
-    
-    <!-- Toast container for notifications -->
-    <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 </body>
 </html>

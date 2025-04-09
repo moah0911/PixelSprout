@@ -1,0 +1,423 @@
+{% extends "base.html" %}
+
+{% block title %}Digital Zen Garden - Nurture Digital Plants with Real-Life Habits{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+    .hero-section {
+        min-height: 80vh;
+        background: linear-gradient(135deg, rgba(12, 41, 27, 0.95), rgba(21, 74, 48, 0.95)), 
+                    url('https://images.unsplash.com/photo-1603903823774-9f88889361a7?q=80&w=1920&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 10;
+    }
+    
+    .app-logo {
+        max-width: 120px;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        animation: pulse 2s infinite;
+    }
+    
+    .app-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(to right, #66BB6A, #43A047, #2E7D32);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 40px rgba(76, 175, 80, 0.4);
+    }
+    
+    .app-subtitle {
+        font-size: 1.5rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+    }
+    
+    .features-section {
+        padding: 5rem 0;
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+    
+    .feature-card {
+        height: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        background-color: rgba(25, 25, 25, 0.8);
+        backdrop-filter: blur(10px);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #4CAF50;
+    }
+    
+    .cta-section {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, rgba(21, 74, 48, 0.95), rgba(12, 41, 27, 0.95));
+    }
+    
+    .btn-main {
+        padding: 0.8rem 2rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-main:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .floating-plants {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+    
+    .floating-plant {
+        position: absolute;
+        opacity: 0.15;
+        animation: float 15s infinite ease-in-out;
+    }
+    
+    .floating-plant:nth-child(1) {
+        top: 20%;
+        left: 10%;
+        animation-delay: 0s;
+        transform: scale(0.7);
+    }
+    
+    .floating-plant:nth-child(2) {
+        top: 60%;
+        left: 15%;
+        animation-delay: 3s;
+        transform: scale(0.5);
+    }
+    
+    .floating-plant:nth-child(3) {
+        top: 30%;
+        right: 15%;
+        animation-delay: 6s;
+        transform: scale(0.6);
+    }
+    
+    .floating-plant:nth-child(4) {
+        top: 70%;
+        right: 10%;
+        animation-delay: 9s;
+        transform: scale(0.4);
+    }
+    
+    .floating-plant:nth-child(5) {
+        top: 50%;
+        left: 40%;
+        animation-delay: 12s;
+        transform: scale(0.8);
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+        }
+        50% {
+            transform: translateY(-20px) rotate(5deg);
+        }
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+    
+    .testimonial-card {
+        background-color: rgba(25, 25, 25, 0.8);
+        backdrop-filter: blur(10px);
+        border: none;
+    }
+    
+    .testimonial-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-right: 20px;
+    }
+    
+    .stats-counter {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #4CAF50;
+    }
+    
+    .parallax-effect {
+        transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section d-flex align-items-center">
+    <div class="floating-plants">
+        <div class="floating-plant">
+            <svg width="200" height="200" viewBox="0 0 100 100">
+                <ellipse cx="50" cy="85" rx="10" ry="5" fill="#5D4037" />
+                <rect x="48" y="30" width="4" height="50" fill="#8b5d3b" />
+                <circle cx="50" cy="20" r="22" fill="#4f9c2c" />
+                <circle cx="32" cy="30" r="12" fill="#5bae3a" />
+                <circle cx="68" cy="30" r="12" fill="#5bae3a" />
+                <circle cx="40" cy="15" r="10" fill="#65b93f" />
+                <circle cx="60" cy="15" r="10" fill="#65b93f" />
+            </svg>
+        </div>
+        <div class="floating-plant">
+            <svg width="200" height="200" viewBox="0 0 100 100">
+                <ellipse cx="50" cy="85" rx="10" ry="5" fill="#5D4037" />
+                <rect x="48" y="35" width="4" height="45" fill="#3e8a21" />
+                <ellipse cx="46" cy="65" rx="8" ry="3" fill="#4a9e2a" transform="rotate(-20,46,65)" />
+                <ellipse cx="54" cy="60" rx="8" ry="3" fill="#4a9e2a" transform="rotate(20,54,60)" />
+                <circle cx="50" cy="30" r="7" fill="#59b936" />
+                <ellipse cx="46" cy="26" rx="4" ry="5" fill="#ec86df" transform="rotate(-15,46,26)" />
+                <ellipse cx="54" cy="26" rx="4" ry="5" fill="#ec86df" transform="rotate(15,54,26)" />
+            </svg>
+        </div>
+        <div class="floating-plant">
+            <svg width="200" height="200" viewBox="0 0 100 100">
+                <ellipse cx="50" cy="85" rx="10" ry="5" fill="#5D4037" />
+                <circle cx="50" cy="75" r="12" fill="#4f9c2c" />
+                <ellipse cx="35" cy="65" rx="9" ry="12" fill="#5bae3a" transform="rotate(-15,35,65)" />
+                <ellipse cx="65" cy="65" rx="9" ry="12" fill="#5bae3a" transform="rotate(15,65,65)" />
+                <ellipse cx="50" cy="45" rx="8" ry="12" fill="#6ec445" />
+            </svg>
+        </div>
+        <div class="floating-plant">
+            <svg width="200" height="200" viewBox="0 0 100 100">
+                <ellipse cx="50" cy="85" rx="10" ry="5" fill="#5D4037" />
+                <path d="M50,20 Q30,40 30,70 Q40,60 50,70 Q60,60 70,70 Q70,40 50,20" fill="#65b93f" />
+            </svg>
+        </div>
+        <div class="floating-plant">
+            <svg width="200" height="200" viewBox="0 0 100 100">
+                <ellipse cx="50" cy="85" rx="10" ry="5" fill="#5D4037" />
+                <rect x="48" y="60" width="4" height="20" fill="#8b5d3b" />
+                <circle cx="40" cy="50" r="15" fill="#ff85a2" />
+                <circle cx="60" cy="50" r="15" fill="#ff85a2" />
+                <circle cx="50" cy="35" r="15" fill="#ff85a2" />
+                <circle cx="50" cy="50" r="5" fill="#ffeb3b" />
+            </svg>
+        </div>
+    </div>
+    
+    <div class="container hero-content text-center">
+        <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="Digital Zen Garden Logo" class="app-logo">
+        <h1 class="app-title">Digital Zen Garden</h1>
+        <p class="app-subtitle">Nurture Virtual Plants with Real-Life Habits</p>
+        <div class="d-flex justify-content-center gap-3">
+            {% if session.user_id %}
+            <a href="/garden" class="btn btn-success btn-lg btn-main">
+                <i class="fas fa-leaf me-2"></i> My Garden
+            </a>
+            {% else %}
+            <a href="/login" class="btn btn-primary btn-lg btn-main">
+                <i class="fas fa-sign-in-alt me-2"></i> Login
+            </a>
+            <a href="/register" class="btn btn-success btn-lg btn-main">
+                <i class="fas fa-seedling me-2"></i> Get Started
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-4">Innovative Features</h2>
+            <p class="lead">Experience a new way of personal growth tracking</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card feature-card h-100 p-4">
+                    <div class="text-center">
+                        <i class="fas fa-seedling feature-icon"></i>
+                    </div>
+                    <div class="card-body text-center">
+                        <h3>Habit Growth System</h3>
+                        <p>Your real-world habits directly affect your plants' health and growth. Log activities like water intake, exercise, and mindfulness to see your garden flourish.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card h-100 p-4">
+                    <div class="text-center">
+                        <i class="fas fa-magic feature-icon"></i>
+                    </div>
+                    <div class="card-body text-center">
+                        <h3>Dynamic Animations</h3>
+                        <p>Watch your plants bounce, dance, and shimmer with our advanced animation system. Change seasons and toggle special visual effects for a personalized experience.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card h-100 p-4">
+                    <div class="text-center">
+                        <i class="fas fa-tint feature-icon"></i>
+                    </div>
+                    <div class="card-body text-center">
+                        <h3>Water Credits System</h3>
+                        <p>Earn water credits over time to nurture your garden. Credits regenerate at a rate of 2 per hour to encourage regular engagement and care.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5 bg-dark">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4 mb-md-0">
+                <div class="stats-counter">5+</div>
+                <p>Plant Types</p>
+            </div>
+            <div class="col-md-3 mb-4 mb-md-0">
+                <div class="stats-counter">7</div>
+                <p>Growth Stages</p>
+            </div>
+            <div class="col-md-3 mb-4 mb-md-0">
+                <div class="stats-counter">10+</div>
+                <p>Habit Categories</p>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-counter">∞</div>
+                <p>Possibilities</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-darker">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-4">How It Works</h2>
+        </div>
+        
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <img src="https://api.iconify.design/fluent-emoji-high-contrast:potted-plant.svg?width=300" alt="How it works" class="img-fluid rounded">
+            </div>
+            <div class="col-md-6">
+                <div class="steps">
+                    <div class="d-flex mb-4">
+                        <div class="me-3">
+                            <div class="badge bg-success rounded-circle p-3">1</div>
+                        </div>
+                        <div>
+                            <h4>Choose Your Plants</h4>
+                            <p>Select from different plant types including succulents, flowers, trees, herbs, and vines, each with unique visuals.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex mb-4">
+                        <div class="me-3">
+                            <div class="badge bg-success rounded-circle p-3">2</div>
+                        </div>
+                        <div>
+                            <h4>Log Your Daily Habits</h4>
+                            <p>Track water intake, exercise, sleep, meditation, and other habits that contribute to your well-being.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex mb-4">
+                        <div class="me-3">
+                            <div class="badge bg-success rounded-circle p-3">3</div>
+                        </div>
+                        <div>
+                            <h4>Watch Your Garden Flourish</h4>
+                            <p>See your plants grow through 7 distinct life stages from seed to flowering, reflecting your real-world habit consistency.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section text-center">
+    <div class="container">
+        <h2 class="display-4 mb-4">Ready to Grow Your Digital Garden?</h2>
+        <p class="lead mb-5">Transform your daily habits into a beautiful, thriving digital garden today.</p>
+        
+        {% if session.user_id %}
+        <a href="/garden" class="btn btn-success btn-lg btn-main px-5">
+            <i class="fas fa-leaf me-2"></i> Visit My Garden
+        </a>
+        {% else %}
+        <a href="/register" class="btn btn-success btn-lg btn-main px-5">
+            <i class="fas fa-seedling me-2"></i> Start Growing Now
+        </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Parallax effect on scroll
+        const parallaxItems = document.querySelectorAll('.parallax-effect');
+        
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.pageYOffset;
+            
+            parallaxItems.forEach(item => {
+                const speed = item.dataset.speed || 0.5;
+                item.style.transform = `translateY(${scrollPosition * speed}px)`;
+            });
+        });
+        
+        // Add random movement to floating plants
+        const plants = document.querySelectorAll('.floating-plant');
+        
+        plants.forEach(plant => {
+            const randomX = Math.random() * 10 - 5;
+            const randomY = Math.random() * 10 - 5;
+            const randomDelay = Math.random() * 2;
+            const randomDuration = 15 + Math.random() * 10;
+            
+            plant.style.animation = `float ${randomDuration}s infinite ease-in-out ${randomDelay}s`;
+            plant.style.transform = `translate(${randomX}px, ${randomY}px) scale(${0.4 + Math.random() * 0.6})`;
+        });
+    });
+</script>
+{% endblock %}
