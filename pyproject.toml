@@ -1,7 +1,7 @@
 [project]
-name = "repl-nix-workspace"
+name = "pixelsprout"
 version = "0.1.0"
-description = "Add your description here"
+description = "A digital garden application that grows with your healthy habits"
 requires-python = ">=3.11"
 dependencies = [
     "email-validator>=2.2.0",
