@@ -93,7 +93,7 @@
             </div>
             
             <!-- Garden Container -->
-            <div id="garden-container" class="garden-container season-spring garden-3d-view">
+            <div id="garden-container" class="garden-container season-spring">
                 <!-- Plants will be loaded here by JavaScript -->
                 <div class="text-center py-5">
                     <div class="spinner-border text-success" role="status">
@@ -119,9 +119,6 @@
                 </div>
                 <button id="water-all-plants-btn" class="btn btn-outline-info">
                     <i class="fas fa-tint me-1"></i> Water All Plants
-                </button>
-                <button id="toggle-3d-view-btn" class="btn btn-outline-secondary">
-                    <i class="fas fa-cube me-1"></i> Toggle 3D View
                 </button>
             </div>
         </div>
@@ -255,7 +252,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap is already included in base.html -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 <script src="{{ url_for('static', filename='svg/plant_stages.js') }}"></script>
 <script src="{{ url_for('static', filename='svg/enhanced_plants.js') }}"></script>
@@ -266,11 +263,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize additional garden UI interactions
-        document.getElementById('toggle-3d-view-btn').addEventListener('click', function() {
-            document.getElementById('garden-container').classList.toggle('garden-3d-view');
-            showNotification('3D view toggled', 'info');
-        });
+        // 3D view toggle has been removed
         
         // Water all plants button
         document.getElementById('water-all-plants-btn').addEventListener('click', async function() {
