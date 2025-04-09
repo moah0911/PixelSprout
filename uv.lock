@@ -917,6 +917,7 @@ dependencies = [
     { name = "flask-wtf" },
     { name = "gunicorn" },
     { name = "psycopg2-binary" },
+    { name = "sqlalchemy" },
     { name = "supabase" },
 ]
 
@@ -930,6 +931,7 @@ requires-dist = [
     { name = "flask-wtf", specifier = ">=1.2.2" },
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
+    { name = "sqlalchemy", specifier = ">=2.0.40" },
     { name = "supabase", specifier = ">=2.15.0" },
 ]
 
