@@ -1,0 +1,109 @@
+/* Main Styles */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Garden styles */
+.garden-container {
+    min-height: 400px;
+    background-color: var(--bs-dark-bg-subtle);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.plant-card {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    height: 100%;
+    overflow: hidden;
+    border: 2px solid transparent;
+}
+
+.plant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.plant-card.selected {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.plant-visual {
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.plant-visual svg {
+    max-height: 140px;
+    max-width: 100%;
+    transition: all 0.3s ease;
+}
+
+/* Subtle animation for plants */
+@keyframes sway {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(2deg); }
+    75% { transform: rotate(-2deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.plant-card:hover .plant-visual svg {
+    animation: sway 3s ease infinite;
+}
+
+/* Plant details panel */
+.plant-details-panel {
+    background-color: var(--bs-dark-bg-subtle);
+    border-radius: 8px;
+    height: 100%;
+    min-height: 400px;
+}
+
+/* Condition logging styles */
+.condition-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    background-color: var(--bs-dark-bg-subtle);
+}
+
+/* Auth form styles */
+.auth-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 8px;
+    background-color: var(--bs-dark-bg-subtle);
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Empty state styles */
+.empty-garden-state {
+    color: var(--bs-secondary);
+    padding: 3rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .garden-container {
+        padding: 1rem;
+    }
+    
+    .plant-details-panel {
+        margin-top: 1.5rem;
+    }
+}

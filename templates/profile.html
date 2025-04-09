@@ -1,0 +1,548 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | Digital Garden{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>
+            <i class="fas fa-user text-info me-2"></i>
+            {{ username }}'s Profile
+        </h1>
+        <p class="text-muted">Track your garden progress and habits</p>
+    </div>
+    <div class="col-md-4 d-flex justify-content-end align-items-center">
+        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#log-condition-modal">
+            <i class="fas fa-clipboard-list me-1"></i> Log Condition
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <!-- User Stats Card -->
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i> Garden Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-success rounded-circle p-3 me-3">
+                        <i class="fas fa-seedling text-white"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Plants in Garden</h6>
+                        <h4 class="mb-0" id="plants-count">--</h4>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-info rounded-circle p-3 me-3">
+                        <i class="fas fa-clipboard-list text-white"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Conditions Logged</h6>
+                        <h4 class="mb-0" id="conditions-count">--</h4>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center">
+                    <div class="bg-warning rounded-circle p-3 me-3">
+                        <i class="fas fa-calendar-alt text-white"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Member Since</h6>
+                        <h4 class="mb-0" id="member-since">--</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Garden Summary Card -->
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-leaf me-2"></i> Garden Summary
+                </h5>
+                <a href="/garden" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-external-link-alt me-1"></i> View Garden
+                </a>
+            </div>
+            <div class="card-body">
+                <div id="plant-summary-container">
+                    <div class="text-center p-3">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading plants...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Habit Tracking -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-heartbeat me-2"></i> Habit Tracking
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul id="condition-types-list" class="list-group">
+                    <div class="text-center p-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading habits...</span>
+                        </div>
+                    </div>
+                </ul>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#add-condition-type-modal">
+                    <i class="fas fa-plus me-1"></i> Add Custom Habit
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i> Recent Activity
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul id="recent-activity-list" class="list-group">
+                    <div class="text-center p-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading activity...</span>
+                        </div>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Log Condition Modal -->
+<div class="modal fade" id="log-condition-modal" tabindex="-1" aria-labelledby="log-condition-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="log-condition-modal-label">Log a Condition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="log-condition-form">
+                    <div class="mb-3">
+                        <label for="condition-type" class="form-label">Condition Type</label>
+                        <select class="form-select" id="condition-type" required>
+                            <!-- Condition types will be populated via JavaScript -->
+                            <option value="" disabled selected>Loading condition types...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="condition-value" class="form-label">Value</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="condition-value" min="0" step="0.1" required>
+                            <span class="input-group-text" id="condition-unit-label">units</span>
+                        </div>
+                        <div id="condition-goal-hint" class="form-text d-none"></div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i> Log Condition
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Custom Condition Type Modal -->
+<div class="modal fade" id="add-condition-type-modal" tabindex="-1" aria-labelledby="add-condition-type-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-condition-type-modal-label">Add Custom Condition Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-condition-type-form">
+                    <div class="mb-3">
+                        <label for="condition-type-name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="condition-type-name" required>
+                        <div class="form-text">Enter a descriptive name for your condition (e.g., "meditation").</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="condition-type-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="condition-type-description" rows="2" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="condition-type-unit" class="form-label">Unit</label>
+                        <input type="text" class="form-control" id="condition-type-unit" required>
+                        <div class="form-text">E.g., "minutes", "glasses", "hours", etc.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="condition-type-goal" class="form-label">Default Goal (optional)</label>
+                        <input type="number" class="form-control" id="condition-type-goal" min="0" step="0.1">
+                        <div class="form-text">A suggested target value for this condition.</div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i> Create Condition Type
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/conditions.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Variables
+    let plants = [];
+    let recentConditions = [];
+    let conditionTypes = [];
+    
+    // Initialize
+    initProfile();
+    
+    async function initProfile() {
+        await fetchUserStats();
+        await fetchPlantSummary();
+        await fetchConditionTypes();
+        await fetchRecentActivity();
+    }
+    
+    async function fetchUserStats() {
+        try {
+            // Fetch plants count
+            const plantsResponse = await fetch('/api/plants');
+            const plantsData = await plantsResponse.json();
+            
+            if (plantsData.success) {
+                plants = plantsData.plants;
+                document.getElementById('plants-count').textContent = plants.length;
+            }
+            
+            // Fetch conditions count
+            const conditionsResponse = await fetch('/api/conditions');
+            const conditionsData = await conditionsResponse.json();
+            
+            if (conditionsData.success) {
+                recentConditions = conditionsData.conditions;
+                document.getElementById('conditions-count').textContent = recentConditions.length;
+            }
+            
+            // Member since date - using the created_at of the first plant as a proxy
+            if (plants.length > 0) {
+                const oldestPlant = plants.reduce((oldest, plant) => {
+                    return new Date(plant.created_at) < new Date(oldest.created_at) ? plant : oldest;
+                }, plants[0]);
+                
+                const memberSince = new Date(oldestPlant.created_at);
+                document.getElementById('member-since').textContent = memberSince.toLocaleDateString();
+            } else {
+                document.getElementById('member-since').textContent = 'New Member';
+            }
+        } catch (error) {
+            console.error('Error fetching user stats:', error);
+            showNotification('Failed to load user statistics', 'error');
+        }
+    }
+    
+    async function fetchPlantSummary() {
+        try {
+            if (plants.length === 0) {
+                const response = await fetch('/api/plants');
+                const data = await response.json();
+                
+                if (data.success) {
+                    plants = data.plants;
+                }
+            }
+            
+            const container = document.getElementById('plant-summary-container');
+            
+            if (plants.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center p-4">
+                        <p class="text-muted">You haven't planted anything yet. Visit your garden to get started!</p>
+                        <a href="/garden" class="btn btn-success mt-3">
+                            <i class="fas fa-seedling me-1"></i> Go to Garden
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Group plants by type and stage
+            const typeCount = {};
+            const stageCount = {};
+            const stageNames = ['Seed', 'Sprout', 'Growing', 'Mature', 'Flowering', 'Withering', 'Dead'];
+            
+            plants.forEach(plant => {
+                // Count by type
+                typeCount[plant.type] = (typeCount[plant.type] || 0) + 1;
+                
+                // Count by stage
+                stageCount[plant.stage] = (stageCount[plant.stage] || 0) + 1;
+            });
+            
+            // Create summary HTML
+            let html = '<div class="row">';
+            
+            // Plant types summary
+            html += `
+                <div class="col-md-6">
+                    <h6 class="mb-3">Plants by Type</h6>
+                    <ul class="list-group">
+            `;
+            
+            Object.entries(typeCount).forEach(([type, count]) => {
+                const displayType = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                html += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${displayType}
+                        <span class="badge bg-primary rounded-pill">${count}</span>
+                    </li>
+                `;
+            });
+            
+            html += `
+                    </ul>
+                </div>
+            `;
+            
+            // Plant stages summary
+            html += `
+                <div class="col-md-6">
+                    <h6 class="mb-3">Plants by Growth Stage</h6>
+                    <ul class="list-group">
+            `;
+            
+            stageNames.forEach((stageName, index) => {
+                const count = stageCount[index] || 0;
+                if (count > 0) {
+                    html += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${stageName}
+                            <span class="badge bg-success rounded-pill">${count}</span>
+                        </li>
+                    `;
+                }
+            });
+            
+            html += `
+                    </ul>
+                </div>
+            `;
+            
+            html += '</div>';
+            
+            container.innerHTML = html;
+        } catch (error) {
+            console.error('Error fetching plant summary:', error);
+            document.getElementById('plant-summary-container').innerHTML = `
+                <div class="alert alert-danger">Failed to load plant summary.</div>
+            `;
+        }
+    }
+    
+    async function fetchConditionTypes() {
+        try {
+            const response = await fetch('/api/condition-types');
+            const data = await response.json();
+            
+            if (data.success) {
+                conditionTypes = data.condition_types;
+                displayConditionTypes();
+            }
+        } catch (error) {
+            console.error('Error fetching condition types:', error);
+            document.getElementById('condition-types-list').innerHTML = `
+                <div class="alert alert-danger">Failed to load habit types.</div>
+            `;
+        }
+    }
+    
+    function displayConditionTypes() {
+        const container = document.getElementById('condition-types-list');
+        
+        if (!container) return;
+        
+        if (conditionTypes.length === 0) {
+            container.innerHTML = `
+                <div class="text-center p-4">
+                    <p class="text-muted">No habits configured yet</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = '';
+        
+        // Sort condition types: system first, then user-defined
+        const sortedTypes = [...conditionTypes].sort((a, b) => {
+            if (a.is_custom && !b.is_custom) return 1;
+            if (!a.is_custom && b.is_custom) return -1;
+            return a.name.localeCompare(b.name);
+        });
+        
+        sortedTypes.forEach(type => {
+            // Format name for display
+            const displayName = type.name
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, l => l.toUpperCase());
+                
+            const listItem = document.createElement('li');
+            listItem.className = 'list-group-item';
+            listItem.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="fw-bold">${displayName}</span>
+                        ${type.is_custom ? '<span class="badge bg-info ms-2">Custom</span>' : ''}
+                        <br>
+                        <small class="text-muted">${type.description}</small>
+                    </div>
+                    ${type.default_goal ? `<span class="badge bg-secondary">Goal: ${type.default_goal} ${type.unit}</span>` : ''}
+                </div>
+            `;
+            
+            container.appendChild(listItem);
+        });
+    }
+    
+    async function fetchRecentActivity() {
+        try {
+            if (recentConditions.length === 0) {
+                const response = await fetch('/api/conditions');
+                const data = await response.json();
+                
+                if (data.success) {
+                    recentConditions = data.conditions;
+                }
+            }
+            
+            const container = document.getElementById('recent-activity-list');
+            
+            if (!container) return;
+            
+            if (recentConditions.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center p-4">
+                        <p class="text-muted">No activity recorded yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Only show the most recent 10 activities
+            const recentActivities = recentConditions.slice(0, 10);
+            
+            recentActivities.forEach(condition => {
+                // Find condition type to get unit
+                const conditionType = conditionTypes.find(t => t.name === condition.type_name);
+                const unit = conditionType ? conditionType.unit : '';
+                
+                // Format date
+                const date = new Date(condition.date_logged);
+                const formattedDate = date.toLocaleString();
+                
+                // Format name for display
+                const displayName = condition.type_name
+                    .replace(/_/g, ' ')
+                    .replace(/\b\w/g, l => l.toUpperCase());
+                
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-clipboard-check text-success me-2"></i>
+                            Logged <span class="fw-bold">${displayName}</span>: ${condition.value} ${unit}
+                            <br>
+                            <small class="text-muted">${formattedDate}</small>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(listItem);
+            });
+        } catch (error) {
+            console.error('Error fetching recent activity:', error);
+            document.getElementById('recent-activity-list').innerHTML = `
+                <div class="alert alert-danger">Failed to load recent activity.</div>
+            `;
+        }
+    }
+    
+    function showNotification(message, type = 'info') {
+        // Get or create notifications container
+        let notificationsContainer = document.getElementById('notifications-container');
+        if (!notificationsContainer) {
+            notificationsContainer = document.createElement('div');
+            notificationsContainer.id = 'notifications-container';
+            notificationsContainer.className = 'position-fixed top-0 end-0 p-3';
+            notificationsContainer.style.zIndex = '1050';
+            document.body.appendChild(notificationsContainer);
+        }
+        
+        // Create toast element
+        const toastId = 'toast-' + Date.now();
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : type}`;
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+        
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        `;
+        
+        // Add toast to container
+        notificationsContainer.appendChild(toast);
+        
+        // Initialize and show toast
+        const toastInstance = new bootstrap.Toast(toast, {
+            autohide: true,
+            delay: 5000
+        });
+        toastInstance.show();
+        
+        // Remove toast after hiding
+        toast.addEventListener('hidden.bs.toast', function() {
+            toast.remove();
+        });
+    }
+});
+</script>
+{% endblock %}

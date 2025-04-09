@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Register | Digital Garden{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-logo">
+        <i class="fas fa-seedling fa-4x text-success"></i>
+        <h1 class="mt-3">Create an Account</h1>
+        <p class="text-muted">Start growing your digital garden today</p>
+    </div>
+    
+    <div id="auth-error" class="alert alert-danger d-none" role="alert"></div>
+    
+    <form id="register-form">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+            <div class="form-text">Choose a name that will be displayed in your garden.</div>
+        </div>
+        
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+            <div class="form-text">Use at least 6 characters.</div>
+        </div>
+        
+        <div class="mb-3">
+            <label for="confirm-password" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirm-password" name="confirm-password" required>
+        </div>
+        
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-user-plus me-2"></i>Register
+            </button>
+        </div>
+    </form>
+    
+    <div class="text-center mt-4">
+        <p>Already have an account? <a href="/login">Login instead</a></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

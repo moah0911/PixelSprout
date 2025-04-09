@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}My Garden | Digital Garden{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>
+            <i class="fas fa-leaf text-success me-2"></i>
+            {{ username }}'s Garden
+        </h1>
+        <p class="text-muted">Watch your plants grow based on your daily habits</p>
+    </div>
+    <div class="col-md-4 d-flex justify-content-end align-items-center">
+        <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#log-condition-modal">
+            <i class="fas fa-clipboard-list me-1"></i> Log Condition
+        </button>
+        <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#add-plant-modal">
+            <i class="fas fa-plus me-1"></i> Add Plant
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Garden View -->
+    <div class="col-lg-8 mb-4">
+        <div id="garden-container" class="garden-container">
+            <!-- Plants will be rendered here with JavaScript -->
+            <div class="text-center p-5">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Loading garden...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Plant Details Panel -->
+    <div class="col-lg-4 mb-4">
+        <div id="plant-details-panel" class="plant-details-panel">
+            <div class="text-center p-4">
+                <p class="text-muted">Select a plant to view details</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Conditions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i> Recent Conditions
+                </h5>
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#add-condition-type-modal">
+                    <i class="fas fa-plus me-1"></i> Add Custom Condition
+                </button>
+            </div>
+            <div class="card-body">
+                <ul id="recent-conditions-list" class="list-group">
+                    <div class="text-center p-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading conditions...</span>
+                        </div>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Log Condition Modal -->
+<div class="modal fade" id="log-condition-modal" tabindex="-1" aria-labelledby="log-condition-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="log-condition-modal-label">Log a Condition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="log-condition-form">
+                    <div class="mb-3">
+                        <label for="condition-type" class="form-label">Condition Type</label>
+                        <select class="form-select" id="condition-type" required>
+                            <!-- Condition types will be populated via JavaScript -->
+                            <option value="" disabled selected>Loading condition types...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="condition-value" class="form-label">Value</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="condition-value" min="0" step="0.1" required>
+                            <span class="input-group-text" id="condition-unit-label">units</span>
+                        </div>
+                        <div id="condition-goal-hint" class="form-text d-none"></div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i> Log Condition
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Plant Modal -->
+<div class="modal fade" id="add-plant-modal" tabindex="-1" aria-labelledby="add-plant-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-plant-modal-label">Add a New Plant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-plant-form">
+                    <div class="mb-3">
+                        <label for="plant-name" class="form-label">Plant Name</label>
+                        <input type="text" class="form-control" id="plant-name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="plant-type" class="form-label">Plant Type</label>
+                        <select class="form-select" id="plant-type" required>
+                            <!-- Plant types will be populated via JavaScript -->
+                            <option value="" disabled selected>Loading plant types...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-seedling me-1"></i> Plant Seed
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Custom Condition Type Modal -->
+<div class="modal fade" id="add-condition-type-modal" tabindex="-1" aria-labelledby="add-condition-type-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-condition-type-modal-label">Add Custom Condition Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-condition-type-form">
+                    <div class="mb-3">
+                        <label for="condition-type-name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="condition-type-name" required>
+                        <div class="form-text">Enter a descriptive name for your condition (e.g., "meditation").</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="condition-type-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="condition-type-description" rows="2" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="condition-type-unit" class="form-label">Unit</label>
+                        <input type="text" class="form-control" id="condition-type-unit" required>
+                        <div class="form-text">E.g., "minutes", "glasses", "hours", etc.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="condition-type-goal" class="form-label">Default Goal (optional)</label>
+                        <input type="number" class="form-control" id="condition-type-goal" min="0" step="0.1">
+                        <div class="form-text">A suggested target value for this condition.</div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i> Create Condition Type
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/garden.js') }}"></script>
+<script src="{{ url_for('static', filename='js/conditions.js') }}"></script>
+{% endblock %}
