@@ -1,19 +1,16 @@
+
 import os
 import logging
 from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 
-class Base(DeclarativeBase):
-    pass
-
-# Create SQLAlchemy instance
-db = SQLAlchemy(model_class=Base)
+# Create SQLAlchemy instance with older style configuration
+db = SQLAlchemy()
 
 # Create Flask app
 app = Flask(__name__)

@@ -1,9 +1,9 @@
 from datetime import datetime
 from enum import Enum
 import os
-from sqlalchemy import String, Integer, Float, ForeignKey, DateTime, Enum as SQLEnum, Table
+from sqlalchemy import String, Integer, Float, ForeignKey, DateTime, Enum as SQLEnum, Table, Column
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import relationship
 import uuid
 from typing import Optional, List
 from app import db
@@ -58,20 +58,20 @@ class User(db.Model, UserMixin):
     
     # Use different column type based on database
     if using_sqlite:
-        id: Mapped[str] = mapped_column(String(36), primary_key=True)
+        id = Column(String(36), primary_key=True)
     else:
-        id: Mapped[str] = mapped_column(UUID, primary_key=True)
+        id = Column(UUID, primary_key=True)
         
-    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    username: Mapped[str] = mapped_column(String(100), nullable=False)
-    water_credits: Mapped[int] = mapped_column(Integer, default=20, nullable=False)
-    garden_score: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+    email = Column(String(255), nullable=False, unique=True)
+    username = Column(String(100), nullable=False)
+    water_credits = Column(Integer, default=20, nullable=False)
+    garden_score = Column(Integer, default=0, nullable=False)
+    created_at = Column(DateTime, default=datetime.now)
     
     # Relationships
-    plants: Mapped[List["Plant"]] = relationship("Plant", back_populates="user", cascade="all, delete-orphan")
-    conditions: Mapped[List["Condition"]] = relationship("Condition", back_populates="user", cascade="all, delete-orphan")
-    condition_types: Mapped[List["ConditionType"]] = relationship("ConditionType", back_populates="user", cascade="all, delete-orphan")
+    plants = relationship("Plant", back_populates="user", cascade="all, delete-orphan")
+    conditions = relationship("Condition", back_populates="user", cascade="all, delete-orphan")
+    condition_types = relationship("ConditionType", back_populates="user", cascade="all, delete-orphan")
     
     # Friendship relationships
     sent_friend_requests = relationship(
@@ -216,22 +216,22 @@ class User(db.Model, UserMixin):
 class Plant(db.Model):
     __tablename__ = "plants"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     # Use different column type based on database
     if using_sqlite:
-        user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False)
+        user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     else:
-        user_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
-    plant_type: Mapped[str] = mapped_column(String(50), nullable=False)
-    stage: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
-    health: Mapped[float] = mapped_column(Float, default=100, nullable=False)
-    progress: Mapped[float] = mapped_column(Float, default=0, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    last_watered: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+        user_id = Column(UUID, ForeignKey("users.id"), nullable=False)
+    name = Column(String(100), nullable=False)
+    plant_type = Column(String(50), nullable=False)
+    stage = Column(Integer, default=0, nullable=False)
+    health = Column(Float, default=100, nullable=False)
+    progress = Column(Float, default=0, nullable=False)
+    created_at = Column(DateTime, default=datetime.now)
+    last_watered = Column(DateTime, default=datetime.now)
     
     # Relationships
-    user: Mapped["User"] = relationship("User", back_populates="plants")
+    user = relationship("User", back_populates="plants")
     
     def __init__(self, id, user_id, name, plant_type, stage=PlantStage.SEED, 
                  health=100, created_at=None, last_watered=None, progress=0):
@@ -249,18 +249,18 @@ class Plant(db.Model):
 class Condition(db.Model):
     __tablename__ = "conditions"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     # Use different column type based on database
     if using_sqlite:
-        user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False)
+        user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     else:
-        user_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
-    type_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    value: Mapped[float] = mapped_column(Float, nullable=False)
-    date_logged: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+        user_id = Column(UUID, ForeignKey("users.id"), nullable=False)
+    type_name = Column(String(100), nullable=False)
+    value = Column(Float, nullable=False)
+    date_logged = Column(DateTime, default=datetime.now)
     
     # Relationships
-    user: Mapped["User"] = relationship("User", back_populates="conditions")
+    user = relationship("User", back_populates="conditions")
     
     def __init__(self, id, user_id, type_name, value, date_logged=None):
         self.id = id if id else None  # Allow auto-increment if None
@@ -273,20 +273,20 @@ class Condition(db.Model):
 class ConditionType(db.Model):
     __tablename__ = "condition_types"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
-    description: Mapped[str] = mapped_column(String, nullable=True)
-    unit: Mapped[str] = mapped_column(String(50), nullable=False)
-    default_goal: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(100), nullable=False)
+    description = Column(String, nullable=True)
+    unit = Column(String(50), nullable=False)
+    default_goal = Column(Float, nullable=True)
     # Use different column type based on database
     if using_sqlite:
-        user_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("users.id"), nullable=True)
+        user_id = Column(String(36), ForeignKey("users.id"), nullable=True)
     else:
-        user_id: Mapped[Optional[str]] = mapped_column(UUID, ForeignKey("users.id"), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+        user_id = Column(UUID, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.now)
     
     # Relationships
-    user: Mapped[Optional["User"]] = relationship("User", back_populates="condition_types")
+    user = relationship("User", back_populates="condition_types")
     
     def __init__(self, id, name, description, unit, default_goal=None, user_id=None):
         self.id = id if id else None  # Allow auto-increment if None
@@ -300,21 +300,21 @@ class ConditionType(db.Model):
 class Friendship(db.Model):
     __tablename__ = "friendships"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     # Use different column type based on database
     if using_sqlite:
-        requester_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False)
-        addressee_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), nullable=False)
+        requester_id = Column(String(36), ForeignKey("users.id"), nullable=False)
+        addressee_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     else:
-        requester_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
-        addressee_id: Mapped[str] = mapped_column(UUID, ForeignKey("users.id"), nullable=False)
-    status: Mapped[str] = mapped_column(String(20), nullable=False, default=FriendshipStatus.PENDING.value)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
+        requester_id = Column(UUID, ForeignKey("users.id"), nullable=False)
+        addressee_id = Column(UUID, ForeignKey("users.id"), nullable=False)
+    status = Column(String(20), nullable=False, default=FriendshipStatus.PENDING.value)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     
     # Relationships
-    requester: Mapped["User"] = relationship("User", foreign_keys=[requester_id])
-    addressee: Mapped["User"] = relationship("User", foreign_keys=[addressee_id])
+    requester = relationship("User", foreign_keys=[requester_id], overlaps="requester_user,sent_friend_requests")
+    addressee = relationship("User", foreign_keys=[addressee_id], overlaps="addressee_user,received_friend_requests")
     
     def __init__(self, requester_id, addressee_id, status=FriendshipStatus.PENDING, created_at=None):
         self.requester_id = requester_id
