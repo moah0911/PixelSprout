@@ -1,6 +1,7 @@
 from app import app, db
 import routes
 import models
+import routes_friends
 
 # Initialize the database and create tables
 with app.app_context():

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Zen Garden - Grow Virtual Plants with Real-Life Habits{% endblock %}
+{% block title %}PixelSprout - Grow Virtual Plants with Real-Life Habits{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -420,8 +420,8 @@
     </div>
     
     <div class="container hero-content text-center">
-        <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="Zen Garden Logo" class="app-logo">
-        <h1 class="app-title">Zen Garden</h1>
+        <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="PixelSprout Logo" class="app-logo">
+        <h1 class="app-title">PixelSprout</h1>
         <p class="app-subtitle">Grow Virtual Plants with Your Real-Life Habits</p>
         <div class="d-flex justify-content-center gap-4">
             {% if current_user.is_authenticated %}
@@ -541,7 +541,7 @@
         <div class="row align-items-center">
             <div class="col-lg-6 mb-5 mb-lg-0">
                 <div class="plant-showcase">
-                    <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="Plant showcase" class="img-fluid" style="width: 100%;">
+                    <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="PixelSprout showcase" class="img-fluid" style="width: 100%;">
                 </div>
             </div>
             <div class="col-lg-6">

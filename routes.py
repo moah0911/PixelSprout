@@ -468,27 +468,47 @@ def water_plant(plant_id):
         'message': f'{plant.name} has been watered!'
     })
 
-# Preset plants API route
+# Sample plants API routes
 @app.route('/api/preset-plants', methods=['POST'])
 @login_required
 def add_preset_plants():
+    # Check if any data was provided (for selecting a specific plant)
+    data = request.json or {}
+    selected_type = data.get('type')
+    
     # Define preset plants
-    preset_plants = [
-        {"name": "Sunflower", "type": "flower", "stage": PlantStage.MATURE.value, "health": 95, "progress": 50},
-        {"name": "Ivy", "type": "vine", "stage": PlantStage.GROWING.value, "health": 80, "progress": 30},
-        {"name": "Cactus", "type": "succulent", "stage": PlantStage.FLOWERING.value, "health": 100, "progress": 75},
-        {"name": "Basil", "type": "herb", "stage": PlantStage.SPROUT.value, "health": 75, "progress": 10},
-        {"name": "Bonsai", "type": "tree", "stage": PlantStage.MATURE.value, "health": 90, "progress": 60}
-    ]
+    preset_plants = {
+        "flower": {"name": "Sunflower", "type": "flower", "stage": PlantStage.MATURE.value, "health": 95, "progress": 50},
+        "vine": {"name": "Ivy", "type": "vine", "stage": PlantStage.GROWING.value, "health": 80, "progress": 30},
+        "succulent": {"name": "Cactus", "type": "succulent", "stage": PlantStage.FLOWERING.value, "health": 100, "progress": 75},
+        "herb": {"name": "Basil", "type": "herb", "stage": PlantStage.SPROUT.value, "health": 75, "progress": 10},
+        "tree": {"name": "Bonsai", "type": "tree", "stage": PlantStage.MATURE.value, "health": 90, "progress": 60}
+    }
     
     plants_added = []
     
+    # If a specific type was requested, only add that one
+    if selected_type and selected_type in preset_plants:
+        plant_data = preset_plants[selected_type]
+        plant_to_add = [plant_data]
+    else:
+        # Otherwise add all available preset plants
+        plant_to_add = preset_plants.values()
+    
     # Create plants
-    for plant_data in preset_plants:
+    for plant_data in plant_to_add:
         # Check if plant with same name already exists for this user
         existing_plant = Plant.query.filter_by(user_id=current_user.id, name=plant_data["name"]).first()
         if existing_plant:
-            continue
+            # Add a number to make the name unique
+            count = 2
+            new_name = f"{plant_data['name']} {count}"
+            
+            while Plant.query.filter_by(user_id=current_user.id, name=new_name).first():
+                count += 1
+                new_name = f"{plant_data['name']} {count}"
+                
+            plant_data["name"] = new_name
         
         # Create new plant
         new_plant = Plant(
@@ -507,8 +527,13 @@ def add_preset_plants():
     # Commit changes
     db.session.commit()
     
+    if len(plants_added) == 1:
+        message = f'Added {plants_added[0]} to your garden!'
+    else:
+        message = f'Added {len(plants_added)} preset plants to your garden!'
+    
     return jsonify({
         'success': True,
         'plants_added': plants_added,
-        'message': f'Added {len(plants_added)} preset plants to your garden!'
+        'message': message
     })

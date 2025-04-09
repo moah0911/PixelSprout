@@ -4,7 +4,7 @@
     {% block head %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Digital Zen Garden{% endblock %}</title>
+    <title>{% block title %}PixelSprout{% endblock %}</title>
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -186,8 +186,8 @@
     <nav class="navbar navbar-expand-lg sticky-top" data-bs-theme="dark">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="Digital Zen Garden Logo" class="logo-img">
-                <div class="app-name">Zen Garden</div>
+                <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="PixelSprout Logo" class="logo-img">
+                <div class="app-name">PixelSprout</div>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -203,6 +203,11 @@
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == '/garden' %}active{% endif %}" href="/garden">
                             <i class="fas fa-seedling me-1"></i> My Garden
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/friends' %}active{% endif %}" href="/friends">
+                            <i class="fas fa-user-friends me-1"></i> Friends
                         </a>
                     </li>
                     <li class="nav-item">
@@ -246,27 +251,17 @@
     <footer class="footer text-center">
         <div class="container">
             <div class="row">
-                <div class="col-md-4 text-md-start mb-3 mb-md-0">
-                    <h5 class="text-success">Zen Garden</h5>
+                <div class="col-md-6 text-md-start mb-3 mb-md-0">
+                    <h5 class="text-success">PixelSprout</h5>
                     <p class="small text-muted mb-0">Grow your virtual garden with real-life habits</p>
                 </div>
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <div class="d-flex justify-content-center">
-                        <a href="#" class="text-success mx-2"><i class="fab fa-github"></i></a>
-                        <a href="#" class="text-success mx-2"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-success mx-2"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-4 text-md-end">
+                <div class="col-md-6 text-md-end">
                     <p class="mb-0 small">
-                        <a href="#" class="text-success text-decoration-none">
-                            <i class="fas fa-question-circle me-1"></i> Help
-                        </a> | 
-                        <a href="#" class="text-success text-decoration-none">
-                            <i class="fas fa-hands-helping me-1"></i> Support
+                        <a href="mailto:stormshots0911@gmail.com" class="text-success text-decoration-none">
+                            <i class="fas fa-envelope me-1"></i> Talk to Creator
                         </a>
                     </p>
-                    <p class="mb-0 small text-muted">&copy; 2025 Zen Garden</p>
+                    <p class="mb-0 small text-muted">&copy; 2025 PixelSprout</p>
                 </div>
             </div>
         </div>

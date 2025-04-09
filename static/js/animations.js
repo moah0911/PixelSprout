@@ -77,26 +77,26 @@ function setAnimationMode(mode) {
     
     // Remove all animation classes first
     plants.forEach(plant => {
-        plant.classList.remove('plant-dancing', 'plant-bouncing', 'plant-shimmering', 'plant-waving', 'plant-excited');
-        plant.classList.remove('effect-rainbow');
+        plant.classList.remove('animation-dancing', 'animation-bouncing', 'animation-shimmering', 'animation-rainbow');
+        plant.classList.remove('effect-sparkle', 'effect-glow');
     });
     
     // Apply the new animation class based on mode
     switch (mode) {
         case 'dancing':
-            plants.forEach(plant => plant.classList.add('plant-dancing'));
+            plants.forEach(plant => plant.classList.add('animation-dancing'));
             showNotification('Plants are now dancing!', 'info');
             break;
         case 'bouncing':
-            plants.forEach(plant => plant.classList.add('plant-bouncing'));
+            plants.forEach(plant => plant.classList.add('animation-bouncing'));
             showNotification('Plants are now bouncing!', 'info');
             break;
         case 'shimmering':
-            plants.forEach(plant => plant.classList.add('plant-shimmering'));
+            plants.forEach(plant => plant.classList.add('animation-shimmering'));
             showNotification('Plants are now shimmering!', 'info');
             break;
         case 'rainbow':
-            plants.forEach(plant => plant.classList.add('effect-rainbow'));
+            plants.forEach(plant => plant.classList.add('animation-rainbow'));
             showNotification('Rainbow mode activated!', 'info');
             break;
         default:
@@ -153,24 +153,30 @@ function applySeasonalEffects(season) {
             // Light bounce effect for spring growth
             plants.forEach(plant => {
                 const randomDelay = Math.random() * 2;
-                plant.style.animation = `plant-bounce 4s ${randomDelay}s infinite ease-in-out`;
+                plant.style.animation = `plantBounce 4s ${randomDelay}s infinite ease-in-out`;
+                plant.style.filter = 'brightness(1.1) saturate(1.1)';
             });
             break;
         case 'summer':
             // Subtle wave effect for summer heat
             plants.forEach(plant => {
                 const randomDelay = Math.random() * 2;
-                plant.style.animation = `plant-wave 7s ${randomDelay}s infinite ease-in-out`;
+                plant.style.animation = `plantDance 7s ${randomDelay}s infinite ease-in-out`;
+                plant.style.filter = 'brightness(1.2) saturate(1.3)';
             });
             break;
         case 'autumn':
-            // No special animation, the CSS filter handles the autumn colors
+            // The CSS filter handles the autumn colors
+            plants.forEach(plant => {
+                plant.style.filter = 'hue-rotate(-15deg) saturate(1.5) brightness(0.95)';
+            });
             break;
         case 'winter':
-            // Slight shiver for winter cold
+            // Slight blue tint for winter cold
             plants.forEach(plant => {
                 const randomDelay = Math.random() * 1;
-                plant.style.animation = `plant-shiver 0.5s ${randomDelay}s infinite ease-in-out`;
+                plant.style.animation = `plantShimmer 3s ${randomDelay}s infinite ease-in-out`;
+                plant.style.filter = 'brightness(0.9) saturate(0.8) hue-rotate(15deg)';
             });
             break;
     }

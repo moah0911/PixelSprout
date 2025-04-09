@@ -1,390 +1,270 @@
-/* Main Styles for Digital Zen Garden */
+/* Digital Zen Garden CSS Styles */
 
-/* ===== Global Styles ===== */
-body {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    color: #e9ecef;
-    background-color: #111;
-    transition: background-color 0.3s ease;
-}
-
-.app-name {
-    font-size: 1.5rem;
-    font-weight: 600;
-    background: linear-gradient(to right, #66BB6A, #43A047, #2E7D32);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
-}
-
-.logo-icon {
-    width: 40px;
-    height: 40px;
-    transition: transform 0.3s ease;
-}
-
-.navbar-brand:hover .logo-icon {
-    transform: rotate(15deg);
-}
-
-/* ===== Garden Page Styles ===== */
-.garden-header {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    border-radius: 10px;
-    background: linear-gradient(135deg, rgba(33, 37, 41, 0.9), rgba(18, 51, 22, 0.9));
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.garden-title {
-    display: flex;
-    align-items: center;
-    font-size: 2rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.garden-subtitle {
-    font-size: 1.1rem;
-    opacity: 0.8;
-    margin-bottom: 0;
-}
-
+/* Garden Layout */
 .garden-container {
-    background: rgba(25, 25, 25, 0.6);
+    background-color: rgba(10, 30, 10, 0.6);
     border-radius: 10px;
-    padding: 2rem;
+    padding: 20px;
     min-height: 400px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: all 0.5s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(76, 175, 80, 0.2);
 }
 
-.empty-garden-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 300px;
+.garden-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #4CAF50;
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.4);
 }
 
-/* Plant Card Styles */
+.garden-subtitle {
+    color: #aaa;
+    font-size: 1rem;
+}
+
+/* Plant Cards */
 .plant-card {
+    background-color: rgba(20, 40, 20, 0.7);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
     position: relative;
-    background: rgba(33, 37, 41, 0.8);
-    border: none;
-    border-radius: 15px;
-    overflow: hidden;
+    border: 1px solid rgba(76, 175, 80, 0.2);
     transition: all 0.3s ease;
-    height: 100%;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .plant-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-.plant-card.selected {
-    border: 2px solid #4CAF50;
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
-}
-
-.plant-visual {
-    position: relative;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    border-color: rgba(76, 175, 80, 0.4);
 }
 
 .plant-container {
-    position: relative;
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    height: 150px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    transition: all 0.5s ease;
+    align-items: center;
+    margin-bottom: 15px;
+    position: relative;
+    transition: all 0.3s ease;
 }
 
-.plant-svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.2));
+.plant-container svg {
+    max-height: 120px;
+    max-width: 100%;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s ease;
+}
+
+.plant-container:hover svg {
+    transform: scale(1.05);
+}
+
+.plant-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.plant-type-badge {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    padding: 3px 8px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.plant-stats {
+    margin-bottom: 15px;
 }
 
 /* Water Credits Display */
-.water-credits-display {
-    background: rgba(0, 149, 237, 0.3);
-    padding: 0.6rem 1rem;
+.water-credits-container {
+    background: linear-gradient(to right, #0f3443, #1a6373);
     border-radius: 50px;
-    color: #fff;
+    padding: 8px 18px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(26, 99, 115, 0.5);
+    transform: translateZ(0);
     position: relative;
     overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-.water-credits-display::before {
+.water-credits-container:before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, rgba(0, 149, 237, 0.3), rgba(0, 149, 237, 0));
-    animation: wave 4s infinite linear;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0.3),
+        rgba(255, 255, 255, 0)
+    );
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+        top: -100%;
+    }
+    100% {
+        left: 100%;
+        top: 100%;
+    }
+}
+
+.water-credits-display {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
 }
 
 .water-credits-display i {
-    margin-right: 0.5rem;
-    color: #03a9f4;
+    margin-right: 8px;
+    color: #56CCF2;
+    animation: droplet 2s infinite;
 }
 
-.water-credits-count {
-    font-weight: 600;
+@keyframes droplet {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(2px) scale(1.1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+#water-credits-count {
+    font-weight: 700;
     font-size: 1.1rem;
+    color: #56CCF2;
+    text-shadow: 0 0 10px rgba(86, 204, 242, 0.5);
+}
+
+.water-credits-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(86, 204, 242, 0.6);
 }
 
 /* Plant Details Panel */
 .plant-details-panel {
-    background: rgba(25, 25, 25, 0.6);
+    background-color: rgba(20, 40, 20, 0.7);
     border-radius: 10px;
-    padding: 1.5rem;
-    min-height: 400px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
-/* Animation Controls */
-.animations-dropdown .dropdown-menu {
-    min-width: 220px;
-    padding: 1rem;
-}
-
-.animations-dropdown .dropdown-item {
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    transition: all 0.2s ease;
-}
-
-.animations-dropdown .dropdown-item:hover {
-    background-color: rgba(76, 175, 80, 0.1);
-}
-
-.animations-dropdown .dropdown-item.active {
-    background-color: rgba(76, 175, 80, 0.3);
-    color: #fff;
-}
-
-/* ===== Plant Animation Effects ===== */
-.plant-dancing {
-    animation: plant-dance 2s infinite ease-in-out;
-}
-
-.plant-bouncing {
-    animation: plant-bounce 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.plant-shimmering {
-    position: relative;
-}
-
-.plant-shimmering::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    background-size: 200% 200%;
-    animation: shimmer 3s infinite linear;
-}
-
-.plant-waving {
-    animation: plant-wave 5s infinite ease-in-out;
-}
-
-.plant-excited {
-    animation: plant-excited 0.5s infinite ease-in-out;
-}
-
-.plant-healthy {
-    filter: saturate(1.2) brightness(1.1);
-}
-
-.plant-unhealthy {
-    filter: saturate(0.8) brightness(0.9);
-}
-
-/* Seasonal Effects */
-.season-spring .plant-container {
-    background: radial-gradient(ellipse at center, rgba(220, 237, 200, 0.1) 0%, transparent 70%);
-}
-
-.season-spring .plant-svg {
-    filter: brightness(1.1) saturate(1.2);
-}
-
-.season-summer .plant-container {
-    background: radial-gradient(ellipse at center, rgba(255, 238, 170, 0.1) 0%, transparent 70%);
-}
-
-.season-summer .plant-svg {
-    filter: brightness(1.2) saturate(1.3) contrast(1.1);
-}
-
-.season-autumn .plant-container {
-    background: radial-gradient(ellipse at center, rgba(255, 204, 143, 0.1) 0%, transparent 70%);
-}
-
-.season-autumn .plant-svg {
-    filter: sepia(0.3) saturate(1.2);
-}
-
-.season-winter .plant-container {
-    background: radial-gradient(ellipse at center, rgba(200, 230, 255, 0.1) 0%, transparent 70%);
-}
-
-.season-winter .plant-svg {
-    filter: brightness(0.95) saturate(0.9) contrast(1.1);
-}
-
-/* Special Effects */
-.effect-rainbow .plant-svg {
-    animation: rainbow-filter 5s infinite linear;
-}
-
-.effect-glow .plant-svg {
-    filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.8));
-}
-
-.effect-sparkle .plant-container::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: 
-        radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 20%),
-        radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 20%),
-        radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 20%);
-    background-size: 10px 10px;
-    background-position: 
-        calc(50% - 20px) calc(50% - 30px),
-        calc(50% + 30px) calc(50% - 10px),
-        calc(50% + 10px) calc(50% + 25px);
-    background-repeat: no-repeat;
-    animation: sparkle 3s infinite ease-in-out;
-}
-
-/* Watering Effects */
-.watering-effect {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 5;
-    pointer-events: none;
-}
-
-.water-drop {
-    position: absolute;
-    width: 10px;
-    height: 15px;
-    background-color: rgba(0, 149, 255, 0.6);
-    border-radius: 100% 100% 0 100%;
-    transform: rotate(45deg);
-    animation: drop-fall 2s ease-in forwards;
-}
-
-.water-drop:nth-child(1) {
-    top: 0;
-    left: 40%;
-    animation-delay: 0s;
-}
-
-.water-drop:nth-child(2) {
-    top: 0;
-    left: 50%;
-    animation-delay: 0.3s;
-}
-
-.water-drop:nth-child(3) {
-    top: 0;
-    left: 60%;
-    animation-delay: 0.6s;
-}
-
-/* Recent Conditions List */
-.condition-item {
-    border-left: 4px solid #4CAF50;
-    background-color: rgba(76, 175, 80, 0.1);
-    margin-bottom: 0.5rem;
-    padding: 0.75rem 1rem;
-    border-radius: 0 5px 5px 0;
-    transition: all 0.3s ease;
-}
-
-.condition-item:hover {
-    transform: translateX(5px);
-    background-color: rgba(76, 175, 80, 0.2);
-}
-
-.condition-value {
-    font-weight: 600;
-    color: #4CAF50;
-}
-
-.condition-type {
-    font-weight: 500;
-}
-
-.condition-time {
-    font-size: 0.8rem;
-    opacity: 0.7;
-}
-
-/* Toast Notifications */
-.toast {
-    backdrop-filter: blur(10px);
-    border: none;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(76, 175, 80, 0.2);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.toast-success {
-    background-color: rgba(40, 167, 69, 0.9);
-    color: white;
+.plant-detail-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #fff;
 }
 
-.toast-error {
-    background-color: rgba(220, 53, 69, 0.9);
-    color: white;
+.plant-detail-image {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
-.toast-warning {
-    background-color: rgba(255, 193, 7, 0.9);
-    color: #212529;
+.plant-detail-image svg {
+    max-height: 180px;
+    max-width: 100%;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
 }
 
-.toast-info {
-    background-color: rgba(23, 162, 184, 0.9);
-    color: white;
+/* 3D Garden View */
+.garden-3d-view {
+    perspective: 1000px;
 }
 
-/* ===== Animations ===== */
-@keyframes plant-dance {
+.garden-3d-view .plant-card {
+    transform-style: preserve-3d;
+    transform: rotateX(5deg);
+}
+
+.garden-3d-view .plant-card:hover {
+    transform: rotateX(5deg) translateY(-5px);
+}
+
+.garden-3d-view .row {
+    transform-style: preserve-3d;
+}
+
+/* Seasonal Themes */
+.season-spring {
+    background: linear-gradient(to bottom, rgba(10, 40, 15, 0.6), rgba(20, 60, 30, 0.7));
+    border-color: rgba(124, 179, 66, 0.3);
+}
+
+.season-summer {
+    background: linear-gradient(to bottom, rgba(30, 50, 15, 0.6), rgba(40, 70, 20, 0.7));
+    border-color: rgba(255, 193, 7, 0.3);
+}
+
+.season-autumn {
+    background: linear-gradient(to bottom, rgba(50, 30, 15, 0.6), rgba(70, 40, 20, 0.7));
+    border-color: rgba(255, 87, 34, 0.3);
+}
+
+.season-winter {
+    background: linear-gradient(to bottom, rgba(15, 30, 40, 0.6), rgba(20, 40, 60, 0.7));
+    border-color: rgba(176, 190, 197, 0.3);
+}
+
+/* Plant Health States */
+.plant-healthy svg {
+    filter: drop-shadow(0 0 10px rgba(76, 175, 80, 0.4));
+}
+
+.plant-unhealthy svg {
+    filter: drop-shadow(0 0 10px rgba(255, 87, 34, 0.4));
+    opacity: 0.8;
+}
+
+/* Animation Effects */
+@keyframes plantDance {
     0%, 100% {
         transform: rotate(0deg);
     }
     25% {
-        transform: rotate(5deg);
+        transform: rotate(-5deg);
     }
     75% {
-        transform: rotate(-5deg);
+        transform: rotate(5deg);
     }
 }
 
-@keyframes plant-bounce {
+@keyframes plantBounce {
     0%, 100% {
         transform: translateY(0);
     }
@@ -393,37 +273,19 @@ body {
     }
 }
 
-@keyframes shimmer {
+@keyframes plantShimmer {
     0% {
-        background-position: -200% 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
-}
-
-@keyframes plant-wave {
-    0%, 100% {
-        transform: skewX(0) rotate(0);
-    }
-    25% {
-        transform: skewX(3deg) rotate(2deg);
-    }
-    75% {
-        transform: skewX(-3deg) rotate(-2deg);
-    }
-}
-
-@keyframes plant-excited {
-    0%, 100% {
-        transform: rotate(-2deg) scale(1);
+        filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.4));
     }
     50% {
-        transform: rotate(2deg) scale(1.05);
+        filter: drop-shadow(0 0 15px rgba(76, 175, 80, 0.8));
+    }
+    100% {
+        filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.4));
     }
 }
 
-@keyframes rainbow-filter {
+@keyframes rainbow {
     0% {
         filter: hue-rotate(0deg);
     }
@@ -432,98 +294,87 @@ body {
     }
 }
 
-@keyframes wave {
-    0% {
-        transform: translateX(-100%) translateY(50%) scaleY(0.5);
-    }
-    50% {
-        transform: translateX(0%) translateY(0%) scaleY(0.5);
-    }
-    100% {
-        transform: translateX(100%) translateY(50%) scaleY(0.5);
-    }
+.animation-dancing svg {
+    animation: plantDance 2s infinite ease-in-out;
 }
 
-@keyframes drop-fall {
-    0% {
-        top: 0;
-        opacity: 0.7;
-    }
-    80% {
-        opacity: 0.7;
-    }
-    100% {
-        top: 100%;
-        opacity: 0;
-    }
+.animation-bouncing svg {
+    animation: plantBounce 2s infinite ease-in-out;
 }
 
-@keyframes sparkle {
+.animation-shimmering svg {
+    animation: plantShimmer 3s infinite;
+}
+
+.animation-rainbow svg {
+    animation: rainbow 5s infinite linear;
+}
+
+/* Special Effects */
+.effect-sparkle::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: white;
+    box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+    animation: sparkleEffect 3s infinite;
+}
+
+@keyframes sparkleEffect {
     0%, 100% {
         opacity: 0;
-        transform: scale(0.5);
+        transform: translate(0, 0) scale(0);
+    }
+    10% {
+        opacity: 1;
+        transform: translate(20px, -20px) scale(1);
+    }
+    20% {
+        opacity: 0;
+        transform: translate(40px, -40px) scale(0);
+    }
+    30% {
+        opacity: 1;
+        transform: translate(-30px, -30px) scale(1);
+    }
+    40% {
+        opacity: 0;
+        transform: translate(-50px, -50px) scale(0);
     }
     50% {
         opacity: 1;
-        transform: scale(1);
+        transform: translate(30px, -60px) scale(1);
+    }
+    60% {
+        opacity: 0;
+        transform: translate(50px, -70px) scale(0);
+    }
+    70% {
+        opacity: 1;
+        transform: translate(-40px, -20px) scale(1);
+    }
+    80% {
+        opacity: 0;
+        transform: translate(-60px, -40px) scale(0);
+    }
+    90% {
+        opacity: 1;
+        transform: translate(10px, -50px) scale(1);
     }
 }
 
-/* ===== Media Queries ===== */
-@media (max-width: 767.98px) {
-    .garden-title {
-        font-size: 1.5rem;
+.effect-glow svg {
+    filter: drop-shadow(0 0 15px rgba(76, 175, 80, 0.8));
+    animation: glowEffect 3s infinite alternate;
+}
+
+@keyframes glowEffect {
+    0% {
+        filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.4));
     }
-    
-    .garden-container, .plant-details-panel {
-        padding: 1rem;
+    100% {
+        filter: drop-shadow(0 0 20px rgba(76, 175, 80, 1));
     }
-    
-    .plant-card {
-        margin-bottom: 1rem;
-    }
-}
-
-/* Dark mode enhancements */
-@media (prefers-color-scheme: dark) {
-    .plant-card {
-        background: rgba(30, 30, 30, 0.8);
-    }
-    
-    .garden-container, .plant-details-panel {
-        background: rgba(22, 22, 22, 0.6);
-    }
-    
-    .condition-item {
-        background-color: rgba(30, 30, 30, 0.8);
-    }
-}
-
-/* Special 3D Garden Effect */
-.garden-3d-view .plant-container {
-    transform-style: preserve-3d;
-    perspective: 800px;
-}
-
-.garden-3d-view .plant-card:hover .plant-container {
-    transform: rotateY(5deg) rotateX(5deg);
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(25, 25, 25, 0.1);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(76, 175, 80, 0.5);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(76, 175, 80, 0.7);
 }
