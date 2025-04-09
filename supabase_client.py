@@ -43,19 +43,29 @@ def create_user(email, password, username):
         auth_response = supabase.auth.sign_up({"email": email, "password": password})
         user_id = auth_response.user.id
         
-        # Create user record in the users table
-        user_data = {
-            'id': user_id,
-            'email': email,
-            'username': username,
-            'created_at': datetime.now().isoformat()
-        }
+        try:
+            # Create user record in the users table
+            user_data = {
+                'id': user_id,
+                'email': email,
+                'username': username,
+                'created_at': datetime.now().isoformat()
+            }
+            
+            supabase.table('users').insert(user_data).execute()
+            
+            # Create default condition types for the user
+            try:
+                create_default_condition_types(user_id)
+            except Exception as e:
+                logging.warning(f"Failed to create default condition types: {str(e)}")
+                
+        except Exception as db_error:
+            logging.warning(f"Failed to create user record in database: {str(db_error)}")
+            logging.warning("This might be because the required tables don't exist.")
+            logging.warning("Please run setup_database.py to create the necessary tables.")
         
-        supabase.table('users').insert(user_data).execute()
-        
-        # Create default condition types for the user
-        create_default_condition_types(user_id)
-        
+        # Return user object even if database operations fail
         return User(user_id, email, username)
     except Exception as e:
         logging.error(f"Failed to create user: {str(e)}")
@@ -66,19 +76,38 @@ def login_user(email, password):
     try:
         auth_response = supabase.auth.sign_in_with_password({"email": email, "password": password})
         user_id = auth_response.user.id
+        user_email = auth_response.user.email
         
-        # Get user details from the users table
-        user_response = supabase.table('users').select('*').eq('id', user_id).execute()
-        
-        if user_response.data:
-            user_data = user_response.data[0]
-            return User(
-                user_data['id'],
-                user_data['email'],
-                user_data['username'],
-                user_data['created_at']
-            )
-        return None
+        try:
+            # Get user details from the users table
+            user_response = supabase.table('users').select('*').eq('id', user_id).execute()
+            
+            if user_response.data:
+                user_data = user_response.data[0]
+                return User(
+                    user_data['id'],
+                    user_data['email'],
+                    user_data['username'],
+                    user_data['created_at']
+                )
+            else:
+                # If user exists in Auth but not in users table, create a simplified user object
+                logging.warning(f"User {user_id} found in Auth but not in users table")
+                logging.warning("This might be because the required tables don't exist.")
+                logging.warning("Please run setup_database.py to create the necessary tables.")
+                
+                # Use email as username if no username is available
+                username = user_email.split('@')[0]
+                return User(user_id, user_email, username)
+        except Exception as db_error:
+            logging.warning(f"Failed to get user from database: {str(db_error)}")
+            logging.warning("This might be because the required tables don't exist.")
+            logging.warning("Please run setup_database.py to create the necessary tables.")
+            
+            # Use email as username if no username is available
+            username = user_email.split('@')[0]
+            return User(user_id, user_email, username)
+            
     except Exception as e:
         logging.error(f"Failed to login user: {str(e)}")
         return None
@@ -86,17 +115,38 @@ def login_user(email, password):
 def get_user_by_id(user_id):
     """Get a user by ID"""
     try:
-        user_response = supabase.table('users').select('*').eq('id', user_id).execute()
-        
-        if user_response.data:
-            user_data = user_response.data[0]
-            return User(
-                user_data['id'],
-                user_data['email'],
-                user_data['username'],
-                user_data['created_at']
-            )
-        return None
+        try:
+            user_response = supabase.table('users').select('*').eq('id', user_id).execute()
+            
+            if user_response.data:
+                user_data = user_response.data[0]
+                return User(
+                    user_data['id'],
+                    user_data['email'],
+                    user_data['username'],
+                    user_data['created_at']
+                )
+            else:
+                # Try to get the user from Auth
+                try:
+                    # We can't directly get a single user by ID with the anon key
+                    # So we'll create a simplified user object
+                    logging.warning(f"User {user_id} not found in users table")
+                    logging.warning("This might be because the required tables don't exist.")
+                    logging.warning("Please run setup_database.py to create the necessary tables.")
+                    
+                    # Return a dummy user with just the ID
+                    return User(user_id, f"user_{user_id}", f"user_{user_id}")
+                except Exception as auth_error:
+                    logging.error(f"Failed to get user from Auth: {str(auth_error)}")
+                    return None
+        except Exception as db_error:
+            logging.warning(f"Failed to get user from database: {str(db_error)}")
+            logging.warning("This might be because the required tables don't exist.")
+            logging.warning("Please run setup_database.py to create the necessary tables.")
+            
+            # Return a dummy user with just the ID
+            return User(user_id, f"user_{user_id}", f"user_{user_id}")
     except Exception as e:
         logging.error(f"Failed to get user: {str(e)}")
         return None
