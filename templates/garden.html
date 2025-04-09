@@ -2,21 +2,36 @@
 
 {% block title %}My Garden | Digital Garden{% endblock %}
 
+{% block head %}
+{{ super() }}
+<!-- Add animation styles -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="row mb-4">
-    <div class="col-md-8">
+    <div class="col-md-6">
         <h1>
             <i class="fas fa-leaf text-success me-2"></i>
             {{ username }}'s Garden
         </h1>
         <p class="text-muted">Watch your plants grow based on your daily habits</p>
     </div>
-    <div class="col-md-4 d-flex justify-content-end align-items-center">
+    <div class="col-md-6 d-flex justify-content-end align-items-center">
+        <!-- Water Credits Display -->
+        <div class="water-credits me-3">
+            <i class="fas fa-tint"></i>
+            <span id="water-credits-count">0</span>
+        </div>
+        
         <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#log-condition-modal">
             <i class="fas fa-clipboard-list me-1"></i> Log Condition
         </button>
-        <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#add-plant-modal">
+        <button class="btn btn-outline-success me-2" data-bs-toggle="modal" data-bs-target="#add-plant-modal">
             <i class="fas fa-plus me-1"></i> Add Plant
+        </button>
+        <button id="add-preset-plants-btn" class="btn btn-outline-info">
+            <i class="fas fa-magic me-1"></i> Add Preset Plants
         </button>
     </div>
 </div>
@@ -187,6 +202,81 @@
 {% endblock %}
 
 {% block scripts %}
+<!-- SVG plant definitions -->
+<script src="{{ url_for('static', filename='svg/plant_stages.js') }}"></script>
+<script src="{{ url_for('static', filename='svg/enhanced_plants.js') }}"></script>
+
+<!-- Functionality scripts -->
+<script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 <script src="{{ url_for('static', filename='js/garden.js') }}"></script>
 <script src="{{ url_for('static', filename='js/conditions.js') }}"></script>
+
+<script>
+// Add event listener for preset plants button
+document.addEventListener('DOMContentLoaded', function() {
+    const presetButton = document.getElementById('add-preset-plants-btn');
+    if (presetButton) {
+        presetButton.addEventListener('click', function() {
+            // Call the API endpoint to add preset plants
+            fetch('/api/preset-plants', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    // Refresh the garden
+                    fetchPlants();
+                } else {
+                    showNotification(data.message || 'Failed to add preset plants', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding preset plants:', error);
+                showNotification('An error occurred while adding preset plants', 'error');
+            });
+        });
+    }
+
+    // Helper function to show notifications
+    function showNotification(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'primary'} border-0`;
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+        
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        `;
+        
+        const toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            const newContainer = document.createElement('div');
+            newContainer.id = 'toast-container';
+            newContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+            document.body.appendChild(newContainer);
+            newContainer.appendChild(toast);
+        } else {
+            toastContainer.appendChild(toast);
+        }
+        
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        // Remove the toast after it's hidden
+        toast.addEventListener('hidden.bs.toast', function() {
+            toast.remove();
+        });
+    }
+});
+</script>
 {% endblock %}

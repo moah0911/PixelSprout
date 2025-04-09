@@ -1,0 +1,103 @@
+/* Plant animation styles */
+.plant-container {
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.plant-container:hover {
+    transform: scale(1.05);
+}
+
+/* Dancing plant animation */
+@keyframes plantDance {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-3deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(3deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.plant-dancing {
+    animation: plantDance 2s ease-in-out infinite;
+    transform-origin: bottom center;
+}
+
+/* Growing plant animation */
+@keyframes plantGrow {
+    0% { transform: scale(0.8); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.plant-growing {
+    animation: plantGrow 3s ease-out;
+}
+
+/* Watering effect animation */
+@keyframes waterDrop {
+    0% { transform: translateY(-20px); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(30px); opacity: 0; }
+}
+
+.water-drop {
+    position: absolute;
+    width: 8px;
+    height: 12px;
+    background: #4facfe;
+    border-radius: 50%;
+    opacity: 0;
+    z-index: 10;
+}
+
+.watering-effect .water-drop:nth-child(1) {
+    left: 40%;
+    animation: waterDrop 1.5s ease-in infinite;
+    animation-delay: 0.2s;
+}
+
+.watering-effect .water-drop:nth-child(2) {
+    left: 50%;
+    animation: waterDrop 1.8s ease-in infinite;
+}
+
+.watering-effect .water-drop:nth-child(3) {
+    left: 60%;
+    animation: waterDrop 1.6s ease-in infinite;
+    animation-delay: 0.5s;
+}
+
+/* Health status glow effects */
+.plant-healthy {
+    filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.6));
+}
+
+.plant-unhealthy {
+    filter: drop-shadow(0 0 5px rgba(255, 87, 34, 0.6));
+}
+
+/* Water credits display */
+.water-credits {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 5px 15px;
+    margin-right: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.water-credits i {
+    margin-right: 5px;
+}
+
+/* Water credit transaction animation */
+@keyframes creditChange {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.credit-change {
+    animation: creditChange 0.5s ease;
+}

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Garden variables
     let plants = [];
     let selectedPlant = null;
+    let waterCredits = 20; // Default water credits
     
     // Initialize garden
     initGarden();
@@ -15,11 +16,37 @@ document.addEventListener('DOMContentLoaded', function() {
         // Fetch plant types for the select dropdown
         await fetchPlantTypes();
         
+        // Fetch water credits
+        await fetchWaterCredits();
+        
         // Fetch and display plants
         await fetchPlants();
         
         // Initialize plant details panel
         updatePlantDetailsPanel();
+    }
+    
+    // Fetch water credits
+    async function fetchWaterCredits() {
+        try {
+            const response = await fetch('/api/water-credits');
+            const data = await response.json();
+            
+            if (data.success) {
+                waterCredits = data.water_credits;
+                updateWaterCreditsDisplay();
+            }
+        } catch (error) {
+            console.error('Error fetching water credits:', error);
+        }
+    }
+    
+    // Update water credits display
+    function updateWaterCreditsDisplay() {
+        const creditsDisplay = document.getElementById('water-credits-count');
+        if (creditsDisplay) {
+            creditsDisplay.textContent = waterCredits;
+        }
     }
     
     async function fetchPlantTypes() {
@@ -104,11 +131,35 @@ document.addEventListener('DOMContentLoaded', function() {
         if (plant.health < 50) healthClass = 'bg-warning';
         if (plant.health < 25) healthClass = 'bg-danger';
         
+        // Create plant container for animations
+        const plantContainer = document.createElement('div');
+        plantContainer.className = 'plant-container';
+        plantContainer.dataset.plantId = plant.id;
+        
+        // Add health-based classes
+        if (plant.health > 75) {
+            plantContainer.classList.add('plant-healthy');
+        } else if (plant.health < 30) {
+            plantContainer.classList.add('plant-unhealthy');
+        }
+        
+        // Add plant SVG to container
+        plantContainer.innerHTML = getPlantSvg(plant.type, plant.stage);
+        
+        // Add water button
+        const waterButton = document.createElement('button');
+        waterButton.className = 'water-plant-btn btn btn-sm btn-info mt-2';
+        waterButton.innerHTML = '<i class="fas fa-tint"></i> Water';
+        waterButton.setAttribute('data-plant-id', plant.id);
+        waterButton.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent plant selection
+            waterPlant(plant.id);
+        });
+        
+        // Assemble the card
         card.innerHTML = `
             <div class="card-body text-center">
-                <div class="plant-visual mb-3">
-                    ${getPlantSvg(plant.type, plant.stage)}
-                </div>
+                <div class="plant-visual mb-3"></div>
                 <h5 class="card-title">${plant.name}</h5>
                 <div class="progress mb-2" style="height: 10px;">
                     <div class="progress-bar ${healthClass}" role="progressbar" style="width: ${plant.health}%;" 
@@ -126,14 +177,24 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         
+        // Insert plant container and water button
+        const visualContainer = card.querySelector('.plant-visual');
+        visualContainer.appendChild(plantContainer);
+        card.querySelector('.card-body').appendChild(waterButton);
+        
         col.appendChild(card);
         return col;
     }
     
     function getPlantSvg(type, stage) {
-        // Get the appropriate SVG for the plant type and stage
+        // Try to get enhanced SVG first
+        if (window.enhancedPlantSvgs && window.enhancedPlantSvgs[type] && window.enhancedPlantSvgs[type][stage]) {
+            return window.enhancedPlantSvgs[type][stage];
+        }
+        
+        // Fall back to regular SVGs
         const plantSvgs = window.plantSvgs || {};
-        const typeSvgs = plantSvgs[type] || plantSvgs.default;
+        const typeSvgs = plantSvgs[type] || plantSvgs.succulent;
         
         // If we have a specific SVG for this stage, use it
         if (typeSvgs && typeSvgs[stage]) {
@@ -144,6 +205,73 @@ document.addEventListener('DOMContentLoaded', function() {
         return `<svg viewBox="0 0 100 100" width="80" height="80">
             <circle cx="50" cy="50" r="${20 + stage * 5}" fill="${getColorForPlantType(type)}" />
         </svg>`;
+    }
+    
+    // Water plant function
+    async function waterPlant(plantId) {
+        try {
+            const response = await fetch(`/api/water-plant/${plantId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Update water credits
+                waterCredits = data.water_credits;
+                updateWaterCreditsDisplay();
+                
+                // Update plant data
+                const plant = plants.find(p => p.id == plantId);
+                if (plant) {
+                    Object.assign(plant, data.plant);
+                }
+                
+                // Show watering effect
+                const plantContainer = document.querySelector(`.plant-container[data-plant-id="${plantId}"]`);
+                if (plantContainer) {
+                    // Add watering animation
+                    const wateringEffect = document.createElement('div');
+                    wateringEffect.className = 'watering-effect';
+                    
+                    // Add water drops
+                    for (let i = 0; i < 3; i++) {
+                        const waterDrop = document.createElement('div');
+                        waterDrop.className = 'water-drop';
+                        wateringEffect.appendChild(waterDrop);
+                    }
+                    
+                    plantContainer.appendChild(wateringEffect);
+                    
+                    // Make plant dance briefly
+                    plantContainer.classList.add('plant-dancing');
+                    
+                    // Remove effects after animation completes
+                    setTimeout(() => {
+                        if (wateringEffect && wateringEffect.parentNode === plantContainer) {
+                            plantContainer.removeChild(wateringEffect);
+                        }
+                        plantContainer.classList.remove('plant-dancing');
+                    }, 2000);
+                }
+                
+                // Update UI
+                renderGarden();
+                if (selectedPlant && selectedPlant.id == plantId) {
+                    updatePlantDetailsPanel();
+                }
+                
+                showNotification(data.message, 'success');
+            } else {
+                showNotification(data.message || 'Failed to water plant', 'error');
+            }
+        } catch (error) {
+            console.error('Error watering plant:', error);
+            showNotification('Error watering plant', 'error');
+        }
     }
     
     function getColorForPlantType(type) {
@@ -279,11 +407,81 @@ document.addEventListener('DOMContentLoaded', function() {
                     <small class="text-muted">Last Watered: ${lastWateredDate.toLocaleDateString()}</small>
                 </div>
                 
+                <div class="d-flex gap-2 mb-3">
+                    <button class="btn btn-info water-plant-btn" data-plant-id="${selectedPlant.id}">
+                        <i class="fas fa-tint"></i> Water Plant
+                    </button>
+                    <button class="btn btn-outline-success dance-plant-btn" data-plant-id="${selectedPlant.id}">
+                        <i class="fas fa-music"></i> Make Dance
+                    </button>
+                </div>
+                
                 <div class="alert ${selectedPlant.health < 30 ? 'alert-danger' : 'alert-info'} small">
                     ${getPlantStatusMessage(selectedPlant)}
                 </div>
             </div>
         `;
+        
+        // Add event listener for dance button
+        const danceButton = detailsPanel.querySelector('.dance-plant-btn');
+        if (danceButton) {
+            danceButton.addEventListener('click', function() {
+                const plantId = this.getAttribute('data-plant-id');
+                const plantContainer = document.querySelector(`.plant-container[data-plant-id="${plantId}"]`);
+                
+                if (plantContainer) {
+                    // Start dancing
+                    plantContainer.classList.add('plant-dancing');
+                    
+                    // Change button to stop dancing
+                    this.innerHTML = '<i class="fas fa-stop"></i> Stop Dancing';
+                    this.classList.remove('btn-outline-success');
+                    this.classList.add('btn-outline-danger');
+                    
+                    // Set flag on the button to know it's dancing
+                    this.dataset.dancing = 'true';
+                    
+                    // Set button click to stop dancing
+                    this.addEventListener('click', function stopDancing(e) {
+                        e.preventDefault();
+                        
+                        // Stop dancing
+                        plantContainer.classList.remove('plant-dancing');
+                        
+                        // Reset button
+                        this.innerHTML = '<i class="fas fa-music"></i> Make Dance';
+                        this.classList.remove('btn-outline-danger');
+                        this.classList.add('btn-outline-success');
+                        
+                        // Remove flag
+                        delete this.dataset.dancing;
+                        
+                        // Remove this event listener
+                        this.removeEventListener('click', stopDancing);
+                        
+                        // Reset original event
+                        this.addEventListener('click', function() {
+                            const plantId = this.getAttribute('data-plant-id');
+                            const plantContainer = document.querySelector(`.plant-container[data-plant-id="${plantId}"]`);
+                            
+                            if (plantContainer) {
+                                plantContainer.classList.add('plant-dancing');
+                                updatePlantDetailsPanel(); // Re-render to get the stop button
+                            }
+                        });
+                    });
+                }
+            });
+        }
+        
+        // Add event listener for water button in details panel
+        const waterButton = detailsPanel.querySelector('.water-plant-btn');
+        if (waterButton) {
+            waterButton.addEventListener('click', function() {
+                const plantId = this.getAttribute('data-plant-id');
+                waterPlant(plantId);
+            });
+        }
     }
     
     function getHealthBarClass(health) {

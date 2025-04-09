@@ -33,6 +33,7 @@ class User(db.Model, UserMixin):
     id: Mapped[str] = mapped_column(UUID, primary_key=True)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     username: Mapped[str] = mapped_column(String(100), nullable=False)
+    water_credits: Mapped[int] = mapped_column(Integer, default=20, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     
     # Relationships
@@ -40,10 +41,11 @@ class User(db.Model, UserMixin):
     conditions: Mapped[List["Condition"]] = relationship("Condition", back_populates="user", cascade="all, delete-orphan")
     condition_types: Mapped[List["ConditionType"]] = relationship("ConditionType", back_populates="user", cascade="all, delete-orphan")
     
-    def __init__(self, id, email, username, created_at=None):
+    def __init__(self, id, email, username, water_credits=20, created_at=None):
         self.id = id
         self.email = email
         self.username = username
+        self.water_credits = water_credits
         self.created_at = created_at or datetime.now()
         
 # Plant model representing a plant in the digital garden

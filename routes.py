@@ -349,3 +349,168 @@ def calculate_condition_effect(condition_type, value):
 def get_plant_types():
     plant_types = [{'value': pt.value, 'name': pt.name} for pt in PlantType]
     return jsonify({'success': True, 'plant_types': plant_types})
+
+# Water credits API routes
+@app.route('/api/water-credits', methods=['GET'])
+@login_required
+def get_water_credits():
+    return jsonify({
+        'success': True,
+        'water_credits': current_user.water_credits
+    })
+
+@app.route('/api/water-credits/add', methods=['POST'])
+@login_required
+def add_water_credits():
+    data = request.json
+    amount = data.get('amount', 1)
+    
+    # Add credits
+    current_user.water_credits += amount
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'water_credits': current_user.water_credits,
+        'message': f'Added {amount} water credits!'
+    })
+
+@app.route('/api/water-credits/use', methods=['POST'])
+@login_required
+def use_water_credits():
+    data = request.json
+    amount = data.get('amount', 1)
+    
+    # Check if user has enough credits
+    if current_user.water_credits < amount:
+        return jsonify({
+            'success': False,
+            'message': 'Not enough water credits!'
+        }), 400
+    
+    # Use credits
+    current_user.water_credits -= amount
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'water_credits': current_user.water_credits,
+        'message': f'Used {amount} water credits!'
+    })
+
+@app.route('/api/water-plant/<int:plant_id>', methods=['POST'])
+@login_required
+def water_plant(plant_id):
+    # Get the plant
+    plant = Plant.query.get(plant_id)
+    
+    if not plant:
+        return jsonify({
+            'success': False,
+            'message': 'Plant not found!'
+        }), 404
+    
+    # Check if the plant belongs to the current user
+    if plant.user_id != current_user.id:
+        return jsonify({
+            'success': False,
+            'message': 'You do not own this plant!'
+        }), 403
+    
+    # Check if user has water credits
+    if current_user.water_credits < 1:
+        return jsonify({
+            'success': False,
+            'message': 'Not enough water credits!'
+        }), 400
+    
+    # Use water credit
+    current_user.water_credits -= 1
+    
+    # Update plant
+    plant.last_watered = datetime.now()
+    
+    # Improve plant health
+    health_gain = min(10, 100 - plant.health)  # Don't exceed 100
+    plant.health += health_gain
+    
+    # Add some progress
+    plant.progress += 5
+    
+    # Check if plant should advance to next stage
+    if plant.progress >= 100 and plant.stage < PlantStage.DEAD.value:
+        plant.progress = 0
+        plant.stage = min(PlantStage.DEAD.value, plant.stage + 1)
+    
+    # Save changes
+    db.session.commit()
+    
+    # Log water condition
+    new_condition = Condition(
+        id=None,
+        user_id=current_user.id,
+        type_name='water_intake',
+        value=1
+    )
+    db.session.add(new_condition)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'water_credits': current_user.water_credits,
+        'plant': {
+            'id': plant.id,
+            'name': plant.name,
+            'type': plant.plant_type,
+            'stage': plant.stage,
+            'health': plant.health,
+            'progress': plant.progress,
+            'last_watered': plant.last_watered.isoformat() if hasattr(plant.last_watered, 'isoformat') else str(plant.last_watered)
+        },
+        'message': f'{plant.name} has been watered!'
+    })
+
+# Preset plants API route
+@app.route('/api/preset-plants', methods=['POST'])
+@login_required
+def add_preset_plants():
+    # Define preset plants
+    preset_plants = [
+        {"name": "Sunflower", "type": "flower", "stage": PlantStage.MATURE.value, "health": 95, "progress": 50},
+        {"name": "Ivy", "type": "vine", "stage": PlantStage.GROWING.value, "health": 80, "progress": 30},
+        {"name": "Cactus", "type": "succulent", "stage": PlantStage.FLOWERING.value, "health": 100, "progress": 75},
+        {"name": "Basil", "type": "herb", "stage": PlantStage.SPROUT.value, "health": 75, "progress": 10},
+        {"name": "Bonsai", "type": "tree", "stage": PlantStage.MATURE.value, "health": 90, "progress": 60}
+    ]
+    
+    plants_added = []
+    
+    # Create plants
+    for plant_data in preset_plants:
+        # Check if plant with same name already exists for this user
+        existing_plant = Plant.query.filter_by(user_id=current_user.id, name=plant_data["name"]).first()
+        if existing_plant:
+            continue
+        
+        # Create new plant
+        new_plant = Plant(
+            id=None,
+            user_id=current_user.id,
+            name=plant_data["name"],
+            plant_type=plant_data["type"],
+            stage=plant_data["stage"],
+            health=plant_data["health"],
+            progress=plant_data["progress"]
+        )
+        
+        db.session.add(new_plant)
+        plants_added.append(plant_data["name"])
+    
+    # Commit changes
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'plants_added': plants_added,
+        'message': f'Added {len(plants_added)} preset plants to your garden!'
+    })
