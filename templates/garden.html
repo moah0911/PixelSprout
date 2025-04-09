@@ -105,14 +105,29 @@
                 <div class="bg-dark p-3 rounded">
                     <form id="log-condition-form">
                         <div class="mb-3">
-                            <label for="condition-type" class="form-label">Condition Type</label>
-                            <select class="form-select" id="condition-type" required>
-                                <option value="" selected disabled>Select condition...</option>
-                                <!-- Options will be loaded by JavaScript -->
-                            </select>
+                            <label class="form-label">Condition Type</label>
+                            <div class="condition-tag-container" id="condition-tag-selector">
+                                <!-- Tags will be loaded by JavaScript -->
+                                <div class="text-center py-2">
+                                    <div class="spinner-border spinner-border-sm text-success" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Hidden field to store the selected condition -->
+                            <input type="hidden" id="condition-type" required>
                         </div>
+                        
+                        <div class="selected-condition-info mb-3 d-none" id="selected-condition-info">
+                            <div class="selected-condition-header">
+                                <span class="selected-condition-name" id="selected-condition-name">Not selected</span>
+                                <small class="text-muted" id="condition-unit-label"></small>
+                            </div>
+                            <small class="text-muted" id="condition-goal-hint"></small>
+                        </div>
+                        
                         <div class="mb-3">
-                            <label for="condition-value" class="form-label">Value <span id="unit-label"></span></label>
+                            <label for="condition-value" class="form-label">Value</label>
                             <input type="number" class="form-control" id="condition-value" step="0.1" required>
                         </div>
                         <button type="submit" class="btn btn-success w-100">
@@ -155,11 +170,17 @@
                         <input type="text" class="form-control" id="plant-name" placeholder="Name your plant..." required>
                     </div>
                     <div class="mb-3">
-                        <label for="plant-type" class="form-label">Plant Type</label>
-                        <select class="form-select" id="plant-type" required>
-                            <option value="" selected disabled>Select plant type...</option>
-                            <!-- Options will be loaded by JavaScript -->
-                        </select>
+                        <label class="form-label">Plant Type</label>
+                        <div class="plant-type-grid" id="plant-type-selector">
+                            <!-- Plant types will be loaded by JavaScript -->
+                            <div class="text-center py-2">
+                                <div class="spinner-border spinner-border-sm text-success" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Hidden field to store selected type -->
+                        <input type="hidden" id="plant-type" required>
                     </div>
                     <div class="text-center mt-4">
                         <button type="submit" class="btn btn-success w-100">

@@ -32,6 +32,15 @@ class PlantType(Enum):
     TREE = "tree"
     HERB = "herb"
     VINE = "vine"
+    BONSAI = "bonsai"
+    FERN = "fern"
+    CACTUS = "cactus"
+    PALM = "palm"
+    FRUIT = "fruit"
+    BAMBOO = "bamboo"
+    CARNIVOROUS = "carnivorous"
+    AQUATIC = "aquatic"
+    MOSS = "moss"
 
 # User model for storing user data
 class User(db.Model, UserMixin):

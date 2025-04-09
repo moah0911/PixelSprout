@@ -47,52 +47,122 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function populateConditionTypeSelect() {
-        if (!conditionTypeSelect) return;
+        // Check for new tag-based selector
+        const tagSelector = document.getElementById('condition-tag-selector');
+        if (!tagSelector) return;
         
-        conditionTypeSelect.innerHTML = '';
+        tagSelector.innerHTML = '';
+        
+        // First, deduplicate the array by name
+        const uniqueTypes = {};
+        for (const type of conditionTypes) {
+            uniqueTypes[type.name] = type;
+        }
         
         // Sort condition types: system first, then user-defined
-        const sortedTypes = [...conditionTypes].sort((a, b) => {
+        const sortedTypes = Object.values(uniqueTypes).sort((a, b) => {
             if (a.is_custom && !b.is_custom) return 1;
             if (!a.is_custom && b.is_custom) return -1;
             return a.name.localeCompare(b.name);
         });
         
+        // Get icons for different condition types
+        const typeIcons = {
+            'water_intake': 'tint',
+            'focus_time': 'bullseye',
+            'deep_work': 'laptop-code',
+            'sunlight': 'sun',
+            'exercise': 'running',
+            'meditation': 'om',
+            'reading': 'book',
+            'sleep': 'bed',
+            'gratitude': 'heart',
+            'journaling': 'pencil-alt',
+            'nature_time': 'leaf',
+            'digital_detox': 'power-off'
+        };
+        
+        // Default icon
+        const defaultIcon = 'check-circle';
+        
         sortedTypes.forEach(type => {
-            const option = document.createElement('option');
-            option.value = type.name;
+            const tag = document.createElement('div');
+            tag.className = 'condition-tag';
+            tag.setAttribute('data-condition-type', type.name);
+            
+            // Get icon for this type or use default
+            const icon = typeIcons[type.name] || defaultIcon;
             
             // Format name for display
             const displayName = type.name
                 .replace(/_/g, ' ')
                 .replace(/\b\w/g, l => l.toUpperCase());
                 
-            option.textContent = displayName + (type.is_custom ? ' (Custom)' : '');
-            conditionTypeSelect.appendChild(option);
+            tag.innerHTML = `<i class="fas fa-${icon}"></i> ${displayName}`;
+            
+            // Add click event
+            tag.addEventListener('click', function() {
+                // Remove active class from all tags
+                document.querySelectorAll('.condition-tag').forEach(t => t.classList.remove('active'));
+                
+                // Add active class to this tag
+                this.classList.add('active');
+                
+                // Set hidden input value
+                if (conditionTypeSelect) {
+                    conditionTypeSelect.value = type.name;
+                }
+                
+                // Update selected condition info
+                updateSelectedConditionInfo(type);
+            });
+            
+            tagSelector.appendChild(tag);
         });
+    }
+    
+    function updateSelectedConditionInfo(conditionType) {
+        const infoContainer = document.getElementById('selected-condition-info');
+        const nameSpan = document.getElementById('selected-condition-name');
+        const unitLabel = document.getElementById('condition-unit-label');
+        const goalHint = document.getElementById('condition-goal-hint');
         
-        // Update unit label after populating select
-        updateUnitLabel();
+        if (!infoContainer || !nameSpan) return;
+        
+        // Show the container
+        infoContainer.classList.remove('d-none');
+        
+        // Update name
+        const displayName = conditionType.name
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, l => l.toUpperCase());
+        
+        nameSpan.textContent = displayName;
+        
+        // Update unit
+        if (unitLabel) {
+            unitLabel.textContent = `(${conditionType.unit})`;
+        }
+        
+        // Update goal hint
+        if (goalHint && conditionType.default_goal) {
+            goalHint.textContent = `Suggested goal: ${conditionType.default_goal} ${conditionType.unit}`;
+            goalHint.classList.remove('d-none');
+        } else if (goalHint) {
+            goalHint.classList.add('d-none');
+        }
     }
     
     function updateUnitLabel() {
+        // This function is now replaced by updateSelectedConditionInfo
+        // But we'll keep it for backward compatibility
         if (!conditionTypeSelect) return;
         
         const selectedTypeName = conditionTypeSelect.value;
         const selectedType = conditionTypes.find(type => type.name === selectedTypeName);
         
-        const unitLabel = document.getElementById('condition-unit-label');
-        if (unitLabel && selectedType) {
-            unitLabel.textContent = selectedType.unit;
-        }
-        
-        // Update goal hint if available
-        const goalHint = document.getElementById('condition-goal-hint');
-        if (goalHint && selectedType && selectedType.default_goal) {
-            goalHint.textContent = `Suggested goal: ${selectedType.default_goal} ${selectedType.unit}`;
-            goalHint.classList.remove('d-none');
-        } else if (goalHint) {
-            goalHint.classList.add('d-none');
+        if (selectedType) {
+            updateSelectedConditionInfo(selectedType);
         }
     }
     
@@ -125,6 +195,29 @@ document.addEventListener('DOMContentLoaded', function() {
         
         recentConditionsList.innerHTML = '';
         
+        // Get icons for different condition types
+        const typeIcons = {
+            'water_intake': 'tint',
+            'focus_time': 'bullseye',
+            'deep_work': 'laptop-code',
+            'sunlight': 'sun',
+            'exercise': 'running',
+            'meditation': 'om',
+            'reading': 'book',
+            'sleep': 'bed',
+            'gratitude': 'heart',
+            'journaling': 'pencil-alt',
+            'nature_time': 'leaf',
+            'digital_detox': 'power-off'
+        };
+        
+        // Default icon
+        const defaultIcon = 'check-circle';
+        
+        // Create a list group
+        const listGroup = document.createElement('ul');
+        listGroup.className = 'list-group';
+        
         recentConditions.forEach(condition => {
             // Find condition type to get unit
             const conditionType = conditionTypes.find(t => t.name === condition.type_name);
@@ -138,20 +231,67 @@ document.addEventListener('DOMContentLoaded', function() {
             const displayName = condition.type_name
                 .replace(/_/g, ' ')
                 .replace(/\b\w/g, l => l.toUpperCase());
+                
+            // Get icon for this type or use default
+            const icon = typeIcons[condition.type_name] || defaultIcon;
+            
+            // Calculate time elapsed
+            const timeElapsed = getTimeElapsed(date);
             
             const listItem = document.createElement('li');
-            listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            listItem.className = 'list-group-item bg-dark border-light border-opacity-10';
             listItem.innerHTML = `
-                <div>
-                    <span class="fw-bold">${displayName}</span>
-                    <br>
-                    <small class="text-muted">${formattedDate}</small>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div class="condition-icon me-3">
+                            <i class="fas fa-${icon} text-success"></i>
+                        </div>
+                        <div>
+                            <span class="fw-bold">${displayName}</span>
+                            <div class="small text-muted">${timeElapsed}</div>
+                        </div>
+                    </div>
+                    <span class="badge bg-success rounded-pill">${condition.value} ${unit}</span>
                 </div>
-                <span class="badge bg-primary rounded-pill">${condition.value} ${unit}</span>
             `;
             
-            recentConditionsList.appendChild(listItem);
+            listGroup.appendChild(listItem);
         });
+        
+        recentConditionsList.appendChild(listGroup);
+    }
+    
+    // Helper function to get human-readable time elapsed
+    function getTimeElapsed(date) {
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+        
+        if (diffInSeconds < 60) {
+            return 'Just now';
+        }
+        
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        if (diffInMinutes < 60) {
+            return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+        }
+        
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours < 24) {
+            return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+        }
+        
+        const diffInDays = Math.floor(diffInHours / 24);
+        if (diffInDays < 30) {
+            return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+        }
+        
+        const diffInMonths = Math.floor(diffInDays / 30);
+        if (diffInMonths < 12) {
+            return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
+        }
+        
+        const diffInYears = Math.floor(diffInMonths / 12);
+        return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
     }
     
     async function handleLogCondition(event) {

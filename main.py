@@ -27,6 +27,12 @@ with app.app_context():
                 'default_goal': 120
             },
             {
+                'name': 'deep_work',
+                'description': 'Time spent in deep, uninterrupted work',
+                'unit': 'minutes',
+                'default_goal': 90
+            },
+            {
                 'name': 'sunlight',
                 'description': 'Time spent outside in sunlight',
                 'unit': 'minutes',
@@ -39,10 +45,46 @@ with app.app_context():
                 'default_goal': 30
             },
             {
+                'name': 'meditation',
+                'description': 'Time spent meditating',
+                'unit': 'minutes',
+                'default_goal': 15
+            },
+            {
+                'name': 'reading',
+                'description': 'Time spent reading books',
+                'unit': 'minutes',
+                'default_goal': 30
+            },
+            {
                 'name': 'sleep',
                 'description': 'Hours of sleep',
                 'unit': 'hours',
                 'default_goal': 8
+            },
+            {
+                'name': 'gratitude',
+                'description': 'Number of things you feel grateful for',
+                'unit': 'items',
+                'default_goal': 3
+            },
+            {
+                'name': 'journaling',
+                'description': 'Time spent journaling',
+                'unit': 'minutes',
+                'default_goal': 10
+            },
+            {
+                'name': 'nature_time',
+                'description': 'Time spent in nature',
+                'unit': 'minutes',
+                'default_goal': 30
+            },
+            {
+                'name': 'digital_detox',
+                'description': 'Time spent away from digital devices',
+                'unit': 'minutes',
+                'default_goal': 60
             }
         ]
         
