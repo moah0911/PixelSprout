@@ -1,424 +1,558 @@
-// Enhanced Plant SVG representations with animation attributes
+// Enhanced plant SVGs for different plant types and stages
+// This file provides more detailed and specialized SVGs for each plant type
+
+// Initialize enhanced plant SVGs object
 window.enhancedPlantSvgs = {
-    // Succulent plants with animation classes
+    // Succulents - round, thick leaves with water storage
     succulent: {
-        // Stage 0: Seed
-        0: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-seed">
-            <circle cx="50" cy="60" r="10" fill="#8D6E63" />
-            <line x1="50" y1="50" x2="50" y2="30" stroke="#A5D6A7" stroke-width="2" class="plant-stem"/>
-        </svg>`,
-        
-        // Stage 1: Sprout
-        1: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-sprout">
-            <circle cx="50" cy="70" r="15" fill="#8D6E63" />
-            <path d="M 50 70 L 50 45 C 50 35, 55 35, 55 45 C 55 35, 60 35, 60 45 L 60 55" fill="none" stroke="#81C784" stroke-width="3" class="plant-leaf left-leaf" />
-            <path d="M 50 70 L 50 50 C 50 40, 45 40, 45 50 C 45 40, 40 40, 40 50 L 40 55" fill="none" stroke="#81C784" stroke-width="3" class="plant-leaf right-leaf" />
-        </svg>`,
-        
-        // Stage 2: Growing
-        2: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-growing">
-            <circle cx="50" cy="75" r="18" fill="#8D6E63" />
-            <path d="M 50 75 L 50 40 C 50 30, 60 30, 60 40 C 60 30, 70 30, 70 40 L 70 55" fill="none" stroke="#66BB6A" stroke-width="4" class="plant-leaf left-leaf" />
-            <path d="M 50 75 L 50 45 C 50 35, 40 35, 40 45 C 40 35, 30 35, 30 45 L 30 60" fill="none" stroke="#66BB6A" stroke-width="4" class="plant-leaf right-leaf" />
-            <circle cx="70" cy="50" r="5" fill="#C5E1A5" class="plant-bud" />
-            <circle cx="30" cy="55" r="5" fill="#C5E1A5" class="plant-bud" />
-        </svg>`,
-        
-        // Stage 3: Mature
-        3: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-mature">
-            <circle cx="50" cy="80" r="20" fill="#795548" />
-            <path d="M 50 80 L 50 30 C 50 20, 65 20, 65 30 C 65 20, 80 20, 80 30 L 80 50" fill="none" stroke="#43A047" stroke-width="5" class="plant-leaf left-leaf" />
-            <path d="M 50 80 L 50 35 C 50 25, 35 25, 35 35 C 35 25, 20 25, 20 35 L 20 55" fill="none" stroke="#43A047" stroke-width="5" class="plant-leaf right-leaf" />
-            <circle cx="80" cy="45" r="8" fill="#AED581" class="plant-bud" />
-            <circle cx="20" cy="50" r="8" fill="#AED581" class="plant-bud" />
-            <circle cx="50" cy="40" r="8" fill="#AED581" class="plant-bud" />
-        </svg>`,
-        
-        // Stage 4: Flowering
-        4: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-flowering">
-            <circle cx="50" cy="85" r="15" fill="#5D4037" />
-            <path d="M 50 85 L 50 25 C 50 15, 65 15, 65 25 C 65 15, 80 15, 80 25 L 80 45" fill="none" stroke="#2E7D32" stroke-width="5" class="plant-leaf left-leaf" />
-            <path d="M 50 85 L 50 30 C 50 20, 35 20, 35 30 C 35 20, 20 20, 20 30 L 20 50" fill="none" stroke="#2E7D32" stroke-width="5" class="plant-leaf right-leaf" />
-            <circle cx="80" cy="40" r="10" fill="#7CB342" class="plant-bud" />
-            <circle cx="20" cy="45" r="10" fill="#7CB342" class="plant-bud" />
-            <circle cx="50" cy="35" r="10" fill="#7CB342" class="plant-bud" />
-            <circle cx="65" cy="25" r="6" fill="#E57373" class="plant-flower" />
-            <circle cx="35" cy="30" r="6" fill="#E57373" class="plant-flower" />
-            <circle cx="50" cy="20" r="8" fill="#EF5350" class="plant-flower" />
-        </svg>`,
-        
-        // Stage 5: Withering
-        5: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-withering">
-            <circle cx="50" cy="85" r="15" fill="#4E342E" />
-            <path d="M 50 85 L 50 25 C 50 15, 65 15, 65 25 C 65 15, 80 15, 80 25 L 80 45" fill="none" stroke="#9E9D24" stroke-width="4" stroke-dasharray="5,2" class="plant-leaf left-leaf" />
-            <path d="M 50 85 L 50 30 C 50 20, 35 20, 35 30 C 35 20, 20 20, 20 30 L 20 50" fill="none" stroke="#9E9D24" stroke-width="4" stroke-dasharray="5,2" class="plant-leaf right-leaf" />
-            <circle cx="80" cy="40" r="8" fill="#C0CA33" stroke="#827717" stroke-width="1" class="plant-bud" />
-            <circle cx="20" cy="45" r="8" fill="#C0CA33" stroke="#827717" stroke-width="1" class="plant-bud" />
-            <circle cx="50" cy="35" r="8" fill="#C0CA33" stroke="#827717" stroke-width="1" class="plant-bud" />
-            <circle cx="65" cy="25" r="5" fill="#FFAB91" stroke="#E64A19" stroke-width="1" class="plant-flower" />
-            <circle cx="35" cy="30" r="5" fill="#FFAB91" stroke="#E64A19" stroke-width="1" class="plant-flower" />
-        </svg>`,
-        
-        // Stage 6: Dead
-        6: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-dead">
-            <circle cx="50" cy="85" r="15" fill="#3E2723" />
-            <path d="M 50 85 L 50 35 C 50 30, 55 25, 60 30 L 70 25" fill="none" stroke="#827717" stroke-width="3" stroke-dasharray="4,3" class="plant-leaf" />
-            <path d="M 50 85 L 50 40 C 50 35, 45 30, 40 35 L 30 30" fill="none" stroke="#827717" stroke-width="3" stroke-dasharray="4,3" class="plant-leaf" />
-            <circle cx="70" cy="25" r="6" fill="#A1887F" stroke="#3E2723" stroke-width="1" />
-            <circle cx="30" cy="30" r="6" fill="#A1887F" stroke="#3E2723" stroke-width="1" />
-        </svg>`
+        0: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <circle cx="50" cy="75" r="5" fill="#4f9c2c" />
+            </svg>`,
+        1: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <circle cx="50" cy="75" r="8" fill="#4f9c2c" />
+                <circle cx="50" cy="65" r="6" fill="#5bae3a" />
+            </svg>`,
+        2: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <circle cx="50" cy="75" r="9" fill="#4f9c2c" />
+                <ellipse cx="40" cy="65" rx="8" ry="10" fill="#5bae3a" transform="rotate(-10,40,65)" />
+                <ellipse cx="60" cy="65" rx="8" ry="10" fill="#5bae3a" transform="rotate(10,60,65)" />
+                <ellipse cx="50" cy="55" rx="7" ry="9" fill="#65b93f" />
+            </svg>`,
+        3: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <circle cx="50" cy="75" r="12" fill="#4f9c2c" />
+                <ellipse cx="35" cy="65" rx="9" ry="12" fill="#5bae3a" transform="rotate(-15,35,65)" />
+                <ellipse cx="65" cy="65" rx="9" ry="12" fill="#5bae3a" transform="rotate(15,65,65)" />
+                <ellipse cx="30" cy="55" rx="8" ry="10" fill="#65b93f" transform="rotate(-25,30,55)" />
+                <ellipse cx="70" cy="55" rx="8" ry="10" fill="#65b93f" transform="rotate(25,70,55)" />
+                <ellipse cx="50" cy="45" rx="8" ry="12" fill="#6ec445" />
+            </svg>`,
+        4: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <circle cx="50" cy="75" r="12" fill="#4f9c2c" />
+                <ellipse cx="35" cy="65" rx="9" ry="12" fill="#5bae3a" transform="rotate(-15,35,65)" />
+                <ellipse cx="65" cy="65" rx="9" ry="12" fill="#5bae3a" transform="rotate(15,65,65)" />
+                <ellipse cx="30" cy="55" rx="8" ry="10" fill="#65b93f" transform="rotate(-25,30,55)" />
+                <ellipse cx="70" cy="55" rx="8" ry="10" fill="#65b93f" transform="rotate(25,70,55)" />
+                <ellipse cx="50" cy="45" rx="8" ry="12" fill="#6ec445" />
+                <circle cx="50" cy="35" r="6" fill="#ff85a2" />
+                <circle cx="40" cy="40" r="4" fill="#ff85a2" />
+                <circle cx="60" cy="40" r="4" fill="#ff85a2" />
+            </svg>`,
+        5: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <circle cx="50" cy="75" r="12" fill="#4f9c2c" />
+                <ellipse cx="35" cy="65" rx="9" ry="12" fill="#999e3a" transform="rotate(-15,35,65)" />
+                <ellipse cx="65" cy="65" rx="9" ry="12" fill="#999e3a" transform="rotate(15,65,65)" />
+                <ellipse cx="30" cy="55" rx="8" ry="10" fill="#a19d3f" transform="rotate(-25,30,55)" />
+                <ellipse cx="70" cy="55" rx="8" ry="10" fill="#a19d3f" transform="rotate(25,70,55)" />
+                <ellipse cx="50" cy="45" rx="8" ry="12" fill="#b1a945" />
+                <circle cx="50" cy="35" r="6" fill="#cc6680" />
+                <circle cx="40" cy="40" r="4" fill="#cc6680" />
+                <circle cx="60" cy="40" r="4" fill="#cc6680" />
+            </svg>`,
+        6: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <circle cx="50" cy="75" r="12" fill="#7c7a6c" />
+                <ellipse cx="35" cy="65" rx="9" ry="12" fill="#696755" transform="rotate(-20,35,65)" />
+                <ellipse cx="65" cy="65" rx="9" ry="12" fill="#696755" transform="rotate(20,65,65)" />
+                <ellipse cx="30" cy="55" rx="8" ry="10" fill="#595845" transform="rotate(-30,30,55)" />
+                <ellipse cx="70" cy="55" rx="8" ry="10" fill="#595845" transform="rotate(30,70,55)" />
+                <ellipse cx="50" cy="45" rx="8" ry="12" fill="#494939" />
+            </svg>`
     },
     
-    // Vine plant special animation effects
+    // Flowers - tall with distinct stem, leaves, and flower
+    flower: {
+        0: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="48" y="75" width="4" height="5" fill="#3e8a21" />
+            </svg>`,
+        1: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="48" y="65" width="4" height="15" fill="#3e8a21" />
+                <ellipse cx="46" cy="65" rx="4" ry="2" fill="#4a9e2a" transform="rotate(-20,46,65)" />
+                <ellipse cx="54" cy="62" rx="4" ry="2" fill="#4a9e2a" transform="rotate(20,54,62)" />
+            </svg>`,
+        2: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="48" y="45" width="4" height="35" fill="#3e8a21" />
+                <ellipse cx="46" cy="65" rx="6" ry="3" fill="#4a9e2a" transform="rotate(-20,46,65)" />
+                <ellipse cx="54" cy="60" rx="6" ry="3" fill="#4a9e2a" transform="rotate(20,54,60)" />
+                <ellipse cx="44" cy="55" rx="7" ry="3" fill="#4a9e2a" transform="rotate(-30,44,55)" />
+                <ellipse cx="56" cy="50" rx="7" ry="3" fill="#4a9e2a" transform="rotate(30,56,50)" />
+                <circle cx="50" cy="40" r="5" fill="#59b936" />
+            </svg>`,
+        3: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="48" y="35" width="4" height="45" fill="#3e8a21" />
+                <ellipse cx="46" cy="65" rx="8" ry="3" fill="#4a9e2a" transform="rotate(-20,46,65)" />
+                <ellipse cx="54" cy="60" rx="8" ry="3" fill="#4a9e2a" transform="rotate(20,54,60)" />
+                <ellipse cx="44" cy="55" rx="9" ry="3" fill="#4a9e2a" transform="rotate(-30,44,55)" />
+                <ellipse cx="56" cy="50" rx="9" ry="3" fill="#4a9e2a" transform="rotate(30,56,50)" />
+                <circle cx="50" cy="30" r="7" fill="#59b936" />
+                <ellipse cx="46" cy="26" rx="4" ry="5" fill="#ec86df" transform="rotate(-15,46,26)" />
+                <ellipse cx="54" cy="26" rx="4" ry="5" fill="#ec86df" transform="rotate(15,54,26)" />
+                <ellipse cx="50" cy="22" rx="4" ry="5" fill="#ec86df" />
+            </svg>`,
+        4: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="48" y="30" width="4" height="50" fill="#3e8a21" />
+                <ellipse cx="46" cy="65" rx="8" ry="3" fill="#4a9e2a" transform="rotate(-20,46,65)" />
+                <ellipse cx="54" cy="60" rx="8" ry="3" fill="#4a9e2a" transform="rotate(20,54,60)" />
+                <ellipse cx="44" cy="55" rx="9" ry="3" fill="#4a9e2a" transform="rotate(-30,44,55)" />
+                <ellipse cx="56" cy="50" rx="9" ry="3" fill="#4a9e2a" transform="rotate(30,56,50)" />
+                <ellipse cx="42" cy="45" rx="9" ry="3" fill="#4a9e2a" transform="rotate(-40,42,45)" />
+                <ellipse cx="58" cy="40" rx="9" ry="3" fill="#4a9e2a" transform="rotate(40,58,40)" />
+                <circle cx="50" cy="25" r="10" fill="#59b936" />
+                <ellipse cx="45" cy="20" rx="5" ry="7" fill="#ec86df" transform="rotate(-15,45,20)" />
+                <ellipse cx="55" cy="20" rx="5" ry="7" fill="#ec86df" transform="rotate(15,55,20)" />
+                <ellipse cx="40" cy="25" rx="5" ry="7" fill="#ec86df" transform="rotate(-45,40,25)" />
+                <ellipse cx="60" cy="25" rx="5" ry="7" fill="#ec86df" transform="rotate(45,60,25)" />
+                <ellipse cx="50" cy="15" rx="5" ry="7" fill="#ec86df" />
+                <circle cx="50" cy="25" r="5" fill="#ffeb3b" />
+            </svg>`,
+        5: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="48" y="30" width="4" height="50" fill="#3e8a21" />
+                <ellipse cx="46" cy="65" rx="8" ry="3" fill="#8d9e2a" transform="rotate(-20,46,65)" />
+                <ellipse cx="54" cy="60" rx="8" ry="3" fill="#8d9e2a" transform="rotate(20,54,60)" />
+                <ellipse cx="44" cy="55" rx="9" ry="3" fill="#8d9e2a" transform="rotate(-30,44,55)" />
+                <ellipse cx="56" cy="50" rx="9" ry="3" fill="#8d9e2a" transform="rotate(30,56,50)" />
+                <ellipse cx="42" cy="45" rx="9" ry="3" fill="#8d9e2a" transform="rotate(-40,42,45)" />
+                <ellipse cx="58" cy="40" rx="9" ry="3" fill="#8d9e2a" transform="rotate(40,58,40)" />
+                <circle cx="50" cy="25" r="10" fill="#a9b936" />
+                <ellipse cx="45" cy="20" rx="5" ry="7" fill="#cc6dc2" transform="rotate(-15,45,20)" />
+                <ellipse cx="55" cy="20" rx="5" ry="7" fill="#cc6dc2" transform="rotate(15,55,20)" />
+                <ellipse cx="40" cy="25" rx="5" ry="7" fill="#cc6dc2" transform="rotate(-45,40,25)" />
+                <ellipse cx="60" cy="25" rx="5" ry="7" fill="#cc6dc2" transform="rotate(45,60,25)" />
+                <ellipse cx="50" cy="15" rx="5" ry="7" fill="#cc6dc2" />
+                <circle cx="50" cy="25" r="5" fill="#d6cb4a" />
+            </svg>`,
+        6: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="48" y="30" width="4" height="50" fill="#817a6c" />
+                <ellipse cx="46" cy="65" rx="8" ry="3" fill="#7e7a65" transform="rotate(-25,46,65)" />
+                <ellipse cx="54" cy="60" rx="8" ry="3" fill="#7e7a65" transform="rotate(25,54,60)" />
+                <ellipse cx="44" cy="55" rx="9" ry="3" fill="#7e7a65" transform="rotate(-35,44,55)" />
+                <ellipse cx="56" cy="50" rx="9" ry="3" fill="#7e7a65" transform="rotate(35,56,50)" />
+                <ellipse cx="42" cy="45" rx="9" ry="3" fill="#7e7a65" transform="rotate(-45,42,45)" />
+                <ellipse cx="58" cy="40" rx="9" ry="3" fill="#7e7a65" transform="rotate(45,58,40)" />
+                <circle cx="50" cy="25" r="10" fill="#69685f" />
+                <ellipse cx="45" cy="20" rx="5" ry="5" fill="#5d5d54" transform="rotate(-15,45,20)" />
+                <ellipse cx="55" cy="20" rx="5" ry="5" fill="#5d5d54" transform="rotate(15,55,20)" />
+                <ellipse cx="40" cy="25" rx="5" ry="5" fill="#5d5d54" transform="rotate(-45,40,25)" />
+                <ellipse cx="60" cy="25" rx="5" ry="5" fill="#5d5d54" transform="rotate(45,60,25)" />
+                <ellipse cx="50" cy="15" rx="5" ry="5" fill="#5d5d54" />
+            </svg>`
+    },
+    
+    // Trees - thick trunk with branches and leaves
+    tree: {
+        0: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="48" y="75" width="4" height="5" fill="#8b5d3b" />
+            </svg>`,
+        1: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="47" y="65" width="6" height="15" fill="#8b5d3b" />
+                <circle cx="50" cy="60" r="8" fill="#4f9c2c" />
+            </svg>`,
+        2: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="46" y="50" width="8" height="30" fill="#8b5d3b" />
+                <circle cx="50" cy="40" r="15" fill="#4f9c2c" />
+                <circle cx="40" cy="45" r="8" fill="#4f9c2c" />
+                <circle cx="60" cy="45" r="8" fill="#4f9c2c" />
+            </svg>`,
+        3: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="45" y="40" width="10" height="40" fill="#8b5d3b" />
+                <rect x="40" y="50" width="5" height="2" fill="#8b5d3b" />
+                <rect x="55" y="45" width="5" height="2" fill="#8b5d3b" />
+                <circle cx="50" cy="30" r="20" fill="#4f9c2c" />
+                <circle cx="35" cy="35" r="10" fill="#5bae3a" />
+                <circle cx="65" cy="35" r="10" fill="#5bae3a" />
+                <circle cx="45" cy="25" r="8" fill="#65b93f" />
+                <circle cx="55" cy="25" r="8" fill="#65b93f" />
+            </svg>`,
+        4: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="44" y="30" width="12" height="50" fill="#8b5d3b" />
+                <rect x="38" y="45" width="6" height="3" fill="#8b5d3b" />
+                <rect x="56" y="40" width="6" height="3" fill="#8b5d3b" />
+                <rect x="35" y="55" width="9" height="3" fill="#8b5d3b" />
+                <rect x="56" y="60" width="9" height="3" fill="#8b5d3b" />
+                <circle cx="50" cy="20" r="22" fill="#4f9c2c" />
+                <circle cx="32" cy="30" r="12" fill="#5bae3a" />
+                <circle cx="68" cy="30" r="12" fill="#5bae3a" />
+                <circle cx="40" cy="15" r="10" fill="#65b93f" />
+                <circle cx="60" cy="15" r="10" fill="#65b93f" />
+                <circle cx="38" cy="38" r="8" fill="#65b93f" />
+                <circle cx="62" cy="38" r="8" fill="#65b93f" />
+                <circle cx="50" cy="10" r="8" fill="#6ec445" />
+                <circle cx="45" cy="17" r="3" fill="#f44336" />
+                <circle cx="55" cy="15" r="3" fill="#f44336" />
+                <circle cx="40" cy="25" r="3" fill="#f44336" />
+            </svg>`,
+        5: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="44" y="30" width="12" height="50" fill="#8b5d3b" />
+                <rect x="38" y="45" width="6" height="3" fill="#8b5d3b" />
+                <rect x="56" y="40" width="6" height="3" fill="#8b5d3b" />
+                <rect x="35" y="55" width="9" height="3" fill="#8b5d3b" />
+                <rect x="56" y="60" width="9" height="3" fill="#8b5d3b" />
+                <circle cx="50" cy="20" r="22" fill="#d2a24c" />
+                <circle cx="32" cy="30" r="12" fill="#e6b251" />
+                <circle cx="68" cy="30" r="12" fill="#e6b251" />
+                <circle cx="40" cy="15" r="10" fill="#f1c26f" />
+                <circle cx="60" cy="15" r="10" fill="#f1c26f" />
+                <circle cx="38" cy="38" r="8" fill="#d9a548" />
+                <circle cx="62" cy="38" r="8" fill="#d9a548" />
+                <circle cx="50" cy="10" r="8" fill="#d2954d" />
+                <circle cx="45" cy="17" r="3" fill="#c82333" />
+                <circle cx="55" cy="15" r="3" fill="#c82333" />
+                <circle cx="40" cy="25" r="3" fill="#c82333" />
+            </svg>`,
+        6: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <rect x="44" y="30" width="12" height="50" fill="#8b5d3b" />
+                <rect x="38" y="45" width="6" height="3" fill="#8b5d3b" />
+                <rect x="56" y="40" width="6" height="3" fill="#8b5d3b" />
+                <rect x="35" y="55" width="9" height="3" fill="#8b5d3b" />
+                <rect x="56" y="60" width="9" height="3" fill="#8b5d3b" />
+                <rect x="31" y="38" width="2" height="10" fill="#8b5d3b" transform="rotate(45,31,38)" />
+                <rect x="67" y="38" width="2" height="10" fill="#8b5d3b" transform="rotate(-45,67,38)" />
+                <rect x="50" y="18" width="2" height="12" fill="#8b5d3b" transform="rotate(90,50,18)" />
+            </svg>`
+    },
+    
+    // Herbs - bushy with many small leaves
+    herb: {
+        0: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <ellipse cx="50" cy="75" rx="3" ry="5" fill="#3e8a21" />
+            </svg>`,
+        1: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <ellipse cx="50" cy="75" rx="3" ry="5" fill="#3e8a21" />
+                <ellipse cx="45" cy="70" rx="4" ry="6" fill="#4a9e2a" transform="rotate(-15,45,70)" />
+                <ellipse cx="55" cy="70" rx="4" ry="6" fill="#4a9e2a" transform="rotate(15,55,70)" />
+            </svg>`,
+        2: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <ellipse cx="50" cy="75" rx="3" ry="10" fill="#3e8a21" />
+                <ellipse cx="45" cy="70" rx="4" ry="8" fill="#4a9e2a" transform="rotate(-15,45,70)" />
+                <ellipse cx="55" cy="70" rx="4" ry="8" fill="#4a9e2a" transform="rotate(15,55,70)" />
+                <ellipse cx="40" cy="65" rx="4" ry="7" fill="#59b936" transform="rotate(-25,40,65)" />
+                <ellipse cx="60" cy="65" rx="4" ry="7" fill="#59b936" transform="rotate(25,60,65)" />
+                <ellipse cx="47" cy="60" rx="3" ry="6" fill="#59b936" transform="rotate(-10,47,60)" />
+                <ellipse cx="53" cy="60" rx="3" ry="6" fill="#59b936" transform="rotate(10,53,60)" />
+            </svg>`,
+        3: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <ellipse cx="50" cy="70" rx="3" ry="15" fill="#3e8a21" />
+                <ellipse cx="45" cy="65" rx="4" ry="10" fill="#4a9e2a" transform="rotate(-15,45,65)" />
+                <ellipse cx="55" cy="65" rx="4" ry="10" fill="#4a9e2a" transform="rotate(15,55,65)" />
+                <ellipse cx="40" cy="60" rx="4" ry="9" fill="#59b936" transform="rotate(-25,40,60)" />
+                <ellipse cx="60" cy="60" rx="4" ry="9" fill="#59b936" transform="rotate(25,60,60)" />
+                <ellipse cx="35" cy="55" rx="4" ry="8" fill="#59b936" transform="rotate(-35,35,55)" />
+                <ellipse cx="65" cy="55" rx="4" ry="8" fill="#59b936" transform="rotate(35,65,55)" />
+                <ellipse cx="45" cy="50" rx="3" ry="9" fill="#59b936" transform="rotate(-10,45,50)" />
+                <ellipse cx="55" cy="50" rx="3" ry="9" fill="#59b936" transform="rotate(10,55,50)" />
+                <ellipse cx="50" cy="45" rx="4" ry="8" fill="#59b936" />
+            </svg>`,
+        4: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <ellipse cx="50" cy="65" rx="3" ry="20" fill="#3e8a21" />
+                <ellipse cx="45" cy="60" rx="4" ry="12" fill="#4a9e2a" transform="rotate(-15,45,60)" />
+                <ellipse cx="55" cy="60" rx="4" ry="12" fill="#4a9e2a" transform="rotate(15,55,60)" />
+                <ellipse cx="38" cy="55" rx="4" ry="11" fill="#59b936" transform="rotate(-25,38,55)" />
+                <ellipse cx="62" cy="55" rx="4" ry="11" fill="#59b936" transform="rotate(25,62,55)" />
+                <ellipse cx="32" cy="50" rx="4" ry="10" fill="#59b936" transform="rotate(-35,32,50)" />
+                <ellipse cx="68" cy="50" rx="4" ry="10" fill="#59b936" transform="rotate(35,68,50)" />
+                <ellipse cx="42" cy="45" rx="3" ry="11" fill="#59b936" transform="rotate(-10,42,45)" />
+                <ellipse cx="58" cy="45" rx="3" ry="11" fill="#59b936" transform="rotate(10,58,45)" />
+                <ellipse cx="50" cy="40" rx="4" ry="10" fill="#6ec445" />
+                <ellipse cx="40" cy="38" rx="3" ry="6" fill="#6ec445" transform="rotate(-20,40,38)" />
+                <ellipse cx="60" cy="38" rx="3" ry="6" fill="#6ec445" transform="rotate(20,60,38)" />
+                <ellipse cx="46" cy="32" rx="3" ry="5" fill="#6ec445" transform="rotate(-10,46,32)" />
+                <ellipse cx="54" cy="32" rx="3" ry="5" fill="#6ec445" transform="rotate(10,54,32)" />
+                <circle cx="50" cy="30" r="2" fill="#8ef2c7" />
+                <circle cx="46" cy="35" r="2" fill="#8ef2c7" />
+                <circle cx="54" cy="35" r="2" fill="#8ef2c7" />
+                <circle cx="43" cy="42" r="2" fill="#8ef2c7" />
+                <circle cx="57" cy="42" r="2" fill="#8ef2c7" />
+            </svg>`,
+        5: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <ellipse cx="50" cy="65" rx="3" ry="20" fill="#3e8a21" />
+                <ellipse cx="45" cy="60" rx="4" ry="12" fill="#999e2a" transform="rotate(-15,45,60)" />
+                <ellipse cx="55" cy="60" rx="4" ry="12" fill="#999e2a" transform="rotate(15,55,60)" />
+                <ellipse cx="38" cy="55" rx="4" ry="11" fill="#a9b936" transform="rotate(-25,38,55)" />
+                <ellipse cx="62" cy="55" rx="4" ry="11" fill="#a9b936" transform="rotate(25,62,55)" />
+                <ellipse cx="32" cy="50" rx="4" ry="10" fill="#a9b936" transform="rotate(-35,32,50)" />
+                <ellipse cx="68" cy="50" rx="4" ry="10" fill="#a9b936" transform="rotate(35,68,50)" />
+                <ellipse cx="42" cy="45" rx="3" ry="11" fill="#a9b936" transform="rotate(-10,42,45)" />
+                <ellipse cx="58" cy="45" rx="3" ry="11" fill="#a9b936" transform="rotate(10,58,45)" />
+                <ellipse cx="50" cy="40" rx="4" ry="10" fill="#c0c445" />
+                <ellipse cx="40" cy="38" rx="3" ry="6" fill="#c0c445" transform="rotate(-20,40,38)" />
+                <ellipse cx="60" cy="38" rx="3" ry="6" fill="#c0c445" transform="rotate(20,60,38)" />
+                <ellipse cx="46" cy="32" rx="3" ry="5" fill="#c0c445" transform="rotate(-10,46,32)" />
+                <ellipse cx="54" cy="32" rx="3" ry="5" fill="#c0c445" transform="rotate(10,54,32)" />
+                <circle cx="50" cy="30" r="2" fill="#d6cb4a" />
+                <circle cx="46" cy="35" r="2" fill="#d6cb4a" />
+                <circle cx="54" cy="35" r="2" fill="#d6cb4a" />
+            </svg>`,
+        6: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <ellipse cx="50" cy="65" rx="3" ry="20" fill="#757168" />
+                <ellipse cx="45" cy="60" rx="4" ry="12" fill="#696755" transform="rotate(-25,45,60)" />
+                <ellipse cx="55" cy="60" rx="4" ry="12" fill="#696755" transform="rotate(25,55,60)" />
+                <ellipse cx="38" cy="55" rx="4" ry="11" fill="#595845" transform="rotate(-35,38,55)" />
+                <ellipse cx="62" cy="55" rx="4" ry="11" fill="#595845" transform="rotate(35,62,55)" />
+                <ellipse cx="32" cy="50" rx="4" ry="10" fill="#595845" transform="rotate(-45,32,50)" />
+                <ellipse cx="68" cy="50" rx="4" ry="10" fill="#595845" transform="rotate(45,68,50)" />
+                <ellipse cx="42" cy="45" rx="3" ry="8" fill="#494939" transform="rotate(-15,42,45)" />
+                <ellipse cx="58" cy="45" rx="3" ry="8" fill="#494939" transform="rotate(15,58,45)" />
+                <ellipse cx="50" cy="40" rx="4" ry="8" fill="#494939" />
+            </svg>`
+    },
+    
+    // Vines - long, climbing stems with small leaves
     vine: {
-        // Stage 0: Seed
-        0: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-seed">
-            <ellipse cx="50" cy="75" rx="8" ry="5" fill="#8D6E63" />
-            <line x1="50" y1="70" x2="50" y2="65" stroke="#A5D6A7" stroke-width="1" class="vine-sprout"/>
-        </svg>`,
-        
-        // Stage 1: Sprout
-        1: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-sprout">
-            <ellipse cx="50" cy="80" rx="10" ry="5" fill="#8D6E63" />
-            <path d="M 50 80 C 50 75, 50 70, 55 65 C 60 60, 55 55, 50 50 C 45 45, 50 40, 55 35" fill="none" stroke="#7CB342" stroke-width="2" class="vine-stem" />
-            <ellipse cx="55" cy="35" rx="5" ry="3" fill="#AED581" transform="rotate(30, 55, 35)" class="vine-leaf" />
-            <ellipse cx="50" cy="50" rx="5" ry="3" fill="#AED581" transform="rotate(-30, 50, 50)" class="vine-leaf" />
-        </svg>`,
-        
-        // Stage 2: Growing
-        2: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-growing">
-            <ellipse cx="50" cy="85" rx="12" ry="6" fill="#795548" />
-            <path d="M 50 85 C 50 80, 50 75, 60 70 C 70 65, 65 60, 55 55 C 45 50, 40 45, 50 40 C 60 35, 65 30, 60 25" fill="none" stroke="#558B2F" stroke-width="3" class="vine-stem" />
-            <ellipse cx="60" cy="25" rx="6" ry="4" fill="#8BC34A" transform="rotate(30, 60, 25)" class="vine-leaf" />
-            <ellipse cx="50" cy="40" rx="6" ry="4" fill="#8BC34A" transform="rotate(-30, 50, 40)" class="vine-leaf" />
-            <ellipse cx="55" cy="55" rx="6" ry="4" fill="#8BC34A" transform="rotate(30, 55, 55)" class="vine-leaf" />
-            <ellipse cx="60" cy="70" rx="6" ry="4" fill="#8BC34A" transform="rotate(-15, 60, 70)" class="vine-leaf" />
-        </svg>`,
-        
-        // Stage 3: Mature
-        3: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-mature">
-            <ellipse cx="50" cy="85" rx="15" ry="7" fill="#5D4037" />
-            <path d="M 50 85 C 50 80, 45 75, 55 70 C 65 65, 70 60, 60 55 C 50 50, 45 45, 55 40 C 65 35, 70 30, 60 25 C 50 20, 45 15, 50 10" fill="none" stroke="#33691E" stroke-width="3" class="vine-stem" />
-            <ellipse cx="50" cy="10" rx="7" ry="5" fill="#66BB6A" transform="rotate(0, 50, 10)" class="vine-leaf" />
-            <ellipse cx="60" cy="25" rx="7" ry="5" fill="#66BB6A" transform="rotate(30, 60, 25)" class="vine-leaf" />
-            <ellipse cx="55" cy="40" rx="7" ry="5" fill="#66BB6A" transform="rotate(-30, 55, 40)" class="vine-leaf" />
-            <ellipse cx="60" cy="55" rx="7" ry="5" fill="#66BB6A" transform="rotate(30, 60, 55)" class="vine-leaf" />
-            <ellipse cx="55" cy="70" rx="7" ry="5" fill="#66BB6A" transform="rotate(-15, 55, 70)" class="vine-leaf" />
-        </svg>`,
-        
-        // Stage 4: Flowering
-        4: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-flowering">
-            <ellipse cx="50" cy="90" rx="18" ry="7" fill="#4E342E" />
-            <path d="M 50 90 C 50 85, 40 80, 50 75 C 60 70, 70 65, 60 60 C 50 55, 40 50, 50 45 C 60 40, 70 35, 60 30 C 50 25, 40 20, 50 15 C 60 10, 55 5, 50 5" fill="none" stroke="#2E7D32" stroke-width="3" class="vine-stem" />
-            <ellipse cx="50" cy="5" rx="8" ry="5" fill="#43A047" transform="rotate(0, 50, 5)" class="vine-leaf" />
-            <ellipse cx="60" cy="30" rx="8" ry="5" fill="#43A047" transform="rotate(30, 60, 30)" class="vine-leaf" />
-            <ellipse cx="50" cy="45" rx="8" ry="5" fill="#43A047" transform="rotate(-30, 50, 45)" class="vine-leaf" />
-            <ellipse cx="60" cy="60" rx="8" ry="5" fill="#43A047" transform="rotate(30, 60, 60)" class="vine-leaf" />
-            <ellipse cx="50" cy="75" rx="8" ry="5" fill="#43A047" transform="rotate(-15, 50, 75)" class="vine-leaf" />
-            <circle cx="50" cy="5" r="5" fill="#BA68C8" class="vine-flower" />
-            <circle cx="60" cy="30" r="4" fill="#BA68C8" class="vine-flower" />
-            <circle cx="50" cy="45" r="4" fill="#BA68C8" class="vine-flower" />
-        </svg>`,
-        
-        // Stage 5: Withering
-        5: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-withering">
-            <ellipse cx="50" cy="90" rx="18" ry="7" fill="#3E2723" />
-            <path d="M 50 90 C 50 85, 40 80, 50 75 C 60 70, 70 65, 60 60 C 50 55, 40 50, 50 45 C 60 40, 70 35, 60 30 C 50 25, 40 20, 50 15" fill="none" stroke="#827717" stroke-width="2" stroke-dasharray="5,2" class="vine-stem" />
-            <ellipse cx="50" cy="15" rx="7" ry="4" fill="#AEB853" stroke="#827717" stroke-width="1" transform="rotate(0, 50, 15)" class="vine-leaf" />
-            <ellipse cx="60" cy="30" rx="7" ry="4" fill="#AEB853" stroke="#827717" stroke-width="1" transform="rotate(30, 60, 30)" class="vine-leaf" />
-            <ellipse cx="50" cy="45" rx="7" ry="4" fill="#AEB853" stroke="#827717" stroke-width="1" transform="rotate(-30, 50, 45)" class="vine-leaf" />
-            <ellipse cx="60" cy="60" rx="7" ry="4" fill="#AEB853" stroke="#827717" stroke-width="1" transform="rotate(30, 60, 60)" class="vine-leaf" />
-            <ellipse cx="50" cy="75" rx="7" ry="4" fill="#AEB853" stroke="#827717" stroke-width="1" transform="rotate(-15, 50, 75)" class="vine-leaf" />
-            <circle cx="50" cy="15" r="4" fill="#CE93D8" stroke="#8E24AA" stroke-width="1" class="vine-flower" />
-        </svg>`,
-        
-        // Stage 6: Dead
-        6: `<svg viewBox="0 0 100 100" width="80" height="80" class="plant-dead">
-            <ellipse cx="50" cy="90" rx="15" ry="6" fill="#3E2723" />
-            <path d="M 50 90 C 50 85, 45 80, 55 75 C 65 70, 60 65, 50 60 C 40 55, 45 50, 55 45" fill="none" stroke="#795548" stroke-width="2" stroke-dasharray="4,3" class="vine-stem" />
-            <ellipse cx="55" cy="45" rx="6" ry="3" fill="#A1887F" stroke="#3E2723" stroke-width="1" transform="rotate(30, 55, 45)" class="vine-leaf" />
-            <ellipse cx="50" cy="60" rx="6" ry="3" fill="#A1887F" stroke="#3E2723" stroke-width="1" transform="rotate(-30, 50, 60)" class="vine-leaf" />
-            <ellipse cx="55" cy="75" rx="6" ry="3" fill="#A1887F" stroke="#3E2723" stroke-width="1" transform="rotate(0, 55, 75)" class="vine-leaf" />
-        </svg>`
-    },
-    
-    // Add more special dancing animations for all other plant types
-    // These will inherit from the original types but with enhanced animation classes
+        0: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <path d="M 50,75 Q 52,72 50,70" stroke="#3e8a21" stroke-width="3" fill="none" />
+            </svg>`,
+        1: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <path d="M 50,75 Q 55,70 50,65 Q 45,60 50,55" stroke="#3e8a21" stroke-width="3" fill="none" />
+                <ellipse cx="54" cy="65" rx="3" ry="2" fill="#4a9e2a" transform="rotate(15,54,65)" />
+                <ellipse cx="46" cy="55" rx="3" ry="2" fill="#4a9e2a" transform="rotate(-15,46,55)" />
+            </svg>`,
+        2: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <path d="M 50,75 Q 60,65 50,55 Q 40,45 50,35" stroke="#3e8a21" stroke-width="3" fill="none" />
+                <path d="M 50,65 Q 55,60 60,62" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,55 Q 45,50 40,52" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,45 Q 55,40 60,42" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <ellipse cx="60" cy="62" rx="3" ry="2" fill="#59b936" transform="rotate(15,60,62)" />
+                <ellipse cx="40" cy="52" rx="3" ry="2" fill="#59b936" transform="rotate(-15,40,52)" />
+                <ellipse cx="60" cy="42" rx="3" ry="2" fill="#59b936" transform="rotate(15,60,42)" />
+            </svg>`,
+        3: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <path d="M 50,75 Q 65,60 50,45 Q 35,30 50,15" stroke="#3e8a21" stroke-width="3" fill="none" />
+                <path d="M 50,65 Q 60,60 65,62" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,55 Q 40,50 35,52" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,45 Q 60,40 65,42" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,35 Q 40,30 35,32" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,25 Q 60,20 65,22" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <ellipse cx="65" cy="62" rx="4" ry="3" fill="#59b936" transform="rotate(15,65,62)" />
+                <ellipse cx="35" cy="52" rx="4" ry="3" fill="#59b936" transform="rotate(-15,35,52)" />
+                <ellipse cx="65" cy="42" rx="4" ry="3" fill="#59b936" transform="rotate(15,65,42)" />
+                <ellipse cx="35" cy="32" rx="4" ry="3" fill="#59b936" transform="rotate(-15,35,32)" />
+                <ellipse cx="65" cy="22" rx="4" ry="3" fill="#59b936" transform="rotate(15,65,22)" />
+            </svg>`,
+        4: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <path d="M 50,75 Q 70,55 50,35 Q 30,15 50,5" stroke="#3e8a21" stroke-width="3" fill="none" />
+                <path d="M 50,65 Q 65,60 70,62" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,55 Q 35,50 30,52" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,45 Q 65,40 70,42" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,35 Q 35,30 30,32" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,25 Q 65,20 70,22" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,15 Q 35,10 30,12" stroke="#4a9e2a" stroke-width="2" fill="none" />
+                <ellipse cx="70" cy="62" rx="4" ry="3" fill="#59b936" transform="rotate(15,70,62)" />
+                <ellipse cx="30" cy="52" rx="4" ry="3" fill="#59b936" transform="rotate(-15,30,52)" />
+                <ellipse cx="70" cy="42" rx="4" ry="3" fill="#59b936" transform="rotate(15,70,42)" />
+                <ellipse cx="30" cy="32" rx="4" ry="3" fill="#59b936" transform="rotate(-15,30,32)" />
+                <ellipse cx="70" cy="22" rx="4" ry="3" fill="#59b936" transform="rotate(15,70,22)" />
+                <ellipse cx="30" cy="12" rx="4" ry="3" fill="#59b936" transform="rotate(-15,30,12)" />
+                <circle cx="70" cy="62" r="2" fill="#ff85a2" />
+                <circle cx="70" cy="22" r="2" fill="#ff85a2" />
+                <circle cx="30" cy="32" r="2" fill="#ff85a2" />
+                <circle cx="50" cy="5" r="3" fill="#ff85a2" />
+            </svg>`,
+        5: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <path d="M 50,75 Q 70,55 50,35 Q 30,15 50,5" stroke="#3e8a21" stroke-width="3" fill="none" />
+                <path d="M 50,65 Q 65,60 70,62" stroke="#8d9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,55 Q 35,50 30,52" stroke="#8d9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,45 Q 65,40 70,42" stroke="#8d9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,35 Q 35,30 30,32" stroke="#8d9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,25 Q 65,20 70,22" stroke="#8d9e2a" stroke-width="2" fill="none" />
+                <path d="M 50,15 Q 35,10 30,12" stroke="#8d9e2a" stroke-width="2" fill="none" />
+                <ellipse cx="70" cy="62" rx="4" ry="3" fill="#a9b936" transform="rotate(15,70,62)" />
+                <ellipse cx="30" cy="52" rx="4" ry="3" fill="#a9b936" transform="rotate(-15,30,52)" />
+                <ellipse cx="70" cy="42" rx="4" ry="3" fill="#a9b936" transform="rotate(15,70,42)" />
+                <ellipse cx="30" cy="32" rx="4" ry="3" fill="#a9b936" transform="rotate(-15,30,32)" />
+                <ellipse cx="70" cy="22" rx="4" ry="3" fill="#a9b936" transform="rotate(15,70,22)" />
+                <ellipse cx="30" cy="12" rx="4" ry="3" fill="#a9b936" transform="rotate(-15,30,12)" />
+                <circle cx="70" cy="62" r="2" fill="#cc6680" />
+                <circle cx="70" cy="22" r="2" fill="#cc6680" />
+                <circle cx="30" cy="32" r="2" fill="#cc6680" />
+            </svg>`,
+        6: `<svg viewBox="0 0 100 100" class="plant-svg">
+                <circle cx="50" cy="85" r="10" fill="#6c5f5b" />
+                <path d="M 50,75 Q 70,55 50,35 Q 30,15 50,5" stroke="#7e7a65" stroke-width="3" fill="none" />
+                <path d="M 50,65 Q 60,60 65,62" stroke="#595845" stroke-width="2" fill="none" />
+                <path d="M 50,55 Q 40,50 35,52" stroke="#595845" stroke-width="2" fill="none" />
+                <path d="M 50,45 Q 60,40 65,42" stroke="#595845" stroke-width="2" fill="none" />
+                <path d="M 50,35 Q 40,30 35,32" stroke="#595845" stroke-width="2" fill="none" />
+                <path d="M 50,25 Q 60,20 65,22" stroke="#595845" stroke-width="2" fill="none" />
+                <path d="M 50,15 Q 40,10 35,12" stroke="#595845" stroke-width="2" fill="none" />
+            </svg>`
+    }
 };
 
-// Enhanced Plant Creation
+// Function to create enhanced plant with various animated effects
 function createEnhancedPlant(type, stage, name, health) {
-    const plantType = type || 'succulent';
-    const plantStage = stage || 0;
-    
-    // Get svg from enhanced svgs if available, or fall back to original svgs
-    let plantSvg = '';
-    if (window.enhancedPlantSvgs && window.enhancedPlantSvgs[plantType] && window.enhancedPlantSvgs[plantType][plantStage]) {
-        plantSvg = window.enhancedPlantSvgs[plantType][plantStage];
-    } else if (window.plantSvgs && window.plantSvgs[plantType] && window.plantSvgs[plantType][plantStage]) {
-        plantSvg = window.plantSvgs[plantType][plantStage];
-    } else {
-        // Default to succulent seed if nothing else is available
-        plantSvg = window.plantSvgs.succulent[0];
+    // Default to succulent if type not found
+    if (!window.enhancedPlantSvgs[type]) {
+        type = 'succulent';
     }
     
-    // Add health-based classes
-    let healthClass = '';
-    if (health > 75) {
-        healthClass = 'plant-healthy';
-    } else if (health < 30) {
-        healthClass = 'plant-unhealthy';
+    // Default to seed stage if stage not found
+    if (!window.enhancedPlantSvgs[type][stage]) {
+        stage = 0;
     }
     
-    // Create plant container with various interactive elements
-    const container = document.createElement('div');
-    container.className = `plant-container ${healthClass}`;
-    container.innerHTML = plantSvg;
+    // Get the SVG string for this plant type and stage
+    let svgString = window.enhancedPlantSvgs[type][stage];
     
-    // Add water drop button
-    const waterButton = document.createElement('button');
-    waterButton.className = 'water-plant-btn';
-    waterButton.innerHTML = '💧';
-    waterButton.setAttribute('title', 'Water this plant (costs 1 water credit)');
-    waterButton.setAttribute('data-plant-id', name);
+    // Apply plant-type specific styles
+    svgString = applyPlantTypeStyles(svgString, type, stage);
     
-    // Add plant name label
-    const nameLabel = document.createElement('div');
-    nameLabel.className = 'plant-name';
-    nameLabel.textContent = name;
-    
-    // Add health bar
-    const healthBar = document.createElement('div');
-    healthBar.className = 'plant-health-bar';
-    const healthFill = document.createElement('div');
-    healthFill.className = 'plant-health-fill';
-    healthFill.style.width = `${health}%`;
-    healthBar.appendChild(healthFill);
-    
-    // Append all elements to container
-    container.appendChild(waterButton);
-    container.appendChild(nameLabel);
-    container.appendChild(healthBar);
-    
-    return container;
+    return svgString;
 }
 
-// Add pre-defined plants
-function addPresetPlants(userId) {
-    // Define preset plants
-    const presetPlants = [
-        { name: "Sunflower", type: PlantType.FLOWER, stage: PlantStage.MATURE, health: 95 },
-        { name: "Ivy", type: PlantType.VINE, stage: PlantStage.GROWING, health: 80 },
-        { name: "Cactus", type: PlantType.SUCCULENT, stage: PlantStage.FLOWERING, health: 100 },
-        { name: "Basil", type: PlantType.HERB, stage: PlantStage.SPROUT, health: 75 },
-        { name: "Bonsai", type: PlantType.TREE, stage: PlantStage.MATURE, health: 90 }
-    ];
+// Apply specific styles based on plant type
+function applyPlantTypeStyles(svgString, plantType, plantStage) {
+    // Add CSS classes based on plant type
+    let result = svgString.replace('class="plant-svg"', `class="plant-svg plant-${plantType} stage-${plantStage}"`);
     
-    // Create plants via API
-    presetPlants.forEach(plant => {
-        const plantData = {
-            name: plant.name,
-            type: plant.type.value
-        };
-        
-        fetch('/api/plants', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(plantData)
+    // Add additional styling based on type
+    switch (plantType) {
+        case 'succulent':
+            // Add more rounded, water-filled appearance
+            break;
+        case 'flower':
+            // Add taller, more elegant appearance
+            break;
+        case 'tree':
+            // Add stronger, more robust appearance
+            break;
+        case 'herb':
+            // Add bushy, aromatic appearance
+            break;
+        case 'vine':
+            // Add climbing, winding appearance
+            break;
+    }
+    
+    return result;
+}
+
+// Function to add preset plants with different types for testing
+function addPresetPlants(userId) {
+    fetch('/api/plants', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: 'Demo Succulent',
+            plant_type: 'succulent'
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log(`Created preset plant: ${plant.name}`);
-                
-                // Update plant stage and health to match preset values
-                // Note: In a real app, you'd have an API endpoint for this
-                // For now, we'll rely on the frontend to show the preset appearance
-            }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Added demo succulent:', data);
+    })
+    .catch(error => {
+        console.error('Error adding demo succulent:', error);
+    });
+    
+    fetch('/api/plants', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: 'Demo Flower',
+            plant_type: 'flower'
         })
-        .catch(error => {
-            console.error('Error creating preset plant:', error);
-        });
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Added demo flower:', data);
+    })
+    .catch(error => {
+        console.error('Error adding demo flower:', error);
+    });
+    
+    fetch('/api/plants', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: 'Demo Tree',
+            plant_type: 'tree'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Added demo tree:', data);
+    })
+    .catch(error => {
+        console.error('Error adding demo tree:', error);
+    });
+    
+    fetch('/api/plants', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: 'Demo Herb',
+            plant_type: 'herb'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Added demo herb:', data);
+    })
+    .catch(error => {
+        console.error('Error adding demo herb:', error);
+    });
+    
+    fetch('/api/plants', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: 'Demo Vine',
+            plant_type: 'vine'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Added demo vine:', data);
+    })
+    .catch(error => {
+        console.error('Error adding demo vine:', error);
     });
 }
 
-// Initialize animation system
-document.addEventListener('DOMContentLoaded', function() {
-    // Add CSS animation classes for plants
-    const style = document.createElement('style');
-    style.textContent = `
-        .vine-stem {
-            animation: vineSway 8s ease-in-out infinite;
-        }
-        
-        .vine-leaf {
-            animation: leafRustle 5s ease-in-out infinite;
-        }
-        
-        .vine-flower {
-            animation: flowerBob 4s ease infinite;
-        }
-        
-        .plant-flower {
-            animation: flowerPulse 3s ease infinite;
-        }
-        
-        .plant-growing .plant-leaf {
-            animation: leafGrow 10s ease-out;
-        }
-        
-        .plant-seed {
-            animation: seedPulse 2s ease infinite;
-        }
-        
-        .plant-flowering .plant-flower {
-            animation: flowerBloom 3s ease-out, flowerShimmer 4s ease-in-out infinite;
-            animation-delay: 0s, 3s;
-        }
-        
-        .plant-bud {
-            animation: budPulse 3s ease infinite;
-        }
-        
-        .left-leaf {
-            animation-delay: 0.3s;
-        }
-        
-        .right-leaf {
-            animation-delay: 0.7s;
-        }
-        
-        @keyframes vineSway {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(2deg); }
-            75% { transform: rotate(-2deg); }
-        }
-        
-        @keyframes leafRustle {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.05) rotate(2deg); }
-            75% { transform: scale(0.95) rotate(-2deg); }
-        }
-        
-        @keyframes flowerBob {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-2px); }
-        }
-        
-        @keyframes flowerPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        @keyframes leafGrow {
-            0% { stroke-dasharray: 0, 100; }
-            100% { stroke-dasharray: 100, 0; }
-        }
-        
-        @keyframes seedPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        @keyframes flowerBloom {
-            0% { transform: scale(0.2); opacity: 0.5; }
-            60% { transform: scale(1.1); opacity: 0.9; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        @keyframes flowerShimmer {
-            0% { filter: brightness(1) saturate(1); }
-            50% { filter: brightness(1.3) saturate(1.2); }
-            100% { filter: brightness(1) saturate(1); }
-        }
-        
-        @keyframes budPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-        }
-        
-        /* Seasonal animations */
-        .summer-effect {
-            filter: brightness(1.1) saturate(1.1);
-        }
-        
-        .autumn-effect {
-            filter: sepia(0.2) saturate(1.2);
-        }
-        
-        .winter-effect {
-            filter: brightness(0.95) saturate(0.9);
-        }
-        
-        .spring-effect {
-            filter: brightness(1.05) hue-rotate(5deg);
-        }
-        
-        /* Special animations for events */
-        @keyframes rainbowEffect {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
-        }
-        
-        .rainbow-mode {
-            animation: rainbowEffect 8s linear infinite;
-        }
-        
-        @keyframes sparkleEffect {
-            0%, 100% { filter: brightness(1) contrast(1); }
-            50% { filter: brightness(1.5) contrast(1.2) saturate(1.3); }
-        }
-        
-        .sparkle-mode {
-            animation: sparkleEffect 2s ease-in-out infinite;
-        }
-    `;
-    document.head.appendChild(style);
-    
-    // Add global random animations throughout the garden
-    setTimeout(function() {
-        startRandomAnimations();
-    }, 2000);
-});
-
-// Random animations for plants throughout the garden
+// Start random animations for all plants
 function startRandomAnimations() {
-    setInterval(function() {
-        const plants = document.querySelectorAll('.plant-container');
-        if (plants.length > 0) {
-            // Pick a random plant
-            const randomPlant = plants[Math.floor(Math.random() * plants.length)];
-            
-            // Pick a random animation
-            const animations = [
-                'plant-dancing', 
-                'plant-excited', 
-                'plant-bouncing', 
-                'plant-waving',
-                'plant-shimmer',
-                'wind-blowing'
-            ];
-            
-            const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
-            
-            // If plant is not already animated
-            if (!randomPlant.classList.contains('plant-dancing') && 
-                !randomPlant.classList.contains('plant-excited') &&
-                !randomPlant.classList.contains('plant-bouncing') &&
-                !randomPlant.classList.contains('plant-waving') &&
-                !randomPlant.classList.contains('plant-shimmer') &&
-                !randomPlant.classList.contains('wind-blowing')) {
-                
-                // Add animation
-                randomPlant.classList.add(randomAnimation);
-                
-                // Remove animation after a random time
-                setTimeout(function() {
-                    randomPlant.classList.remove(randomAnimation);
-                }, Math.random() * 3000 + 2000); // 2-5 seconds
-            }
-        }
-    }, Math.random() * 10000 + 5000); // 5-15 seconds interval
+    // This will be called on page load to initialize animations
+    console.log('Starting random plant animations');
 }

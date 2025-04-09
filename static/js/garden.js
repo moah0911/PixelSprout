@@ -510,48 +510,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function showNotification(message, type = 'info') {
-        // Get or create notifications container
-        let notificationsContainer = document.getElementById('notifications-container');
-        if (!notificationsContainer) {
-            notificationsContainer = document.createElement('div');
-            notificationsContainer.id = 'notifications-container';
-            notificationsContainer.className = 'position-fixed top-0 end-0 p-3';
-            notificationsContainer.style.zIndex = '1050';
-            document.body.appendChild(notificationsContainer);
-        }
-        
-        // Create toast element
-        const toastId = 'toast-' + Date.now();
-        const toast = document.createElement('div');
-        toast.id = toastId;
-        toast.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : type}`;
-        toast.setAttribute('role', 'alert');
-        toast.setAttribute('aria-live', 'assertive');
-        toast.setAttribute('aria-atomic', 'true');
-        
-        toast.innerHTML = `
-            <div class="d-flex">
-                <div class="toast-body">
-                    ${message}
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        `;
-        
-        // Add toast to container
-        notificationsContainer.appendChild(toast);
-        
-        // Initialize and show toast
-        const toastInstance = new bootstrap.Toast(toast, {
-            autohide: true,
-            delay: 5000
-        });
-        toastInstance.show();
-        
-        // Remove toast after hiding
-        toast.addEventListener('hidden.bs.toast', function() {
-            toast.remove();
-        });
+        // Just log to console instead of showing notifications
+        console.log(`Notification (${type}): ${message}`);
     }
     
     // Refresh plants data periodically
