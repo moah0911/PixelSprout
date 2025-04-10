@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     email TEXT NOT NULL UNIQUE,
     username TEXT NOT NULL,
     water_credits INT NOT NULL DEFAULT 20,
+    profile_picture_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
 );
 
@@ -23,6 +24,7 @@ CREATE TABLE IF NOT EXISTS public.plants (
     stage INT NOT NULL DEFAULT 0, -- 0 = SEED, 1 = SPROUT, etc.
     health FLOAT NOT NULL DEFAULT 100,
     progress FLOAT NOT NULL DEFAULT 0,
+    image_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     last_watered TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
 );

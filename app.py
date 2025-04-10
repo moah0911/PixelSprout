@@ -5,6 +5,10 @@ from flask import Flask
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -24,6 +28,7 @@ app.config.update(
     SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
+    MAX_CONTENT_LENGTH=16 * 1024 * 1024,  # 16MB max upload size
 )
 
 # Configure database connection
@@ -54,3 +59,20 @@ login_manager.login_view = 'login_page'
 def load_user(user_id):
     from models import User
     return User.query.get(user_id)
+
+# Initialize Supabase Storage buckets
+try:
+    from supabase_storage import SupabaseStorage
+    SupabaseStorage.initialize_buckets()
+except Exception as e:
+    logging.error(f"Failed to initialize Supabase Storage buckets: {str(e)}")
+
+# Import and register blueprints
+try:
+    from routes_auth import auth_bp
+    app.register_blueprint(auth_bp)
+    
+    from routes_storage import storage_bp
+    app.register_blueprint(storage_bp)
+except Exception as e:
+    logging.error(f"Failed to register blueprints: {str(e)}")

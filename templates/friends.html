@@ -97,8 +97,9 @@
                                         <button class="btn btn-success btn-sm view-garden-btn" data-friend-id="{{ friend.id }}">
                                             <i class="fas fa-leaf me-1"></i> View Garden
                                         </button>
-                                        <button class="btn btn-outline-light btn-sm send-water-btn" data-friend-id="{{ friend.id }}">
+                                        <button class="btn btn-outline-light btn-sm send-water-btn water-effect" data-friend-id="{{ friend.id }}">
                                             <i class="fas fa-tint me-1"></i> Send Water
+                                            <span class="water-ripple"></span>
                                         </button>
                                     </div>
                                 </div>
@@ -180,6 +181,166 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Interactive Particle System
+        function createParticleSystem() {
+            const friendsHeader = document.querySelector('.friends-header');
+            const particlesContainer = document.querySelector('.particles-container');
+            
+            if (!friendsHeader || !particlesContainer) return;
+            
+            // Create more particles
+            const particleCount = 20;
+            const colors = [
+                'rgba(76, 175, 80, 0.6)',
+                'rgba(139, 195, 74, 0.5)',
+                'rgba(205, 220, 57, 0.4)',
+                'rgba(156, 204, 101, 0.5)',
+                'rgba(129, 199, 132, 0.6)'
+            ];
+            
+            // Remove existing particles
+            while (particlesContainer.firstChild) {
+                particlesContainer.removeChild(particlesContainer.firstChild);
+            }
+            
+            // Create new particles
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'floating-particle';
+                
+                // Random position
+                const top = Math.random() * 100;
+                const left = Math.random() * 100;
+                
+                // Random size
+                const size = 4 + Math.random() * 8;
+                
+                // Random color
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Random animation duration
+                const duration = 8 + Math.random() * 12;
+                
+                // Set styles
+                particle.style.top = `${top}%`;
+                particle.style.left = `${left}%`;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.background = color;
+                particle.style.animation = `float ${duration}s infinite ease-in-out`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+            
+            // Make particles interactive
+            friendsHeader.addEventListener('mousemove', function(e) {
+                const rect = friendsHeader.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const particles = particlesContainer.querySelectorAll('.floating-particle');
+                particles.forEach(particle => {
+                    const particleRect = particle.getBoundingClientRect();
+                    const particleX = particleRect.left + particleRect.width / 2 - rect.left;
+                    const particleY = particleRect.top + particleRect.height / 2 - rect.top;
+                    
+                    const dx = particleX - x;
+                    const dy = particleY - y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100) {
+                        const angle = Math.atan2(dy, dx);
+                        const force = (100 - distance) / 10;
+                        
+                        const translateX = Math.cos(angle) * force;
+                        const translateY = Math.sin(angle) * force;
+                        
+                        particle.style.transform = `translate(${translateX}px, ${translateY}px)`;
+                    } else {
+                        particle.style.transform = 'translate(0, 0)';
+                    }
+                });
+            });
+            
+            friendsHeader.addEventListener('mouseleave', function() {
+                const particles = particlesContainer.querySelectorAll('.floating-particle');
+                particles.forEach(particle => {
+                    particle.style.transform = 'translate(0, 0)';
+                });
+            });
+        }
+        
+        // Initialize particle system
+        createParticleSystem();
+        
+        // Recreate particles on window resize
+        window.addEventListener('resize', createParticleSystem);
+        
+        // Water Button Animation
+        function initWaterButtons() {
+            const waterButtons = document.querySelectorAll('.send-water-btn');
+            
+            waterButtons.forEach(button => {
+                // Create water drops
+                for (let i = 0; i < 5; i++) {
+                    const drop = document.createElement('div');
+                    drop.className = 'water-drop';
+                    button.appendChild(drop);
+                }
+                
+                button.addEventListener('mouseenter', function() {
+                    const drops = this.querySelectorAll('.water-drop');
+                    drops.forEach((drop, index) => {
+                        // Random position
+                        const left = 20 + Math.random() * 60; // 20% to 80%
+                        
+                        // Set animation
+                        drop.style.left = `${left}%`;
+                        drop.style.top = '0';
+                        drop.style.opacity = '0.8';
+                        drop.style.transform = 'scale(1)';
+                        drop.style.transition = 'all 0s';
+                        
+                        setTimeout(() => {
+                            drop.style.top = '100%';
+                            drop.style.opacity = '0';
+                            drop.style.transform = 'scale(0.5)';
+                            drop.style.transition = `all ${0.5 + Math.random() * 0.5}s ease`;
+                        }, index * 100);
+                    });
+                });
+                
+                button.addEventListener('click', function(e) {
+                    // Create ripple effect
+                    const ripple = this.querySelector('.water-ripple');
+                    if (ripple) {
+                        ripple.style.left = `${e.offsetX}px`;
+                        ripple.style.top = `${e.offsetY}px`;
+                        ripple.classList.remove('active');
+                        void ripple.offsetWidth; // Trigger reflow
+                        ripple.classList.add('active');
+                    }
+                    
+                    // Show water splash
+                    const splash = document.createElement('div');
+                    splash.className = 'water-splash';
+                    document.body.appendChild(splash);
+                    
+                    const rect = this.getBoundingClientRect();
+                    splash.style.left = `${rect.left + rect.width / 2}px`;
+                    splash.style.top = `${rect.top + rect.height / 2}px`;
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(splash);
+                    }, 1000);
+                });
+            });
+        }
+        
+        // Initialize water buttons
+        initWaterButtons();
+        
         // Show notification
         function showNotification(message, type = 'info') {
             const statusContainer = document.getElementById('status-container');

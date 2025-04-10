@@ -99,7 +99,25 @@ def garden_page():
 @app.route('/profile')
 @login_required
 def profile_page():
-    return render_template('profile.html', username=current_user.username)
+    # Get profile picture URL from Supabase if available
+    profile_picture_url = None
+    try:
+        from supabase import create_client
+        import os
+        
+        supabase_url = os.environ.get("SUPABASE_URL")
+        supabase_key = os.environ.get("SUPABASE_KEY")
+        
+        if supabase_url and supabase_key:
+            supabase = create_client(supabase_url, supabase_key)
+            user_response = supabase.table('users').select('profile_picture_url').eq('id', current_user.id).execute()
+            
+            if user_response.data and user_response.data[0].get('profile_picture_url'):
+                profile_picture_url = user_response.data[0]['profile_picture_url']
+    except Exception as e:
+        logging.error(f"Failed to get profile picture URL: {str(e)}")
+    
+    return render_template('profile.html', username=current_user.username, profile_picture_url=profile_picture_url)
 
 # API routes
 @app.route('/api/plants', methods=['GET'])

@@ -263,8 +263,14 @@ class SupabaseAuth:
             }
     
     @staticmethod
-    def update_user_profile(user_id, username=None):
-        """Update the user profile"""
+    def update_user_profile(user_id, username=None, profile_picture_url=None):
+        """Update the user profile
+        
+        Args:
+            user_id: The user ID
+            username: Optional new username
+            profile_picture_url: Optional profile picture URL
+        """
         if not supabase:
             raise Exception("Supabase client not initialized")
             
@@ -273,6 +279,8 @@ class SupabaseAuth:
             update_data = {}
             if username:
                 update_data['username'] = username
+            if profile_picture_url:
+                update_data['profile_picture_url'] = profile_picture_url
             
             # If nothing to update, return success
             if not update_data:

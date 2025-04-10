@@ -6,12 +6,23 @@
 <div class="profile-header mb-5">
     <div class="profile-header-bg"></div>
     <div class="container">
+        <!-- Error and success messages -->
+        <div id="error-message" class="alert alert-danger d-none mb-3"></div>
+        <div id="success-message" class="alert alert-success d-none mb-3"></div>
         <div class="row align-items-center">
             <div class="col-md-8">
                 <div class="profile-info">
-                    <div class="profile-avatar">
-                        <i class="fas fa-user-circle fa-4x"></i>
+                    <div class="profile-avatar" id="profile-picture-container">
+                        <div id="profile-picture-preview">
+                            <img src="{{ profile_picture_url|default('https://via.placeholder.com/150?text=Upload+Image', true) }}" class="img-fluid rounded-circle profile-picture" alt="Profile Picture">
+                        </div>
                         <div class="profile-status online"></div>
+                        <div class="profile-picture-upload">
+                            <label for="profile-picture-input" class="btn btn-sm btn-success btn-glow-alt">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" id="profile-picture-input" class="d-none" accept="image/*">
+                        </div>
                     </div>
                     <div class="profile-text">
                         <h1 class="profile-name">
@@ -261,6 +272,7 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/conditions.js') }}"></script>
+<script src="{{ url_for('static', filename='js/storage.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Variables
