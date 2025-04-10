@@ -1144,6 +1144,8 @@ h6 {
     max-width: 100%;
     filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
     transition: all 0.3s ease;
+    margin: 0 auto; /* Center horizontally */
+    display: block; /* Ensure proper centering */
 }
 
 .plant-container:hover svg {
