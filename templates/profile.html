@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Profile | Digital Garden{% endblock %}
+{% block title %}PixelSprout - Profile{% endblock %}
 
 {% block content %}
 <div class="profile-header mb-5">
@@ -15,12 +15,17 @@
                     </div>
                     <div class="profile-text">
                         <h1 class="profile-name">
-                            {{ username }}'s Profile
+                            <span class="animated-text">PixelSprout</span> - {{ username }}'s Profile
                         </h1>
                         <p class="profile-tagline">
                             <i class="fas fa-seedling me-2 text-success fa-pulse"></i>
                             Track your garden progress and habits
                         </p>
+                        <div class="particles-container">
+                            <div class="floating-particle" style="top: 20%; left: 10%; width: 8px; height: 8px; background: rgba(76, 175, 80, 0.6); animation: float 8s infinite ease-in-out;"></div>
+                            <div class="floating-particle" style="top: 30%; left: 20%; width: 6px; height: 6px; background: rgba(139, 195, 74, 0.5); animation: float 12s infinite ease-in-out;"></div>
+                            <div class="floating-particle" style="top: 15%; left: 30%; width: 10px; height: 10px; background: rgba(205, 220, 57, 0.4); animation: float 10s infinite ease-in-out;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
