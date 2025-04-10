@@ -67,16 +67,7 @@
                 </div>
             </form>
 
-            <div class="auth-divider auth-fade-in-delay-2">or</div>
 
-            <div class="auth-demo auth-fade-in-delay-3">
-                <h3 class="auth-demo-title">
-                    <i class="fas fa-rocket"></i> Quick Demo Access
-                </h3>
-                <button id="demo-login" class="auth-demo-button">
-                    <i class="fas fa-user-check me-2"></i> Try Demo Account
-                </button>
-            </div>
         </div>
     </div>
 </div>
@@ -88,7 +79,6 @@
         const loginForm = document.getElementById('login-form');
         const errorDiv = document.getElementById('login-error');
         const errorMessage = document.getElementById('error-message');
-        const demoLoginBtn = document.getElementById('demo-login');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const loginButton = document.querySelector('.auth-button');
@@ -169,45 +159,7 @@
             }
         });
         
-        // Handle demo login
-        if (demoLoginBtn) {
-            demoLoginBtn.addEventListener('click', function() {
-                // Animate filling in the demo credentials
-                emailInput.value = '';
-                passwordInput.value = '';
-                
-                const demoEmail = 'demo@example.com';
-                const demoPassword = 'demopassword';
-                
-                let emailIndex = 0;
-                let passwordIndex = 0;
-                
-                // Type email character by character
-                const typeEmail = setInterval(() => {
-                    if (emailIndex < demoEmail.length) {
-                        emailInput.value += demoEmail.charAt(emailIndex);
-                        emailIndex++;
-                    } else {
-                        clearInterval(typeEmail);
-                        
-                        // Then type password
-                        const typePassword = setInterval(() => {
-                            if (passwordIndex < demoPassword.length) {
-                                passwordInput.value += demoPassword.charAt(passwordIndex);
-                                passwordIndex++;
-                            } else {
-                                clearInterval(typePassword);
-                                
-                                // Submit form after typing is complete
-                                setTimeout(() => {
-                                    loginForm.dispatchEvent(new Event('submit'));
-                                }, 300);
-                            }
-                        }, 50);
-                    }
-                }, 50);
-            });
-        }
+
         
         // Add particle animation
         function createParticles() {
