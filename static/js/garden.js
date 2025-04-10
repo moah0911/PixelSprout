@@ -269,12 +269,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 wateringEffect.className = 'watering-effect';
                 
                 // Add water drops
-                for (let i = 0; i < 5; i++) { // Increased to 5 drops for better visibility
+                for (let i = 0; i < 5; i++) {
                     const waterDrop = document.createElement('div');
                     waterDrop.className = 'water-drop';
-                    waterDrop.style.left = `${30 + (i * 10)}%`; // Distribute drops evenly
-                    waterDrop.style.animationDelay = `${i * 0.2}s`; // Stagger animation
                     wateringEffect.appendChild(waterDrop);
+                }
+                
+                // Add water splash effects
+                for (let i = 0; i < 5; i++) {
+                    const waterSplash = document.createElement('div');
+                    waterSplash.className = 'water-splash';
+                    wateringEffect.appendChild(waterSplash);
                 }
                 
                 plantContainer.appendChild(wateringEffect);
@@ -444,9 +449,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Format dates
-        const createdDate = new Date(selectedPlant.created_at);
-        const lastWateredDate = new Date(selectedPlant.last_watered);
+        // Format dates with India time zone adjustment
+        const createdDateFormatted = formatDate(selectedPlant.created_at);
+        const lastWateredFormatted = formatDate(selectedPlant.last_watered);
+        const timeElapsedSinceWatering = getTimeElapsed(selectedPlant.last_watered);
         
         // Get plant stage name
         const stageNames = ['Seed', 'Sprout', 'Growing', 'Mature', 'Flowering', 'Withering', 'Dead'];
@@ -483,10 +489,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 
                 <div class="mb-1">
-                    <small class="text-muted">Created: ${createdDate.toLocaleDateString()}</small>
+                    <small class="text-muted">Created: ${createdDateFormatted}</small>
                 </div>
                 <div class="mb-3">
-                    <small class="text-muted">Last Watered: ${lastWateredDate.toLocaleDateString()}</small>
+                    <small class="text-muted">Last Watered: ${timeElapsedSinceWatering}</small>
                 </div>
                 
                 <div class="d-flex gap-2 mb-3">

@@ -168,49 +168,85 @@ function getStageText(stage) {
 }
 
 /**
- * Format a date for display
+ * Adjust server time to India time zone (UTC+5:30)
+ * @param {string} dateString - ISO date string from server (US West/Oregon - UTC-7 or UTC-8)
+ * @returns {Date} - Date object adjusted to India time
+ */
+function adjustToIndiaTimeZone(dateString) {
+    // Create date object from server time
+    const serverDate = new Date(dateString);
+    
+    // Get the user's local time zone offset in minutes
+    const userOffset = new Date().getTimezoneOffset();
+    
+    // India time zone is UTC+5:30 (offset of -330 minutes from UTC)
+    const indiaOffset = -330;
+    
+    // Calculate the difference between user's time zone and India time zone in milliseconds
+    const offsetDiff = (userOffset - indiaOffset) * 60 * 1000;
+    
+    // Adjust the date by adding the offset difference
+    return new Date(serverDate.getTime() + offsetDiff);
+}
+
+/**
+ * Format a date for display with India time zone adjustment
  * @param {string} dateString - ISO date string
- * @returns {string} - Formatted date string
+ * @returns {string} - Formatted date string in India time
  */
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, { 
+    // Adjust to India time zone
+    const indiaDate = adjustToIndiaTimeZone(dateString);
+    
+    // Format with India time indicator
+    return indiaDate.toLocaleDateString(undefined, { 
         year: 'numeric', 
         month: 'short', 
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
-    });
+    }) + ' (IST)';
 }
 
 /**
- * Get time elapsed since a date
+ * Get time elapsed since a date, adjusted for India time zone
  * @param {string} dateString - ISO date string
  * @returns {string} - Time elapsed description
  */
 function getTimeElapsed(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
+    // Adjust to India time zone
+    const date = adjustToIndiaTimeZone(dateString);
     
-    const diffMs = now - date;
+    // Create a new date object representing current time in India
+    const now = new Date();
+    const indiaTimeNow = adjustToIndiaTimeZone(now.toISOString());
+    
+    const diffMs = indiaTimeNow - date;
     const diffSec = Math.floor(diffMs / 1000);
     const diffMin = Math.floor(diffSec / 60);
     const diffHr = Math.floor(diffMin / 60);
     const diffDays = Math.floor(diffHr / 24);
     
-    if (diffDays > 0) {
-        return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
-    }
+    // Format the time in 12-hour format with AM/PM
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    const timeString = `${formattedHours}:${formattedMinutes} ${ampm} IST`;
     
-    if (diffHr > 0) {
-        return diffHr === 1 ? '1 hour ago' : `${diffHr} hours ago`;
+    if (diffDays > 7) {
+        // For dates more than a week ago, show the full date
+        return `${date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} at ${timeString}`;
+    } else if (diffDays > 0) {
+        return diffDays === 1 ? `Yesterday at ${timeString}` : `${diffDays} days ago at ${timeString}`;
+    } else if (diffHr > 0) {
+        return diffHr === 1 ? `1 hour ago at ${timeString}` : `${diffHr} hours ago at ${timeString}`;
+    } else if (diffMin > 0) {
+        return diffMin === 1 ? `1 minute ago at ${timeString}` : `${diffMin} minutes ago at ${timeString}`;
+    } else {
+        return `Just now at ${timeString}`;
     }
-    
-    if (diffMin > 0) {
-        return diffMin === 1 ? '1 minute ago' : `${diffMin} minutes ago`;
-    }
-    
-    return 'Just now';
 }
 
 /**
