@@ -4,371 +4,25 @@
 
 {% block head %}
 {{ super() }}
-<style>
-    .hero-section {
-        min-height: 90vh;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        background: linear-gradient(160deg, rgba(5, 25, 5, 0.9), rgba(10, 40, 15, 0.95));
-    }
-    
-    .hero-content {
-        position: relative;
-        z-index: 10;
-    }
-    
-    .hero-leaves {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M50 10C35 30 35 70 50 90C65 70 65 30 50 10Z' fill='%234CAF50' fill-opacity='0.03'/%3E%3C/svg%3E"),
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M40 5C20 20 20 60 40 75C60 60 60 20 40 5Z' fill='%233F9142' fill-opacity='0.03'/%3E%3C/svg%3E");
-        background-size: 20%, 15%;
-        opacity: 1;
-    }
-    
-    .app-logo {
-        max-width: 150px;
-        margin-bottom: 20px;
-        filter: drop-shadow(0 0 20px rgba(76, 175, 80, 0.6));
-        animation: floating 4s infinite ease-in-out;
-    }
-    
-    .app-title {
-        font-size: 5rem;
-        font-weight: 800;
-        margin-bottom: 1rem;
-        background: linear-gradient(to right, #7deb7d, #4CAF50, #2E7D32);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0 0 30px rgba(76, 175, 80, 0.4);
-        animation: glow 4s infinite alternate;
-    }
-    
-    .app-subtitle {
-        font-size: 1.8rem;
-        opacity: 0.9;
-        margin-bottom: 2.5rem;
-        color: #e0e0e0;
-    }
-    
-    @keyframes glow {
-        0% {
-            text-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
-        }
-        100% {
-            text-shadow: 0 0 40px rgba(76, 175, 80, 0.7), 0 0 80px rgba(76, 175, 80, 0.4);
-        }
-    }
-    
-    .features-section {
-        padding: 5rem 0;
-        background: linear-gradient(to bottom, rgba(8, 32, 8, 0.7), rgba(5, 20, 5, 0.9));
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .features-section::before {
-        content: '';
-        position: absolute;
-        top: -50px;
-        left: 0;
-        width: 100%;
-        height: 100px;
-        background: linear-gradient(to bottom, transparent, rgba(8, 32, 8, 0.7));
-    }
-    
-    .feature-card {
-        height: 100%;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        border: 1px solid rgba(76, 175, 80, 0.2);
-        background: rgba(15, 40, 15, 0.6);
-        backdrop-filter: blur(10px);
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        border-radius: 15px;
-    }
-    
-    .feature-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(120deg, transparent, rgba(76, 175, 80, 0.05), transparent);
-        transform: translateX(-100%);
-        transition: all 0.6s ease;
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-15px) scale(1.03);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(76, 175, 80, 0.4);
-        border-color: rgba(76, 175, 80, 0.4);
-    }
-    
-    .feature-card:hover::before {
-        transform: translateX(100%);
-    }
-    
-    .feature-icon {
-        font-size: 3rem;
-        margin-bottom: 1.5rem;
-        color: #4CAF50;
-        background: radial-gradient(circle, rgba(76, 175, 80, 0.2) 0%, transparent 70%);
-        width: 100px;
-        height: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
-        margin: 0 auto 1.5rem;
-    }
-    
-    .cta-section {
-        padding: 6rem 0;
-        background: linear-gradient(160deg, rgba(10, 40, 15, 0.95), rgba(5, 25, 5, 0.9));
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .cta-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5C15 15 15 45 30 55C45 45 45 15 30 5Z' fill='%234CAF50' fill-opacity='0.03'/%3E%3C/svg%3E");
-        background-size: 10%;
-        opacity: 0.8;
-    }
-    
-    .btn-main {
-        padding: 1rem 2.5rem;
-        font-size: 1.3rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        border-radius: 50px;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        z-index: 1;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 0 5px rgba(76, 175, 80, 0.1);
-    }
-    
-    .btn-main::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transform: translateX(-100%);
-        transition: 0.6s;
-        z-index: -1;
-    }
-    
-    .btn-main:hover {
-        transform: translateY(-5px) scale(1.05);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 0 8px rgba(76, 175, 80, 0.2);
-    }
-    
-    .btn-main:hover::after {
-        transform: translateX(100%);
-    }
-    
-    .floating-plants {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        z-index: 2;
-        pointer-events: none;
-    }
-    
-    .floating-plant {
-        position: absolute;
-        opacity: 0.2;
-        filter: drop-shadow(0 0 20px rgba(76, 175, 80, 0.4));
-        animation: floating 15s infinite ease-in-out;
-    }
-    
-    .floating-plant:nth-child(1) {
-        top: 15%;
-        left: 8%;
-        animation-delay: 0s;
-        transform: scale(0.8);
-    }
-    
-    .floating-plant:nth-child(2) {
-        top: 65%;
-        left: 12%;
-        animation-delay: 3s;
-        transform: scale(0.6);
-    }
-    
-    .floating-plant:nth-child(3) {
-        top: 25%;
-        right: 10%;
-        animation-delay: 6s;
-        transform: scale(0.7);
-    }
-    
-    .floating-plant:nth-child(4) {
-        top: 70%;
-        right: 8%;
-        animation-delay: 9s;
-        transform: scale(0.5);
-    }
-    
-    .floating-plant:nth-child(5) {
-        top: 45%;
-        left: 45%;
-        animation-delay: 12s;
-        transform: scale(0.4);
-    }
-    
-    @keyframes floating {
-        0%, 100% {
-            transform: translateY(0) rotate(0deg);
-        }
-        50% {
-            transform: translateY(-30px) rotate(5deg);
-        }
-    }
-    
-    .stats-section {
-        background: rgba(5, 20, 5, 0.8);
-        border-top: 1px solid rgba(76, 175, 80, 0.2);
-        border-bottom: 1px solid rgba(76, 175, 80, 0.2);
-    }
-    
-    .stats-card {
-        position: relative;
-        padding: 2rem;
-        border-radius: 15px;
-        background: linear-gradient(145deg, rgba(15, 40, 15, 0.4), rgba(5, 20, 5, 0.6));
-        border: 1px solid rgba(76, 175, 80, 0.15);
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-    
-    .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        border-color: rgba(76, 175, 80, 0.3);
-    }
-    
-    .stats-card::before {
-        content: '';
-        position: absolute;
-        width: 100px;
-        height: 100px;
-        background: radial-gradient(circle, rgba(76, 175, 80, 0.2) 0%, transparent 70%);
-        top: -20px;
-        right: -20px;
-        border-radius: 50%;
-    }
-    
-    .stats-counter {
-        font-size: 3rem;
-        font-weight: 700;
-        background: linear-gradient(to right, #7deb7d, #4CAF50);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
-    }
-    
-    .steps-container {
-        background: rgba(10, 30, 10, 0.5);
-        border-radius: 20px;
-        padding: 2rem;
-        border: 1px solid rgba(76, 175, 80, 0.2);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-    
-    .step-circle {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: linear-gradient(45deg, #2E7D32, #4CAF50);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: white;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2), 0 0 0 5px rgba(76, 175, 80, 0.1);
-    }
-    
-    .step-line {
-        position: absolute;
-        top: 30px;
-        left: 30px;
-        bottom: 0;
-        width: 2px;
-        background: rgba(76, 175, 80, 0.3);
-        z-index: -1;
-    }
-    
-    .step-content {
-        padding-left: 1.5rem;
-    }
-    
-    .step-title {
-        color: #4CAF50;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-    
-    .plant-showcase {
-        max-width: 500px;
-        margin: 0 auto;
-        position: relative;
-    }
-    
-    .plant-showcase::after {
-        content: '';
-        position: absolute;
-        bottom: -30px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80%;
-        height: 20px;
-        background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
-        border-radius: 50%;
-    }
-    
-    .plant-showcase img {
-        filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
-        animation: gentle-float 5s infinite ease-in-out;
-    }
-    
-    @keyframes gentle-float {
-        0%, 100% {
-            transform: translateY(0px);
-        }
-        50% {
-            transform: translateY(-10px);
-        }
-    }
-</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
 {% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
 <section class="hero-section">
-    <div class="hero-leaves"></div>
+    <!-- Background Elements -->
+    <div class="hero-bg-elements">
+        <div class="hero-circle"></div>
+        <div class="hero-circle"></div>
+        <div class="hero-circle"></div>
+        <div class="hero-line"></div>
+        <div class="hero-line"></div>
+        <div class="hero-line"></div>
+        <div class="hero-line"></div>
+        <div class="hero-leaves"></div>
+    </div>
+    
+    <!-- Floating Plants -->
     <div class="floating-plants">
         <div class="floating-plant">
             <svg width="300" height="300" viewBox="0 0 100 100">
@@ -419,20 +73,32 @@
         </div>
     </div>
     
+    <!-- Hero Content -->
     <div class="container hero-content text-center">
-        <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="PixelSprout Logo" class="app-logo">
+        <div class="app-logo-container">
+            <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="PixelSprout Logo" class="app-logo">
+            <div class="app-logo-glow"></div>
+            <div class="app-logo-particles">
+                <div class="app-particle"></div>
+                <div class="app-particle"></div>
+                <div class="app-particle"></div>
+                <div class="app-particle"></div>
+            </div>
+        </div>
+        
         <h1 class="app-title">PixelSprout</h1>
         <p class="app-subtitle">Grow Virtual Plants with Your Real-Life Habits</p>
-        <div class="d-flex justify-content-center gap-4">
+        
+        <div class="hero-buttons">
             {% if current_user.is_authenticated %}
-            <a href="/garden" class="btn btn-success btn-lg btn-main">
+            <a href="/garden" class="hero-btn hero-btn-success">
                 <i class="fas fa-leaf me-2"></i> My Garden
             </a>
             {% else %}
-            <a href="/login" class="btn btn-primary btn-lg btn-main">
+            <a href="/login" class="hero-btn hero-btn-primary">
                 <i class="fas fa-sign-in-alt me-2"></i> Login
             </a>
-            <a href="/register" class="btn btn-success btn-lg btn-main">
+            <a href="/register" class="hero-btn hero-btn-success">
                 <i class="fas fa-seedling me-2"></i> Get Started
             </a>
             {% endif %}
@@ -441,89 +107,75 @@
 </section>
 
 <!-- Features Section -->
-<section class="features-section py-5">
-    <div class="container py-4">
-        <div class="text-center mb-5">
-            <h2 class="display-4 fw-bold" style="color: #7deb7d;">Extraordinary Features</h2>
-            <p class="lead text-light opacity-80 mx-auto" style="max-width: 700px;">Transform your daily habits into a thriving digital garden with our revolutionary platform</p>
-        </div>
+<section class="features-section">
+    <div class="container">
+        <h2 class="section-title">Extraordinary Features</h2>
+        <p class="section-subtitle">Transform your daily habits into a thriving digital garden with our revolutionary platform</p>
         
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="feature-card h-100 p-4">
-                    <div class="text-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-seedling"></i>
-                        </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-seedling feature-icon"></i>
+                        <div class="feature-icon-bg"></div>
                     </div>
-                    <div class="card-body text-center">
-                        <h3 class="text-success mb-3">Habit Growth System</h3>
-                        <p>Your real-world habits directly affect your plants' health and growth. Log activities like water intake, exercise, and mindfulness to see your garden flourish.</p>
-                    </div>
+                    <h3 class="feature-title">Habit Growth System</h3>
+                    <p class="feature-description">Your real-world habits directly affect your plants' health and growth. Log activities like water intake, exercise, and mindfulness to see your garden flourish.</p>
                 </div>
             </div>
             
-            <div class="col-md-4">
-                <div class="feature-card h-100 p-4">
-                    <div class="text-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-magic"></i>
-                        </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-magic feature-icon"></i>
+                        <div class="feature-icon-bg"></div>
                     </div>
-                    <div class="card-body text-center">
-                        <h3 class="text-success mb-3">Living Animations</h3>
-                        <p>Watch your plants dance, bounce, shimmer and come alive with our advanced animation system. Change seasons and toggle special visual effects for a personalized experience.</p>
-                    </div>
+                    <h3 class="feature-title">Living Animations</h3>
+                    <p class="feature-description">Watch your plants dance, bounce, shimmer and come alive with our advanced animation system. Change seasons and toggle special visual effects for a personalized experience.</p>
                 </div>
             </div>
             
-            <div class="col-md-4">
-                <div class="feature-card h-100 p-4">
-                    <div class="text-center">
-                        <div class="feature-icon">
-                            <i class="fas fa-tint"></i>
-                        </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-tint feature-icon"></i>
+                        <div class="feature-icon-bg"></div>
                     </div>
-                    <div class="card-body text-center">
-                        <h3 class="text-success mb-3">Water Credits System</h3>
-                        <p>Earn water credits over time to nurture your garden. Credits regenerate at a rate of 2 per hour to encourage regular engagement and care.</p>
+                    <h3 class="feature-title">Water Credits System</h3>
+                    <p class="feature-description">Earn water credits over time to nurture your garden. Credits regenerate at a rate of 2 per hour to encourage regular engagement and care.</p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-chart-line feature-icon"></i>
+                        <div class="feature-icon-bg"></div>
                     </div>
+                    <h3 class="feature-title">Progress Tracking</h3>
+                    <p class="feature-description">Monitor your habit consistency with beautiful visualizations. See your growth over time and identify patterns to improve your daily routines.</p>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- Statistics Section -->
-<section class="stats-section py-5">
-    <div class="container py-4">
-        <div class="row g-4">
-            <div class="col-md-3 col-6">
-                <div class="stats-card text-center h-100">
-                    <div class="stats-counter">5+</div>
-                    <h5>Plant Types</h5>
-                    <p class="small text-muted mb-0">Unique visuals & behaviors</p>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-users feature-icon"></i>
+                        <div class="feature-icon-bg"></div>
+                    </div>
+                    <h3 class="feature-title">Community Garden</h3>
+                    <p class="feature-description">Connect with friends, share your garden progress, and inspire each other. Visit other gardens and leave encouraging messages to foster growth.</p>
                 </div>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="stats-card text-center h-100">
-                    <div class="stats-counter">7</div>
-                    <h5>Growth Stages</h5>
-                    <p class="small text-muted mb-0">From seed to flowering</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="stats-card text-center h-100">
-                    <div class="stats-counter">10+</div>
-                    <h5>Habit Categories</h5>
-                    <p class="small text-muted mb-0">Track what matters to you</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="stats-card text-center h-100">
-                    <div class="stats-counter">∞</div>
-                    <h5>Possibilities</h5>
-                    <p class="small text-muted mb-0">Create your unique garden</p>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <i class="fas fa-trophy feature-icon"></i>
+                        <div class="feature-icon-bg"></div>
+                    </div>
+                    <h3 class="feature-title">Achievements & Rewards</h3>
+                    <p class="feature-description">Unlock special achievements as you maintain habits and grow your garden. Earn rewards, rare plants, and customization options as you progress.</p>
                 </div>
             </div>
         </div>
@@ -531,46 +183,147 @@
 </section>
 
 <!-- How It Works Section -->
-<section class="py-5">
-    <div class="container py-4">
-        <div class="text-center mb-5">
-            <h2 class="display-4 fw-bold" style="color: #7deb7d;">How It Works</h2>
-            <p class="lead opacity-80 mx-auto" style="max-width: 700px;">Three simple steps to grow your digital zen garden</p>
-        </div>
+<section class="how-it-works-section">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">Growing your digital garden is simple and rewarding</p>
         
         <div class="row align-items-center">
-            <div class="col-lg-6 mb-5 mb-lg-0">
-                <div class="plant-showcase">
-                    <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="PixelSprout showcase" class="img-fluid" style="width: 100%;">
-                </div>
-            </div>
             <div class="col-lg-6">
                 <div class="steps-container">
-                    <div class="position-relative">
-                        <div class="d-flex mb-5 position-relative">
-                            <div class="step-circle">1</div>
-                            <div class="step-line"></div>
-                            <div class="step-content">
-                                <h4 class="step-title">Choose Your Plants</h4>
-                                <p>Select from different plant types including succulents, flowers, trees, herbs, and vines, each with unique visuals and growth patterns.</p>
-                            </div>
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-connector"></div>
+                        <div class="step-content">
+                            <h3 class="step-title">Create Your Account</h3>
+                            <p class="step-description">Sign up in seconds and get immediate access to your personal garden space with starter plants.</p>
                         </div>
-                        
-                        <div class="d-flex mb-5 position-relative">
-                            <div class="step-circle">2</div>
-                            <div class="step-line"></div>
-                            <div class="step-content">
-                                <h4 class="step-title">Log Your Daily Habits</h4>
-                                <p>Track water intake, exercise, sleep, meditation, and other habits that contribute to your well-being and watch as they affect your plants.</p>
-                            </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-connector"></div>
+                        <div class="step-content">
+                            <h3 class="step-title">Track Your Habits</h3>
+                            <p class="step-description">Log your daily activities like water intake, exercise, meditation, and more to nurture your plants.</p>
                         </div>
-                        
-                        <div class="d-flex position-relative">
-                            <div class="step-circle">3</div>
-                            <div class="step-content">
-                                <h4 class="step-title">Watch Your Garden Flourish</h4>
-                                <p>See your plants grow through 7 distinct life stages from seed to flowering, reflecting your real-world habit consistency.</p>
-                            </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-connector"></div>
+                        <div class="step-content">
+                            <h3 class="step-title">Watch Your Garden Grow</h3>
+                            <p class="step-description">See your plants flourish as you maintain healthy habits. Each plant responds differently to your care.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Unlock Achievements</h3>
+                            <p class="step-description">Earn rewards, discover new plant varieties, and customize your garden as you progress.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 mt-5 mt-lg-0">
+                <div class="text-center">
+                    <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="Plant Growth Stages" class="img-fluid" style="max-width: 60%; filter: drop-shadow(0 10px 20px rgba(76, 175, 80, 0.4));">
+                </div>
+                
+                <div class="row mt-5 g-4">
+                    <div class="col-6">
+                        <div class="text-center">
+                            <div class="stats-counter">5+</div>
+                            <h5>Plant Types</h5>
+                            <p>Unique visuals & behaviors</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <div class="stats-counter">7</div>
+                            <h5>Growth Stages</h5>
+                            <p>From seed to flowering</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <div class="stats-counter">10+</div>
+                            <h5>Habit Categories</h5>
+                            <p>Track what matters to you</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <div class="stats-counter">∞</div>
+                            <h5>Possibilities</h5>
+                            <p>Your garden, your way</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <h2 class="section-title">What Our Users Say</h2>
+        <p class="section-subtitle">Join thousands of users who are transforming their habits with PixelSprout</p>
+        
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <p class="testimonial-text">PixelSprout has completely changed how I approach my daily habits. Seeing my plants grow as I maintain my routines is incredibly motivating!</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah J.">
+                        </div>
+                        <div class="testimonial-info">
+                            <h4>Sarah J.</h4>
+                            <p>Fitness Coach</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <p class="testimonial-text">I've tried many habit trackers, but none have kept me engaged like PixelSprout. The visual feedback of my garden growing makes all the difference.</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Michael T.">
+                        </div>
+                        <div class="testimonial-info">
+                            <h4>Michael T.</h4>
+                            <p>Software Developer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <p class="testimonial-text">The community aspect is what I love most. Sharing my garden progress with friends and seeing theirs keeps me accountable and inspired.</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Emma R.">
+                        </div>
+                        <div class="testimonial-info">
+                            <h4>Emma R.</h4>
+                            <p>Student</p>
                         </div>
                     </div>
                 </div>
@@ -581,19 +334,21 @@
 
 <!-- Call to Action -->
 <section class="cta-section">
-    <div class="container text-center">
-        <h2 class="display-4 fw-bold mb-4" style="color: #7deb7d;">Ready to Grow Your Digital Garden?</h2>
-        <p class="lead mb-5 mx-auto" style="max-width: 700px;">Transform your daily habits into a beautiful, thriving digital garden today. Start your journey to better habits and a flourishing garden.</p>
-        
-        {% if current_user.is_authenticated %}
-        <a href="/garden" class="btn btn-success btn-lg btn-main px-5">
-            <i class="fas fa-leaf me-2"></i> Visit My Garden
-        </a>
-        {% else %}
-        <a href="/register" class="btn btn-success btn-lg btn-main px-5">
-            <i class="fas fa-seedling me-2"></i> Start Growing Now
-        </a>
-        {% endif %}
+    <div class="container">
+        <div class="cta-container">
+            <h2 class="cta-title">Ready to Grow Your Digital Garden?</h2>
+            <p class="cta-subtitle">Transform your daily habits into a beautiful, thriving digital garden today. Start your journey to better habits and a flourishing garden.</p>
+            
+            {% if current_user.is_authenticated %}
+            <a href="/garden" class="cta-btn">
+                <i class="fas fa-leaf me-2"></i> Visit My Garden
+            </a>
+            {% else %}
+            <a href="/register" class="cta-btn">
+                <i class="fas fa-seedling me-2"></i> Start Growing Now
+            </a>
+            {% endif %}
+        </div>
     </div>
 </section>
 {% endblock %}

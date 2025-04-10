@@ -89,7 +89,8 @@ class SupabaseAuth:
                     'id': user_id,
                     'email': auth_response.user.email,
                     'username': user_data.get('username', email.split('@')[0]),
-                    'water_credits': user_data.get('water_credits', 20)
+                    'water_credits': user_data.get('water_credits', 20),
+                    'profile_picture_url': user_data.get('profile_picture_url')
                 },
                 'session': auth_response.session
             }
@@ -140,7 +141,8 @@ class SupabaseAuth:
                         'id': user.id,
                         'email': user.email,
                         'username': user.email.split('@')[0],
-                        'water_credits': 20
+                        'water_credits': 20,
+                        'profile_picture_url': None
                     }
                 }
                 
@@ -152,7 +154,8 @@ class SupabaseAuth:
                     'id': user.id,
                     'email': user.email,
                     'username': user_data.get('username', user.email.split('@')[0]),
-                    'water_credits': user_data.get('water_credits', 20)
+                    'water_credits': user_data.get('water_credits', 20),
+                    'profile_picture_url': user_data.get('profile_picture_url')
                 }
             }
         except Exception as e:

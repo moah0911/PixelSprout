@@ -27,6 +27,7 @@ def register():
         session['user_id'] = result['user']['id']
         session['email'] = result['user']['email']
         session['username'] = result['user']['username']
+        session['water_credits'] = 20
         
         return jsonify({
             'success': True,
@@ -34,7 +35,8 @@ def register():
             'user': {
                 'id': result['user']['id'],
                 'email': result['user']['email'],
-                'username': result['user']['username']
+                'username': result['user']['username'],
+                'water_credits': 20
             }
         })
     else:
@@ -65,6 +67,7 @@ def login():
         session['email'] = result['user']['email']
         session['username'] = result['user']['username']
         session['water_credits'] = result['user'].get('water_credits', 20)
+        session['profile_picture_url'] = result['user'].get('profile_picture_url')
         
         return jsonify({
             'success': True,
@@ -73,7 +76,8 @@ def login():
                 'id': result['user']['id'],
                 'email': result['user']['email'],
                 'username': result['user']['username'],
-                'water_credits': result['user'].get('water_credits', 20)
+                'water_credits': result['user'].get('water_credits', 20),
+                'profile_picture_url': result['user'].get('profile_picture_url')
             }
         })
     else:
@@ -108,6 +112,7 @@ def get_current_user():
         session['email'] = result['user']['email']
         session['username'] = result['user']['username']
         session['water_credits'] = result['user'].get('water_credits', 20)
+        session['profile_picture_url'] = result['user'].get('profile_picture_url')
         
         return jsonify({
             'success': True,
@@ -115,7 +120,8 @@ def get_current_user():
                 'id': result['user']['id'],
                 'email': result['user']['email'],
                 'username': result['user']['username'],
-                'water_credits': result['user'].get('water_credits', 20)
+                'water_credits': result['user'].get('water_credits', 20),
+                'profile_picture_url': result['user'].get('profile_picture_url')
             }
         })
     else:
@@ -191,5 +197,6 @@ def load_logged_in_user():
             'id': session.get('user_id'),
             'email': session.get('email'),
             'username': session.get('username'),
-            'water_credits': session.get('water_credits', 20)
+            'water_credits': session.get('water_credits', 20),
+            'profile_picture_url': session.get('profile_picture_url')
         }

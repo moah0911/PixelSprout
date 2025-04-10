@@ -2,74 +2,80 @@
 
 {% block title %}PixelSprout - Login{% endblock %}
 
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card border-0 bg-dark bg-opacity-50 shadow-lg">
-                <div class="card-body p-5">
-                    <div class="text-center mb-4">
-                        <div class="logo-animation mb-3">
-                            <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="Logo" class="mb-3 pulse-grow" style="width: 100px; height: 100px;">
-                            <div class="glow-circle"></div>
-                        </div>
-                        <h2 class="welcome-heading animated-text">Welcome Back</h2>
-                        <p class="login-subtitle">Login to your <span class="text-success fw-bold">PixelSprout</span> Garden</p>
-                    </div>
-                    
-                    <div id="login-error" class="alert alert-danger d-none" role="alert"></div>
-                    
-                    <form id="login-form">
-                        <div class="mb-4">
-                            <label for="email" class="form-label input-label">
-                                <i class="fas fa-envelope me-2 text-success"></i>Email
-                            </label>
-                            <div class="input-group input-group-glow">
-                                <span class="input-group-text bg-success bg-opacity-50 border-0">
-                                    <i class="fas fa-envelope fa-bounce"></i>
-                                </span>
-                                <input type="email" class="form-control fancy-input bg-dark bg-opacity-50 border-0 text-light" id="email" name="email" placeholder="Your email" required>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="password" class="form-label input-label">
-                                <i class="fas fa-lock me-2 text-success"></i>Password
-                            </label>
-                            <div class="input-group input-group-glow">
-                                <span class="input-group-text bg-success bg-opacity-50 border-0">
-                                    <i class="fas fa-lock fa-bounce"></i>
-                                </span>
-                                <input type="password" class="form-control fancy-input bg-dark bg-opacity-50 border-0 text-light" id="password" name="password" placeholder="Your password" required>
-                            </div>
-                        </div>
-                        
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg btn-glow">
-                                <div class="btn-content">
-                                    <i class="fas fa-sign-in-alt me-2"></i> Login
-                                </div>
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <div class="mt-4 text-center">
-                        <p class="register-prompt">Don't have an account? <a href="{{ url_for('register_page') }}" class="text-success register-link">Register now <i class="fas fa-arrow-right ms-1"></i></a></p>
-                    </div>
+<div class="auth-container">
+    <!-- Animated Background Elements -->
+    <div class="auth-bg">
+        <div class="auth-bg-circle"></div>
+        <div class="auth-bg-circle"></div>
+        <div class="auth-bg-circle"></div>
+        <div class="auth-bg-line"></div>
+        <div class="auth-bg-line"></div>
+        <div class="auth-bg-line"></div>
+    </div>
+
+    <div class="auth-card auth-fade-in">
+        <div class="auth-card-header">
+            <div class="auth-logo-container">
+                <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="PixelSprout Logo" class="auth-logo">
+                <div class="auth-logo-glow"></div>
+                <div class="auth-logo-particles">
+                    <div class="auth-particle"></div>
+                    <div class="auth-particle"></div>
+                    <div class="auth-particle"></div>
+                    <div class="auth-particle"></div>
                 </div>
             </div>
-            
-            <div class="text-center mt-4">
-                <div class="glass-panel p-4 rounded">
-                    <h5 class="mb-3 demo-title"><i class="fas fa-rocket me-2 text-warning"></i>Demo Mode</h5>
-                    <div class="row g-2">
-                        <div class="col">
-                            <button id="demo-login" class="btn btn-outline-success w-100 btn-glow-alt">
-                                <i class="fas fa-user-check me-2"></i> Quick Login
-                            </button>
-                        </div>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Login to nurture your digital garden</p>
+        </div>
+
+        <div class="auth-card-body">
+            <div id="login-error" class="auth-error d-none">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="error-message">Invalid email or password</span>
+            </div>
+
+            <form id="login-form" class="auth-fade-in-delay-1">
+                <div class="auth-form-group">
+                    <label for="email" class="auth-label">Email Address</label>
+                    <div class="auth-input-container">
+                        <input type="email" id="email" name="email" class="auth-input" placeholder="Enter your email" required>
+                        <i class="fas fa-envelope auth-input-icon"></i>
                     </div>
                 </div>
+
+                <div class="auth-form-group">
+                    <label for="password" class="auth-label">Password</label>
+                    <div class="auth-input-container">
+                        <input type="password" id="password" name="password" class="auth-input" placeholder="Enter your password" required>
+                        <i class="fas fa-lock auth-input-icon"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-button">
+                    <i class="fas fa-sign-in-alt me-2"></i> Login to Garden
+                </button>
+
+                <div class="auth-alt-action auth-fade-in-delay-2">
+                    <p>Don't have an account? <a href="{{ url_for('register_page') }}" class="auth-link">Create Account <i class="fas fa-arrow-right ms-1"></i></a></p>
+                </div>
+            </form>
+
+            <div class="auth-divider auth-fade-in-delay-2">or</div>
+
+            <div class="auth-demo auth-fade-in-delay-3">
+                <h3 class="auth-demo-title">
+                    <i class="fas fa-rocket"></i> Quick Demo Access
+                </h3>
+                <button id="demo-login" class="auth-demo-button">
+                    <i class="fas fa-user-check me-2"></i> Try Demo Account
+                </button>
             </div>
         </div>
     </div>
@@ -81,14 +87,37 @@
     document.addEventListener('DOMContentLoaded', function() {
         const loginForm = document.getElementById('login-form');
         const errorDiv = document.getElementById('login-error');
+        const errorMessage = document.getElementById('error-message');
         const demoLoginBtn = document.getElementById('demo-login');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginButton = document.querySelector('.auth-button');
+        
+        // Add focus effects to inputs
+        const inputs = document.querySelectorAll('.auth-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('input-focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('input-focused');
+            });
+        });
         
         // Handle login form submission
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            // Show loading state
+            loginButton.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Logging in...';
+            loginButton.disabled = true;
+            
+            // Hide any previous errors
+            errorDiv.classList.add('d-none');
+            
+            const email = emailInput.value;
+            const password = passwordInput.value;
             
             try {
                 const response = await fetch('/api/login', {
@@ -102,28 +131,137 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Redirect to garden page on successful login
-                    window.location.href = '/garden';
+                    // Show success message before redirect
+                    loginButton.innerHTML = '<i class="fas fa-check-circle"></i> Success!';
+                    loginButton.style.background = 'linear-gradient(45deg, #2E7D32, #4CAF50)';
+                    
+                    // Add success animation to logo
+                    const logoContainer = document.querySelector('.auth-logo-container');
+                    logoContainer.classList.add('success-animation');
+                    
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/garden';
+                    }, 1000);
                 } else {
                     // Show error message
-                    errorDiv.textContent = data.message || 'Login failed';
+                    errorMessage.textContent = data.message || 'Login failed';
                     errorDiv.classList.remove('d-none');
+                    
+                    // Reset button
+                    loginButton.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Login to Garden';
+                    loginButton.disabled = false;
+                    
+                    // Shake effect on error
+                    loginForm.classList.add('shake-animation');
+                    setTimeout(() => {
+                        loginForm.classList.remove('shake-animation');
+                    }, 500);
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                errorDiv.textContent = 'An error occurred during login. Please try again.';
+                errorMessage.textContent = 'An error occurred during login. Please try again.';
                 errorDiv.classList.remove('d-none');
+                
+                // Reset button
+                loginButton.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Login to Garden';
+                loginButton.disabled = false;
             }
         });
         
         // Handle demo login
         if (demoLoginBtn) {
             demoLoginBtn.addEventListener('click', function() {
-                document.getElementById('email').value = 'demo@example.com';
-                document.getElementById('password').value = 'demopassword';
-                loginForm.dispatchEvent(new Event('submit'));
+                // Animate filling in the demo credentials
+                emailInput.value = '';
+                passwordInput.value = '';
+                
+                const demoEmail = 'demo@example.com';
+                const demoPassword = 'demopassword';
+                
+                let emailIndex = 0;
+                let passwordIndex = 0;
+                
+                // Type email character by character
+                const typeEmail = setInterval(() => {
+                    if (emailIndex < demoEmail.length) {
+                        emailInput.value += demoEmail.charAt(emailIndex);
+                        emailIndex++;
+                    } else {
+                        clearInterval(typeEmail);
+                        
+                        // Then type password
+                        const typePassword = setInterval(() => {
+                            if (passwordIndex < demoPassword.length) {
+                                passwordInput.value += demoPassword.charAt(passwordIndex);
+                                passwordIndex++;
+                            } else {
+                                clearInterval(typePassword);
+                                
+                                // Submit form after typing is complete
+                                setTimeout(() => {
+                                    loginForm.dispatchEvent(new Event('submit'));
+                                }, 300);
+                            }
+                        }, 50);
+                    }
+                }, 50);
             });
         }
+        
+        // Add particle animation
+        function createParticles() {
+            const particles = document.querySelectorAll('.auth-particle');
+            particles.forEach(particle => {
+                // Random position
+                const randomLeft = Math.floor(Math.random() * 100);
+                particle.style.left = `${randomLeft}%`;
+                
+                // Random size
+                const randomSize = Math.floor(Math.random() * 4) + 3;
+                particle.style.width = `${randomSize}px`;
+                particle.style.height = `${randomSize}px`;
+                
+                // Random animation duration
+                const randomDuration = Math.floor(Math.random() * 3) + 2;
+                particle.style.animationDuration = `${randomDuration}s`;
+            });
+        }
+        
+        // Initialize particles
+        createParticles();
+        
+        // Recreate particles periodically
+        setInterval(createParticles, 4000);
     });
 </script>
+
+<style>
+    /* Additional animations for login page */
+    .input-focused .auth-input-icon {
+        color: #8BC34A;
+        transform: translateY(-50%) scale(1.1);
+    }
+    
+    .shake-animation {
+        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    }
+    
+    @keyframes shake {
+        10%, 90% { transform: translateX(-1px); }
+        20%, 80% { transform: translateX(2px); }
+        30%, 50%, 70% { transform: translateX(-4px); }
+        40%, 60% { transform: translateX(4px); }
+    }
+    
+    .success-animation {
+        animation: success-pulse 1s ease;
+    }
+    
+    @keyframes success-pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+</style>
 {% endblock %}

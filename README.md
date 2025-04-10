@@ -14,7 +14,8 @@ PixelSprout is a dynamic digital garden web application that transforms your hab
 
 ## Stack
 
-- **Backend**: Flask, SQLAlchemy, PostgreSQL
+- **Backend**: Flask
+- **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase
 - **Frontend**: JavaScript, CSS, HTML
 - **Visualization**: SVG animations with interactive elements
@@ -25,8 +26,7 @@ PixelSprout is a dynamic digital garden web application that transforms your hab
 ### Prerequisites
 
 - Python 3.11+
-- PostgreSQL database
-- Supabase account for authentication (optional)
+- Supabase account (for both authentication and database)
 
 ### Local Development Setup
 
@@ -49,20 +49,21 @@ PixelSprout is a dynamic digital garden web application that transforms your hab
 
 4. Set up environment variables:
    ```bash
-   # Database connection
-   export DATABASE_URL=postgresql://username:password@localhost:5432/pixelsprout
-   
-   # Supabase configuration (if using Supabase)
+   # Supabase configuration
    export SUPABASE_URL=your_supabase_url
    export SUPABASE_KEY=your_supabase_key
    
-   # Flask secret key
-   export FLASK_SECRET_KEY=your_secret_key
+   # Flask secret key (optional - will be auto-generated if not provided)
+   export SESSION_SECRET=your_secret_key
    ```
+   
+   Note: The SESSION_SECRET key will be automatically generated and stored in the `instance/secret_key` file if not provided as an environment variable. This ensures security without manual configuration.
 
-5. Initialize the database:
+5. Initialize the Supabase database:
    ```bash
-   python setup_database.py
+   # Run the SQL commands in supabase_setup.sql in the Supabase SQL Editor
+   # or use the Supabase CLI if you have it installed:
+   # supabase db push
    ```
 
 6. Run the application:
@@ -76,19 +77,39 @@ PixelSprout is a dynamic digital garden web application that transforms your hab
 
 For production deployment, the application is configured to work with cloud platforms like Render, Heroku, or AWS:
 
-1. Ensure your database connection string is properly set as an environment variable
-2. Make sure your Supabase configuration is properly set up in environment variables
-3. For Render deployment, the included `render.yaml` file provides configuration
+1. Make sure your Supabase configuration is properly set up in environment variables
+2. For Render deployment, the included `render.yaml` file provides configuration
+3. The SESSION_SECRET will be automatically generated if not provided as an environment variable
+   - For production, it's recommended to set SESSION_SECRET manually to ensure it remains consistent across application restarts and deployments
+   - If not set, a new secret key will be generated and stored in the `instance/secret_key` file
 
 #### Database Migration
 
 If you need to modify the database schema:
 
-1. Make changes to the models in `models.py`
-2. Run the database migration scripts:
+1. Update the SQL commands in `supabase_setup.sql`
+2. Run the updated SQL commands in the Supabase SQL Editor
+3. If using the Supabase CLI:
    ```bash
-   python setup_database.py
+   supabase db push
    ```
+
+#### Supabase Setup Instructions
+
+For detailed instructions on setting up Supabase for this application:
+
+1. See the `supabase_setup_instructions.md` file
+2. Follow the SQL setup in `supabase_setup.sql`
+3. Configure Row Level Security (RLS) policies as described in the setup file
+4. Set up Supabase Storage buckets by running:
+   ```bash
+   python setup_supabase_storage.py
+   ```
+5. Configure Storage permissions in the Supabase dashboard:
+   - Go to Storage > Policies
+   - For each bucket (pixelsprout-uploads, profile-pictures, plant-images):
+     - Add a policy to allow authenticated users to upload files
+     - Add a policy to allow public read access to all files
 
 ## License
 
