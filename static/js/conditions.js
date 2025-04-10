@@ -52,6 +52,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing options
         conditionTypeSelect.innerHTML = '<option value="" selected disabled>Select condition...</option>';
         
+        // Check if conditionTypes is empty or undefined
+        if (!conditionTypes || conditionTypes.length === 0) {
+            console.error('No condition types available');
+            showNotification('Failed to load condition types', 'error');
+            return;
+        }
+        
         // First, deduplicate the array by name
         const uniqueTypes = {};
         for (const type of conditionTypes) {
@@ -88,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Default icon
         const defaultIcon = 'check-circle';
         
+        // Add options to select
         sortedTypes.forEach(type => {
             const option = document.createElement('option');
             option.value = type.name;
@@ -106,15 +114,26 @@ document.addEventListener('DOMContentLoaded', function() {
             conditionTypeSelect.appendChild(option);
         });
         
-        // Add change event listener
+        // Update the unit label when condition type changes
         conditionTypeSelect.addEventListener('change', function() {
             const selectedTypeName = this.value;
             const selectedType = conditionTypes.find(type => type.name === selectedTypeName);
             
             if (selectedType) {
                 updateGoalHint(selectedType);
+                
+                // Update the unit label in the input group
+                const valueUnit = document.getElementById('value-unit');
+                if (valueUnit) {
+                    valueUnit.textContent = selectedType.unit || 'units';
+                }
             }
         });
+        
+        // Trigger change event if there's a default selection
+        if (conditionTypeSelect.value) {
+            conditionTypeSelect.dispatchEvent(new Event('change'));
+        }
     }
     
     function updateGoalHint(conditionType) {
@@ -198,14 +217,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const listGroup = document.createElement('ul');
         listGroup.className = 'list-group';
         
-        recentConditions.forEach(condition => {
+        // Limit to the 5 most recent conditions
+        const recentLimit = 5;
+        const limitedConditions = recentConditions.slice(0, recentLimit);
+        
+        // Add a header showing how many conditions are displayed
+        const headerItem = document.createElement('li');
+        headerItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+        headerItem.innerHTML = `
+            <span>Recent Conditions</span>
+            <span class="badge bg-success rounded-pill">${limitedConditions.length} of ${recentConditions.length}</span>
+        `;
+        listGroup.appendChild(headerItem);
+        
+        limitedConditions.forEach(condition => {
             // Find condition type to get unit
             const conditionType = conditionTypes.find(t => t.name === condition.type_name);
             const unit = conditionType ? conditionType.unit : '';
             
             // Format date
             const date = new Date(condition.date_logged);
-            const formattedDate = date.toLocaleString();
             
             // Get display name from condition type if available
             let displayName;
@@ -268,6 +299,29 @@ document.addEventListener('DOMContentLoaded', function() {
             
             listGroup.appendChild(listItem);
         });
+        
+        // Add "View All" button if there are more conditions
+        if (recentConditions.length > recentLimit) {
+            const viewAllItem = document.createElement('li');
+            viewAllItem.className = 'list-group-item text-center';
+            viewAllItem.innerHTML = `
+                <button class="btn btn-sm btn-outline-success" id="view-all-conditions-btn">
+                    <i class="fas fa-list me-1"></i> View All ${recentConditions.length} Conditions
+                </button>
+            `;
+            listGroup.appendChild(viewAllItem);
+            
+            // Add event listener after appending to DOM
+            setTimeout(() => {
+                const viewAllBtn = document.getElementById('view-all-conditions-btn');
+                if (viewAllBtn) {
+                    viewAllBtn.addEventListener('click', function() {
+                        // Show modal with all conditions or navigate to conditions page
+                        showNotification('Viewing all conditions feature coming soon!', 'info');
+                    });
+                }
+            }, 0);
+        }
         
         recentConditionsList.appendChild(listGroup);
     }

@@ -35,6 +35,607 @@ document.addEventListener('DOMContentLoaded', function() {
         gardenContainer.addEventListener('click', handlePlantClick);
     }
     
+    // Add event listener for rename form
+    const renamePlantForm = document.getElementById('rename-plant-form');
+    if (renamePlantForm) {
+        renamePlantForm.addEventListener('submit', handleRenamePlant);
+    }
+    
+    /**
+     * Handle click on a plant card
+     * @param {Event} event - The click event
+     */
+    function handlePlantClick(event) {
+        // Find the closest plant card or list item
+        const plantCard = event.target.closest('.plant-card, .plant-list-item');
+        if (!plantCard) return;
+        
+        // Get the plant ID
+        const plantId = plantCard.dataset.plantId;
+        if (!plantId) return;
+        
+        // Find the selected plant
+        selectedPlant = plants.find(p => p.id == plantId);
+        if (!selectedPlant) return;
+        
+        // Update UI to show selected plant
+        document.querySelectorAll('.plant-card, .plant-list-item').forEach(card => {
+            card.classList.remove('selected');
+        });
+        plantCard.classList.add('selected');
+        
+        // Update plant details panel
+        updatePlantDetailsPanel();
+        
+        // Show plant details modal
+        const detailsModal = new bootstrap.Modal(document.getElementById('plant-details-modal'));
+        detailsModal.show();
+        
+        // Prepare the modal with plant details
+        prepareDetailsModal(plantId);
+    }
+    
+    /**
+     * Update the plant details panel with information about the selected plant
+     */
+    function updatePlantDetailsPanel() {
+        const detailsPanel = document.getElementById('plant-details-panel');
+        if (!detailsPanel) return;
+        
+        if (!selectedPlant) {
+            detailsPanel.innerHTML = `
+                <div class="text-center p-4">
+                    <i class="fas fa-leaf fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Select a plant to view detailed information</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Format dates
+        const createdDate = new Date(selectedPlant.created_at);
+        const lastWateredDate = new Date(selectedPlant.last_watered);
+        const timeElapsedSinceWatering = getTimeElapsed(selectedPlant.last_watered);
+        
+        // Get stage name
+        const stageNames = ['Seed', 'Sprout', 'Growing', 'Mature', 'Flowering', 'Withering', 'Dead'];
+        const stageName = stageNames[selectedPlant.stage] || 'Unknown';
+        
+        // Calculate days since creation
+        const daysSinceCreation = Math.floor((new Date() - createdDate) / (1000 * 60 * 60 * 24));
+        
+        // Create enhanced plant details panel
+        detailsPanel.innerHTML = `
+            <div class="plant-details">
+                <div class="plant-details-visual mb-4">
+                    ${getPlantSvg(selectedPlant.type, selectedPlant.stage)}
+                </div>
+                
+                <div class="plant-details-header mb-3">
+                    <h3 class="plant-details-name">${selectedPlant.name}</h3>
+                    <div class="plant-details-badges">
+                        <span class="badge bg-primary">${selectedPlant.type}</span>
+                        <span class="badge ${selectedPlant.stage > 4 ? 'bg-danger' : 'bg-success'}">${stageName}</span>
+                    </div>
+                </div>
+                
+                <div class="plant-progress-container mb-3">
+                    <div class="plant-progress-label">
+                        <span>Health</span>
+                        <span>${Math.round(selectedPlant.health)}%</span>
+                    </div>
+                    <div class="plant-progress-bar">
+                        <div class="plant-progress-fill plant-health-fill" style="width: ${selectedPlant.health}%"></div>
+                    </div>
+                </div>
+                
+                <div class="plant-progress-container mb-4">
+                    <div class="plant-progress-label">
+                        <span>Growth</span>
+                        <span>${Math.round(selectedPlant.progress)}%</span>
+                    </div>
+                    <div class="plant-progress-bar">
+                        <div class="plant-progress-fill plant-growth-fill" style="width: ${selectedPlant.progress}%"></div>
+                    </div>
+                </div>
+                
+                <div class="plant-details-stats mb-4">
+                    <div class="plant-stat-item">
+                        <div class="plant-stat-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="plant-stat-content">
+                            <div class="plant-stat-label">Age</div>
+                            <div class="plant-stat-value">${daysSinceCreation} days</div>
+                        </div>
+                    </div>
+                    
+                    <div class="plant-stat-item">
+                        <div class="plant-stat-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="plant-stat-content">
+                            <div class="plant-stat-label">Last Watered</div>
+                            <div class="plant-stat-value">${timeElapsedSinceWatering}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="plant-stat-item">
+                        <div class="plant-stat-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <div class="plant-stat-content">
+                            <div class="plant-stat-label">Created</div>
+                            <div class="plant-stat-value">${formatDate(selectedPlant.created_at)}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="plant-details-actions mb-3">
+                    <button class="btn btn-garden btn-garden-secondary water-plant-btn" data-plant-id="${selectedPlant.id}">
+                        <i class="fas fa-tint me-2"></i> Water Plant
+                    </button>
+                    
+                    <button class="btn btn-garden btn-garden-outline dance-plant-btn" data-plant-id="${selectedPlant.id}">
+                        <i class="fas fa-music me-2"></i> Animate
+                    </button>
+                    
+                    <button class="btn btn-garden btn-garden-primary" data-bs-toggle="modal" data-bs-target="#plant-details-modal">
+                        <i class="fas fa-info-circle me-2"></i> More Details
+                    </button>
+                </div>
+                
+                <div class="plant-status-message ${selectedPlant.health < 30 ? 'status-danger' : 'status-info'}">
+                    <i class="fas ${selectedPlant.health < 30 ? 'fa-exclamation-triangle' : 'fa-info-circle'} me-2"></i>
+                    ${getPlantStatusMessage(selectedPlant)}
+                </div>
+            </div>
+        `;
+        
+        // Add event listeners to buttons
+        const waterButton = detailsPanel.querySelector('.water-plant-btn');
+        if (waterButton) {
+            waterButton.addEventListener('click', function() {
+                const plantId = this.getAttribute('data-plant-id');
+                waterPlant(plantId);
+            });
+        }
+        
+        const danceButton = detailsPanel.querySelector('.dance-plant-btn');
+        if (danceButton) {
+            danceButton.addEventListener('click', function() {
+                const plantId = this.getAttribute('data-plant-id');
+                const plantContainer = document.querySelector(`.plant-container[data-plant-id="${plantId}"]`);
+                
+                if (plantContainer) {
+                    // Toggle dancing class
+                    if (plantContainer.classList.contains('animation-dancing')) {
+                        plantContainer.classList.remove('animation-dancing');
+                        this.innerHTML = '<i class="fas fa-music me-2"></i> Animate';
+                        this.classList.remove('btn-garden-primary');
+                        this.classList.add('btn-garden-outline');
+                    } else {
+                        plantContainer.classList.add('animation-dancing');
+                        this.innerHTML = '<i class="fas fa-stop me-2"></i> Stop Animation';
+                        this.classList.remove('btn-garden-outline');
+                        this.classList.add('btn-garden-primary');
+                    }
+                }
+            });
+        }
+    }
+    
+    /**
+     * Prepare the details modal with plant information
+     * @param {string} plantId - The ID of the plant to show details for
+     */
+    function prepareDetailsModal(plantId) {
+        // Find the plant by ID
+        const plant = plants.find(p => p.id == plantId);
+        if (!plant) return;
+        
+        // Update modal title
+        const modalTitle = document.getElementById('modal-plant-name');
+        if (modalTitle) {
+            modalTitle.textContent = plant.name;
+        }
+        
+        // Update plant visual
+        const modalPlantVisual = document.getElementById('modal-plant-visual');
+        if (modalPlantVisual) {
+            modalPlantVisual.innerHTML = getPlantSvg(plant.type, plant.stage);
+        }
+        
+        // Update plant stats
+        const modalPlantStats = document.getElementById('modal-plant-stats');
+        if (modalPlantStats) {
+            // Get stage name
+            const stageNames = ['Seed', 'Sprout', 'Growing', 'Mature', 'Flowering', 'Withering', 'Dead'];
+            const stageName = stageNames[plant.stage] || 'Unknown';
+            
+            modalPlantStats.innerHTML = `
+                <div class="plant-progress-container mb-3">
+                    <div class="plant-progress-label">
+                        <span>Health</span>
+                        <span>${Math.round(plant.health)}%</span>
+                    </div>
+                    <div class="plant-progress-bar">
+                        <div class="plant-progress-fill plant-health-fill" style="width: ${plant.health}%"></div>
+                    </div>
+                </div>
+                
+                <div class="plant-progress-container mb-3">
+                    <div class="plant-progress-label">
+                        <span>Growth</span>
+                        <span>${Math.round(plant.progress)}%</span>
+                    </div>
+                    <div class="plant-progress-bar">
+                        <div class="plant-progress-fill plant-growth-fill" style="width: ${plant.progress}%"></div>
+                    </div>
+                </div>
+                
+                <div class="plant-details-badges mb-3">
+                    <span class="badge bg-primary">${plant.type}</span>
+                    <span class="badge ${plant.stage > 4 ? 'bg-danger' : 'bg-success'}">${stageName}</span>
+                </div>
+            `;
+        }
+        
+        // Set up modal water button
+        const modalWaterButton = document.getElementById('modal-water-plant-btn');
+        if (modalWaterButton) {
+            modalWaterButton.setAttribute('data-plant-id', plant.id);
+            modalWaterButton.onclick = function() {
+                waterPlant(plant.id);
+            };
+        }
+        
+        // Set up rename button
+        const modalRenameButton = document.getElementById('modal-rename-plant-btn');
+        if (modalRenameButton) {
+            modalRenameButton.onclick = function() {
+                // Set the plant ID in the rename form
+                const renameIdInput = document.getElementById('rename-plant-id');
+                if (renameIdInput) {
+                    renameIdInput.value = plant.id;
+                }
+                
+                // Set the current name as default
+                const newNameInput = document.getElementById('new-plant-name');
+                if (newNameInput) {
+                    newNameInput.value = plant.name;
+                }
+                
+                // Hide the details modal and show the rename modal
+                const detailsModal = bootstrap.Modal.getInstance(document.getElementById('plant-details-modal'));
+                if (detailsModal) {
+                    detailsModal.hide();
+                }
+                
+                // Show rename modal
+                const renameModal = new bootstrap.Modal(document.getElementById('rename-plant-modal'));
+                if (renameModal) {
+                    renameModal.show();
+                }
+            };
+        }
+        
+        // Create a simple growth history chart
+        const historyContainer = document.getElementById('modal-plant-history');
+        if (historyContainer) {
+            historyContainer.innerHTML = '<canvas id="growth-history-chart"></canvas>';
+            
+            // Create dummy data for the chart (in a real app, this would come from the backend)
+            const labels = [];
+            const healthData = [];
+            const growthData = [];
+            
+            // Generate some data points for the last 7 days
+            const today = new Date();
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                
+                // Generate some random data that trends upward
+                const daysSinceCreation = Math.floor((date - new Date(plant.created_at)) / (1000 * 60 * 60 * 24));
+                const baseHealth = Math.max(0, Math.min(100, 50 + daysSinceCreation * 5 + Math.random() * 20 - 10));
+                const baseGrowth = Math.max(0, Math.min(100, 30 + daysSinceCreation * 7 + Math.random() * 15 - 7.5));
+                
+                healthData.push(baseHealth);
+                growthData.push(baseGrowth);
+            }
+            
+            // Add current values
+            labels.push('Today');
+            healthData.push(plant.health);
+            growthData.push(plant.progress);
+            
+            // Create the chart if Chart.js is available
+            if (typeof Chart !== 'undefined') {
+                const ctx = document.getElementById('growth-history-chart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Health',
+                                data: healthData,
+                                borderColor: '#4CAF50',
+                                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            },
+                            {
+                                label: 'Growth',
+                                data: growthData,
+                                borderColor: '#2196F3',
+                                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#e9ecef'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#e9ecef'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#e9ecef'
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Fallback if Chart.js is not available
+                historyContainer.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Chart.js is required to display growth history. Please include it in your project.
+                    </div>
+                `;
+            }
+        }
+    }
+    
+    /**
+     * Get a status message for a plant based on its health and growth
+     * @param {Object} plant - The plant object
+     * @returns {string} A status message
+     */
+    function getPlantStatusMessage(plant) {
+        if (plant.health < 30) {
+            return 'This plant needs water urgently!';
+        } else if (plant.health < 50) {
+            return 'This plant could use some water soon.';
+        } else if (plant.progress > 90 && plant.stage < 4) {
+            return 'This plant is ready to advance to the next stage!';
+        } else if (plant.health > 80 && plant.progress > 70) {
+            return 'This plant is thriving!';
+        } else {
+            return 'This plant is doing well.';
+        }
+    }
+    
+    /**
+     * Format a date string into a readable format
+     * @param {string} dateString - The date string to format
+     * @returns {string} A formatted date string
+     */
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+    
+    /**
+     * Get a human-readable time elapsed string
+     * @param {string} dateString - The date string to calculate elapsed time from
+     * @returns {string} A human-readable time elapsed string
+     */
+    function getTimeElapsed(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+        
+        if (diffInSeconds < 60) {
+            return 'Just now';
+        }
+        
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        if (diffInMinutes < 60) {
+            return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+        }
+        
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours < 24) {
+            return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+        }
+        
+        const diffInDays = Math.floor(diffInHours / 24);
+        if (diffInDays === 1) {
+            return 'Yesterday';
+        }
+        
+        if (diffInDays < 7) {
+            return `${diffInDays} days ago`;
+        }
+        
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+    
+    /**
+     * Handle plant rename form submission
+     * @param {Event} event - The form submission event
+     */
+    async function handleRenamePlant(event) {
+        event.preventDefault();
+        
+        const plantIdInput = document.getElementById('rename-plant-id');
+        const newNameInput = document.getElementById('new-plant-name');
+        
+        if (!plantIdInput || !newNameInput) {
+            showNotification('Form elements not found', 'error');
+            return;
+        }
+        
+        const plantId = plantIdInput.value;
+        const newName = newNameInput.value.trim();
+        
+        if (!plantId || !newName) {
+            showNotification('Please enter a new name', 'warning');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/rename-plant/${plantId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: newName })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Update plant in the array
+                const plant = plants.find(p => p.id == plantId);
+                if (plant) {
+                    plant.name = newName;
+                }
+                
+                // Update UI
+                renderGarden();
+                if (selectedPlant && selectedPlant.id == plantId) {
+                    selectedPlant.name = newName;
+                    updatePlantDetailsPanel();
+                }
+                
+                showNotification(`Plant renamed to ${newName}`, 'success');
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('rename-plant-modal'));
+                if (modal) {
+                    modal.hide();
+                }
+            } else {
+                showNotification(data.message || 'Failed to rename plant', 'error');
+            }
+        } catch (error) {
+            console.error('Error renaming plant:', error);
+            showNotification('Error renaming plant', 'error');
+        }
+    }
+    
+    /**
+     * Water a plant
+     * @param {string} plantId - The ID of the plant to water
+     */
+    async function waterPlant(plantId) {
+        try {
+            // Show watering effect immediately for better user feedback
+            const plantContainer = document.querySelector(`.plant-container[data-plant-id="${plantId}"]`);
+            if (plantContainer) {
+                // Add watering animation
+                const wateringEffect = document.createElement('div');
+                wateringEffect.className = 'watering-effect';
+                
+                // Add water drops
+                for (let i = 0; i < 5; i++) {
+                    const waterDrop = document.createElement('div');
+                    waterDrop.className = 'water-drop';
+                    wateringEffect.appendChild(waterDrop);
+                }
+                
+                // Add water splash effects
+                for (let i = 0; i < 5; i++) {
+                    const waterSplash = document.createElement('div');
+                    waterSplash.className = 'water-splash';
+                    wateringEffect.appendChild(waterSplash);
+                }
+                
+                plantContainer.appendChild(wateringEffect);
+                
+                // Make plant dance briefly
+                plantContainer.classList.add('animation-dancing');
+                
+                // Remove effects after animation completes
+                setTimeout(() => {
+                    const wateringEffect = plantContainer.querySelector('.watering-effect');
+                    if (wateringEffect && wateringEffect.parentNode === plantContainer) {
+                        plantContainer.removeChild(wateringEffect);
+                    }
+                    plantContainer.classList.remove('animation-dancing');
+                }, 2000);
+            }
+            
+            const response = await fetch(`/api/water-plant/${plantId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Update water credits
+                waterCredits = data.water_credits;
+                updateWaterCreditsDisplay();
+                
+                // Update plant data
+                const plant = plants.find(p => p.id == plantId);
+                if (plant) {
+                    Object.assign(plant, data.plant);
+                }
+                
+                // Update UI
+                renderGarden();
+                if (selectedPlant && selectedPlant.id == plantId) {
+                    selectedPlant = data.plant;
+                    updatePlantDetailsPanel();
+                }
+                
+                showNotification(data.message || 'Plant watered successfully!', 'success');
+            } else {
+                showNotification(data.message || 'Failed to water plant', 'error');
+            }
+        } catch (error) {
+            console.error('Error watering plant:', error);
+            showNotification('Error watering plant', 'error');
+        }
+    }
+    
     if (waterAllPlantsBtn) {
         waterAllPlantsBtn.addEventListener('click', handleWaterAllPlants);
     }
@@ -79,6 +680,110 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Initialize garden stats
         updateGardenStats();
+        
+        // Add plant details modal to the page if it doesn't exist
+        if (!document.getElementById('plant-details-modal')) {
+            createPlantDetailsModal();
+        }
+    }
+    
+    /**
+     * Create the plant details modal
+     * This modal shows detailed information about a plant when clicked
+     */
+    function createPlantDetailsModal() {
+        const modalHtml = `
+            <div class="modal fade" id="plant-details-modal" tabindex="-1" aria-labelledby="plant-details-modal-label" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content bg-dark">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modal-plant-name">Plant Details</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-5 text-center">
+                                    <div id="modal-plant-visual" class="plant-details-visual mb-4"></div>
+                                    <div id="modal-plant-stats"></div>
+                                </div>
+                                <div class="col-md-7">
+                                    <h5 class="mb-3">Growth History</h5>
+                                    <div id="modal-plant-history" class="mb-4"></div>
+                                    
+                                    <h5 class="mb-3">Care Instructions</h5>
+                                    <div class="care-instructions mb-4">
+                                        <div class="care-instruction-item">
+                                            <i class="fas fa-tint text-info"></i>
+                                            <span>Water regularly to maintain health above 70%</span>
+                                        </div>
+                                        <div class="care-instruction-item">
+                                            <i class="fas fa-sun text-warning"></i>
+                                            <span>Log sunlight conditions to boost growth</span>
+                                        </div>
+                                        <div class="care-instruction-item">
+                                            <i class="fas fa-heart text-danger"></i>
+                                            <span>Log self-care activities to earn water credits</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <h5 class="mb-3">Plant Traits</h5>
+                                    <div class="plant-traits mb-4">
+                                        <span class="plant-trait">Resilient</span>
+                                        <span class="plant-trait">Fast-growing</span>
+                                        <span class="plant-trait">Colorful</span>
+                                        <span class="plant-trait">Adaptive</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-light" id="modal-rename-plant-btn">
+                                <i class="fas fa-edit me-1"></i> Rename
+                            </button>
+                            <button type="button" class="btn btn-info" id="modal-water-plant-btn">
+                                <i class="fas fa-tint me-1"></i> Water Plant
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rename Plant Modal -->
+            <div class="modal fade" id="rename-plant-modal" tabindex="-1" aria-labelledby="rename-plant-modal-label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content bg-dark">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="rename-plant-modal-label">Rename Plant</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="rename-plant-form">
+                                <input type="hidden" id="rename-plant-id">
+                                <div class="mb-3">
+                                    <label for="new-plant-name" class="form-label">New Name</label>
+                                    <input type="text" class="form-control" id="new-plant-name" required>
+                                </div>
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-check-circle me-1"></i> Save New Name
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add modals to the page
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Add event listener for rename form
+        const renameForm = document.getElementById('rename-plant-form');
+        if (renameForm) {
+            renameForm.addEventListener('submit', handleRenamePlant);
+        }
     }
     
     // Fetch water credits
