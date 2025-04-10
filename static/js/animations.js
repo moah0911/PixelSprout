@@ -13,6 +13,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup effects dropdown handlers
     setupEffectsDropdownHandlers();
+    
+    // Initialize particle effects
+    initParticles();
+    
+    // Update unit label when condition type changes
+    const conditionTypeSelect = document.getElementById('condition-type');
+    if (conditionTypeSelect) {
+        conditionTypeSelect.addEventListener('change', updateValueUnit);
+    }
 });
 
 /**
@@ -528,4 +537,110 @@ function setupEffectsDropdownHandlers() {
             }
         });
     });
+}
+
+/**
+ * Initialize particle effects for the garden header
+ */
+function initParticles() {
+    const particlesContainer = document.querySelector('.particles-container');
+    if (!particlesContainer) return;
+    
+    // Create particles
+    for (let i = 0; i < 30; i++) {
+        createParticle(particlesContainer);
+    }
+}
+
+/**
+ * Create a single floating particle
+ * @param {HTMLElement} container - The container to add the particle to
+ */
+function createParticle(container) {
+    const particle = document.createElement('div');
+    particle.className = 'floating-particle';
+    
+    // Random size between 3px and 8px
+    const size = 3 + Math.random() * 5;
+    
+    // Random position
+    const posX = Math.random() * 100;
+    const posY = Math.random() * 100;
+    
+    // Random opacity
+    const opacity = 0.1 + Math.random() * 0.4;
+    
+    // Random animation duration between 15s and 40s
+    const duration = 15 + Math.random() * 25;
+    
+    // Random delay
+    const delay = Math.random() * 10;
+    
+    // Random color (green shades)
+    const hue = 100 + Math.random() * 40; // Green hues
+    const saturation = 60 + Math.random() * 40;
+    const lightness = 40 + Math.random() * 30;
+    
+    // Apply styles
+    particle.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        border-radius: 50%;
+        background-color: hsla(${hue}, ${saturation}%, ${lightness}%, ${opacity});
+        top: ${posY}%;
+        left: ${posX}%;
+        filter: blur(1px);
+        box-shadow: 0 0 ${size * 2}px hsla(${hue}, ${saturation}%, ${lightness}%, ${opacity * 0.5});
+        animation: float ${duration}s ${delay}s infinite ease-in-out;
+        pointer-events: none;
+    `;
+    
+    container.appendChild(particle);
+}
+
+/**
+ * Update the value unit label based on the selected condition type
+ */
+function updateValueUnit() {
+    const conditionTypeSelect = document.getElementById('condition-type');
+    const valueUnitSpan = document.getElementById('value-unit');
+    
+    if (!conditionTypeSelect || !valueUnitSpan) return;
+    
+    const selectedOption = conditionTypeSelect.options[conditionTypeSelect.selectedIndex];
+    if (!selectedOption || selectedOption.disabled) {
+        valueUnitSpan.textContent = 'units';
+        return;
+    }
+    
+    // Get the condition type name
+    const typeName = selectedOption.value;
+    
+    // Find the condition type in the global array
+    if (typeof conditionTypes !== 'undefined' && Array.isArray(conditionTypes)) {
+        const selectedType = conditionTypes.find(type => type.name === typeName);
+        if (selectedType && selectedType.unit) {
+            valueUnitSpan.textContent = selectedType.unit;
+            return;
+        }
+    }
+    
+    // Fallback to common units based on condition name
+    const unitMap = {
+        'water_intake': 'ml',
+        'focus_time': 'min',
+        'deep_work': 'min',
+        'sunlight': 'min',
+        'exercise': 'min',
+        'meditation': 'min',
+        'reading': 'min',
+        'sleep': 'hours',
+        'gratitude': 'items',
+        'journaling': 'min',
+        'nature_time': 'min',
+        'digital_detox': 'min'
+    };
+    
+    valueUnitSpan.textContent = unitMap[typeName] || 'units';
 }

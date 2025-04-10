@@ -226,19 +226,43 @@ document.addEventListener('DOMContentLoaded', function() {
             const timeElapsed = getTimeElapsed(date);
             
             const listItem = document.createElement('li');
-            listItem.className = 'list-group-item bg-dark border-light border-opacity-10';
+            listItem.className = 'list-group-item condition-card';
+            
+            // Get a color based on condition type for visual variety
+            const typeColors = {
+                'water_intake': '#56CCF2',
+                'focus_time': '#9B51E0',
+                'deep_work': '#2D9CDB',
+                'sunlight': '#F2C94C',
+                'exercise': '#EB5757',
+                'meditation': '#BB6BD9',
+                'reading': '#6FCF97',
+                'sleep': '#6B7FD9',
+                'gratitude': '#F2994A',
+                'journaling': '#27AE60',
+                'nature_time': '#219653',
+                'digital_detox': '#828282'
+            };
+            
+            // Get color for this condition or use default
+            const color = typeColors[condition.type_name] || '#4CAF50';
+            
             listItem.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <div class="condition-icon me-3">
-                            <i class="fas fa-${icon} text-success"></i>
+                <div class="condition-card-content">
+                    <div class="condition-header">
+                        <div class="condition-icon-container" style="background-color: ${color}20; border-color: ${color}">
+                            <i class="fas fa-${icon}" style="color: ${color}"></i>
                         </div>
-                        <div>
-                            <span class="fw-bold">${displayName}</span>
-                            <div class="small text-muted">${timeElapsed}</div>
+                        <div class="condition-info">
+                            <span class="condition-name">${displayName}</span>
+                            <div class="condition-time">${timeElapsed}</div>
                         </div>
                     </div>
-                    <span class="badge bg-success rounded-pill">${condition.value} ${unit}</span>
+                    <div class="condition-value-container">
+                        <span class="condition-value" style="background-color: ${color}; box-shadow: 0 0 10px ${color}80">
+                            ${condition.value} ${unit}
+                        </span>
+                    </div>
                 </div>
             `;
             
@@ -248,37 +272,58 @@ document.addEventListener('DOMContentLoaded', function() {
         recentConditionsList.appendChild(listGroup);
     }
     
-    // Helper function to get human-readable time elapsed
+    // Enhanced function to get human-readable time elapsed with more precise formatting
     function getTimeElapsed(date) {
         const now = new Date();
         const diffInSeconds = Math.floor((now - date) / 1000);
         
+        // Format the actual time
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+        const timeString = `${formattedHours}:${formattedMinutes} ${ampm}`;
+        
+        // Get day name
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = days[date.getDay()];
+        
+        // Format based on time elapsed
         if (diffInSeconds < 60) {
-            return 'Just now';
+            return `<span class="time-highlight">Just now</span> at ${timeString}`;
         }
         
         const diffInMinutes = Math.floor(diffInSeconds / 60);
         if (diffInMinutes < 60) {
-            return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+            return `<span class="time-highlight">${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago</span> at ${timeString}`;
         }
         
         const diffInHours = Math.floor(diffInMinutes / 60);
         if (diffInHours < 24) {
-            return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+            return `<span class="time-highlight">${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago</span> at ${timeString}`;
         }
         
         const diffInDays = Math.floor(diffInHours / 24);
+        if (diffInDays === 1) {
+            return `<span class="time-highlight">Yesterday</span> at ${timeString}`;
+        }
+        
+        if (diffInDays < 7) {
+            return `<span class="time-highlight">${dayName}</span> at ${timeString}`;
+        }
+        
         if (diffInDays < 30) {
-            return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+            return `<span class="time-highlight">${diffInDays} days ago</span> on ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at ${timeString}`;
         }
         
         const diffInMonths = Math.floor(diffInDays / 30);
         if (diffInMonths < 12) {
-            return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
+            return `<span class="time-highlight">${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago</span> on ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
         }
         
         const diffInYears = Math.floor(diffInMonths / 12);
-        return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
+        return `<span class="time-highlight">${diffInYears} year${diffInYears > 1 ? 's' : ''} ago</span> on ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
     }
     
     async function handleLogCondition(event) {

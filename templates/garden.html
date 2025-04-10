@@ -9,22 +9,26 @@
 
 {% block content %}
 <div class="container py-4">
-    <!-- Garden Header -->
-    <div class="garden-header mb-4">
-        <div class="row align-items-center">
+    <!-- Enhanced Garden Header with Particle Effects -->
+    <div class="garden-header mb-4 position-relative">
+        <!-- Floating particles background -->
+        <div class="particles-container"></div>
+        
+        <div class="row align-items-center position-relative">
             <div class="col-md-6 mb-3 mb-md-0">
-                <div class="garden-title">
-                    <i class="fas fa-seedling me-2" style="color:#4CAF50"></i>
+                <div class="garden-title animated-text">
+                    <i class="fas fa-seedling me-2 text-success fa-beat-fade" style="--fa-beat-fade-opacity: 0.67; --fa-beat-fade-scale: 1.075;"></i>
                     {{ username }}'s Garden
                 </div>
                 <p class="garden-subtitle">
-                    Nurture your plants by tracking daily conditions and habits
+                    <span class="typewriter">Nurture your plants by tracking daily conditions and habits</span>
                 </p>
             </div>
             <div class="col-md-6 d-flex align-items-center justify-content-md-end justify-content-center">
                 <div class="water-credits-container">
                     <div class="water-credits-display">
-                        <i class="fas fa-tint fa-pulse"></i> <span id="water-credits-count">--</span> credits
+                        <i class="fas fa-tint fa-bounce" style="--fa-bounce-start-scale-x: 1; --fa-bounce-start-scale-y: 1; --fa-bounce-jump-scale-x: 1; --fa-bounce-jump-scale-y: 1; --fa-bounce-land-scale-x: 1; --fa-bounce-land-scale-y: 1; --fa-bounce-rebound: 0;"></i> 
+                        <span id="water-credits-count" class="glow-text">--</span> credits
                     </div>
                 </div>
             </div>
@@ -99,42 +103,60 @@
                 </div>
             </div>
             
-            <!-- Quick Log Condition Panel -->
+            <!-- Enhanced Quick Log Condition Panel -->
             <div class="mb-4">
-                <h3 class="mb-3">Log Condition</h3>
-                <div class="bg-dark p-3 rounded">
+                <h3 class="mb-3 section-title">
+                    <i class="fas fa-clipboard-list text-success me-2"></i>
+                    Log Condition
+                </h3>
+                <div class="glass-panel">
                     <form id="log-condition-form">
                         <div class="mb-3">
-                            <label for="condition-type" class="form-label">Condition Type</label>
+                            <label for="condition-type" class="form-label">
+                                <i class="fas fa-tag me-1 text-info"></i> Condition Type
+                            </label>
                             <select class="form-select custom-select-dark" id="condition-type" required>
                                 <option value="" selected disabled>Select condition...</option>
                                 <!-- Options will be loaded by JavaScript -->
                             </select>
-                            <small class="text-muted mt-1 d-block" id="condition-goal-hint"></small>
+                            <small class="text-info mt-2 d-block" id="condition-goal-hint"></small>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="condition-value" class="form-label">Value</label>
-                            <input type="number" class="form-control" id="condition-value" step="0.1" required>
+                            <label for="condition-value" class="form-label">
+                                <i class="fas fa-chart-line me-1 text-warning"></i> Value
+                            </label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="condition-value" step="0.1" required>
+                                <span class="input-group-text" id="value-unit">units</span>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-success w-100">
+                        <button type="submit" class="btn btn-success w-100 btn-glow">
                             <i class="fas fa-plus-circle me-1"></i> Log Condition
                         </button>
                     </form>
                 </div>
             </div>
             
-            <!-- Recent Conditions Panel -->
+            <!-- Enhanced Recent Conditions Panel -->
             <div>
-                <h3 class="mb-3">Recent Conditions</h3>
-                <div class="bg-dark p-3 rounded">
-                    <div id="recent-conditions-list">
-                        <div class="text-center p-3">
-                            <div class="spinner-border spinner-border-sm text-success" role="status">
+                <h3 class="mb-3 section-title">
+                    <i class="fas fa-history text-success me-2"></i>
+                    Recent Conditions
+                </h3>
+                <div class="glass-panel">
+                    <div id="recent-conditions-list" class="conditions-container">
+                        <div class="text-center p-4">
+                            <div class="spinner-grow text-success" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
-                            <p class="text-muted mt-2">Loading conditions...</p>
+                            <p class="text-muted mt-3">Loading your conditions...</p>
                         </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-sm btn-outline-success" id="add-custom-condition-btn" data-bs-toggle="modal" data-bs-target="#add-condition-type-modal">
+                            <i class="fas fa-plus-circle me-1"></i> Add Custom Condition
+                        </button>
                     </div>
                 </div>
             </div>
