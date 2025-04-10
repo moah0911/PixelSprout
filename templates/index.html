@@ -259,69 +259,7 @@
     </div>
 </section>
 
-<!-- Testimonials Section -->
-<section class="testimonials-section">
-    <div class="container">
-        <h2 class="section-title">What Our Users Say</h2>
-        <p class="section-subtitle">Join thousands of users who are transforming their habits with PixelSprout</p>
-        
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">
-                        <i class="fas fa-quote-left"></i>
-                    </div>
-                    <p class="testimonial-text">PixelSprout has completely changed how I approach my daily habits. Seeing my plants grow as I maintain my routines is incredibly motivating!</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">
-                            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah J.">
-                        </div>
-                        <div class="testimonial-info">
-                            <h4>Sarah J.</h4>
-                            <p>Fitness Coach</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">
-                        <i class="fas fa-quote-left"></i>
-                    </div>
-                    <p class="testimonial-text">I've tried many habit trackers, but none have kept me engaged like PixelSprout. The visual feedback of my garden growing makes all the difference.</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">
-                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Michael T.">
-                        </div>
-                        <div class="testimonial-info">
-                            <h4>Michael T.</h4>
-                            <p>Software Developer</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">
-                        <i class="fas fa-quote-left"></i>
-                    </div>
-                    <p class="testimonial-text">The community aspect is what I love most. Sharing my garden progress with friends and seeing theirs keeps me accountable and inspired.</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Emma R.">
-                        </div>
-                        <div class="testimonial-info">
-                            <h4>Emma R.</h4>
-                            <p>Student</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 <!-- Call to Action -->
 <section class="cta-section">
@@ -330,15 +268,17 @@
             <h2 class="cta-title">Ready to Grow Your Digital Garden?</h2>
             <p class="cta-subtitle">Transform your daily habits into a beautiful, thriving digital garden today. Start your journey to better habits and a flourishing garden.</p>
             
-            {% if current_user.is_authenticated %}
-            <a href="/garden" class="cta-btn">
-                <i class="fas fa-leaf me-2"></i> Visit My Garden
-            </a>
-            {% else %}
-            <a href="/register" class="cta-btn">
-                <i class="fas fa-seedling me-2"></i> Start Growing Now
-            </a>
-            {% endif %}
+            <div class="cta-buttons">
+                {% if current_user.is_authenticated %}
+                <a href="/garden" class="hero-btn hero-btn-success">
+                    <i class="fas fa-leaf me-2"></i> Visit My Garden
+                </a>
+                {% else %}
+                <a href="/register" class="hero-btn hero-btn-success">
+                    <i class="fas fa-seedling me-2"></i> Start Growing Now
+                </a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </section>
@@ -347,27 +287,27 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Parallax effect on scroll
+        // Subtle parallax effect on scroll
         window.addEventListener('scroll', function() {
             const scrollPosition = window.pageYOffset;
             const heroContent = document.querySelector('.hero-content');
             
-            if (heroContent) {
-                heroContent.style.transform = `translateY(${scrollPosition * 0.2}px)`;
+            if (heroContent && scrollPosition < 500) {
+                heroContent.style.transform = `translateY(${scrollPosition * 0.05}px)`;
             }
         });
         
-        // Add random movement to floating plants
+        // Add subtle random movement to floating plants
         const plants = document.querySelectorAll('.floating-plant');
         
         plants.forEach(plant => {
-            const randomX = Math.random() * 10 - 5;
-            const randomY = Math.random() * 10 - 5;
-            const randomDelay = Math.random() * 3;
-            const randomDuration = 15 + Math.random() * 15;
+            const randomX = Math.random() * 5 - 2.5;
+            const randomY = Math.random() * 5 - 2.5;
+            const randomDelay = Math.random() * 2;
+            const randomDuration = 20 + Math.random() * 10;
             
             plant.style.animation = `floating ${randomDuration}s infinite ease-in-out ${randomDelay}s`;
-            plant.style.transform = `translate(${randomX}px, ${randomY}px) scale(${0.4 + Math.random() * 0.6})`;
+            plant.style.transform = `translate(${randomX}px, ${randomY}px) scale(${0.4 + Math.random() * 0.4})`;
         });
     });
 </script>

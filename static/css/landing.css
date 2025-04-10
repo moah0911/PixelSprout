@@ -228,21 +228,41 @@
 }
 
 .app-title {
-    font-size: 5rem;
+    font-size: 4.5rem;
     font-weight: 800;
     margin-bottom: 1rem;
     background: linear-gradient(to right, #7deb7d, #4CAF50, #2E7D32);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 30px rgba(76, 175, 80, 0.4);
+    text-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
     animation: glow 4s infinite alternate;
 }
 
 .app-subtitle {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     opacity: 0.9;
     margin-bottom: 2.5rem;
     color: #e0e0e0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .app-title {
+        font-size: 3.5rem;
+    }
+    
+    .app-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .hero-btn {
+        width: 100%;
+    }
 }
 
 @keyframes glow {
@@ -278,11 +298,25 @@
 .hero-btn-primary {
     background: linear-gradient(45deg, #1565C0, #42A5F5);
     color: white;
+    text-decoration: none;
+}
+
+.hero-btn-primary:hover {
+    background: linear-gradient(45deg, #1976D2, #64B5F6);
+    color: white;
+    text-decoration: none;
 }
 
 .hero-btn-success {
     background: linear-gradient(45deg, #2E7D32, #4CAF50);
     color: white;
+    text-decoration: none;
+}
+
+.hero-btn-success:hover {
+    background: linear-gradient(45deg, #388E3C, #66BB6A);
+    color: white;
+    text-decoration: none;
 }
 
 .hero-btn::before {
@@ -299,8 +333,9 @@
 }
 
 .hero-btn:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 0 8px rgba(76, 175, 80, 0.2);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 0 0 5px rgba(76, 175, 80, 0.2);
+    z-index: 2;
 }
 
 .hero-btn:hover::before {
@@ -320,8 +355,8 @@
 
 .floating-plant {
     position: absolute;
-    opacity: 0.2;
-    filter: drop-shadow(0 0 20px rgba(76, 175, 80, 0.4));
+    opacity: 0.1;
+    filter: drop-shadow(0 0 10px rgba(76, 175, 80, 0.3));
     animation: floating-plant 15s infinite ease-in-out;
 }
 
@@ -365,7 +400,7 @@
         transform: translateY(0) rotate(0deg);
     }
     50% {
-        transform: translateY(-30px) rotate(5deg);
+        transform: translateY(-15px) rotate(2deg);
     }
 }
 
@@ -431,9 +466,33 @@
 }
 
 .feature-card:hover {
-    transform: translateY(-15px) scale(1.03);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(76, 175, 80, 0.4);
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(76, 175, 80, 0.3);
     border-color: rgba(76, 175, 80, 0.4);
+}
+
+@media (max-width: 768px) {
+    .feature-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .feature-icon-container {
+        width: 90px;
+        height: 90px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+    }
+    
+    .feature-title {
+        font-size: 1.5rem;
+    }
+    
+    .feature-description {
+        font-size: 1rem;
+    }
 }
 
 .feature-card:hover::before {
@@ -537,6 +596,35 @@
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .steps-container {
+        padding: 2rem;
+    }
+    
+    .step {
+        padding-left: 60px;
+        margin-bottom: 3rem;
+    }
+    
+    .step-number {
+        width: 45px;
+        height: 45px;
+        font-size: 1.4rem;
+    }
+    
+    .step-title {
+        font-size: 1.5rem;
+    }
+    
+    .step-description {
+        font-size: 1rem;
+    }
+    
+    .step-connector {
+        left: 22px;
+    }
 }
 
 .steps-container::before {
@@ -721,6 +809,29 @@
     overflow: hidden;
 }
 
+@media (max-width: 768px) {
+    .cta-container {
+        padding: 2.5rem 1.5rem;
+    }
+    
+    .cta-title {
+        font-size: 2rem;
+    }
+    
+    .cta-subtitle {
+        font-size: 1rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .cta-btn {
+        width: 100%;
+    }
+}
+
 .cta-container::before {
     content: '';
     position: absolute;
@@ -731,6 +842,13 @@
     background: linear-gradient(120deg, transparent, rgba(76, 175, 80, 0.05), transparent);
     transform: translateX(-100%);
     transition: all 0.6s ease;
+}
+
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
 }
 
 .cta-container:hover::before {
