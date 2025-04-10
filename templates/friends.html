@@ -28,33 +28,26 @@
                                 <i class="fas fa-tint"></i>
                             </div>
                             <div class="stat-info">
-                                <span class="stat-value" id="water-credits">--</span>
+                                <span class="stat-value" id="water-credits">{{ current_user.water_credits }}</span>
                                 <span class="stat-label">Water Credits</span>
                             </div>
                         </div>
                         
                         <div class="community-stat">
                             <div class="stat-icon">
-                                <i class="fas fa-seedling"></i>
+                                <i class="fas fa-user-plus"></i>
                             </div>
                             <div class="stat-info">
-                                <span class="stat-value" id="community-rank">--</span>
-                                <span class="stat-label">Community Rank</span>
+                                <span class="stat-value" id="request-count">{{ friend_requests|length }}</span>
+                                <span class="stat-label">Requests</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="community-hero-visual">
-                    <div class="community-illustration">
-                        <img src="{{ url_for('static', filename='images/community-garden.svg') }}" alt="Community Garden" class="community-image">
-                        <div class="floating-elements">
-                            <div class="floating-element" style="--delay: 0s; --duration: 4s; --x: -10px; --y: 10px;"><i class="fas fa-leaf"></i></div>
-                            <div class="floating-element" style="--delay: 1s; --duration: 5s; --x: 15px; --y: -12px;"><i class="fas fa-seedling"></i></div>
-                            <div class="floating-element" style="--delay: 2s; --duration: 6s; --x: -8px; --y: -15px;"><i class="fas fa-tint"></i></div>
-                            <div class="floating-element" style="--delay: 0.5s; --duration: 7s; --x: 12px; --y: 8px;"><i class="fas fa-sun"></i></div>
-                        </div>
-                    </div>
+                <div class="community-hero-image">
+                    <div class="particles-container"></div>
+                    <img src="{{ url_for('static', filename='img/community-garden.svg') }}" alt="Community Garden" class="community-illustration">
                 </div>
             </div>
         </div>
@@ -813,12 +806,233 @@
             }, 300);
         }, 3000);
     }
-</script>
-{% endblock %}
-{% endblock %}
+    
+    // Friend request functions
+    function acceptFriendRequest(requestId) {
+        console.log('Accepting friend request:', requestId);
+        
+        // In a real implementation, this would be an API call
+        // For now, we'll just update the UI
+        
+        // Find the request card
+        const requestCard = document.querySelector(`.friend-request-card[data-request-id="${requestId}"]`);
+        
+        if (requestCard) {
+            // Show acceptance animation
+            requestCard.classList.add('accepted');
+            
+            // Update UI after animation
+            setTimeout(() => {
+                // Remove from requests
+                requestCard.remove();
+                
+                // Update counts
+                updateFriendCounts();
+                
+                // Show success notification
+                showNotification('Friend request accepted!', 'success');
+            }, 500);
+        }
+    }
+    
+    function declineFriendRequest(requestId) {
+        console.log('Declining friend request:', requestId);
+        
+        // Find the request card
+        const requestCard = document.querySelector(`.friend-request-card[data-request-id="${requestId}"]`);
+        
+        if (requestCard) {
+            // Show decline animation
+            requestCard.classList.add('declined');
+            
+            // Update UI after animation
+            setTimeout(() => {
+                // Remove from requests
+                requestCard.remove();
+                
+                // Update counts
+                updateFriendCounts();
+                
+                // Show notification
+                showNotification('Friend request declined', 'info');
+            }, 500);
+        }
+    }
+    
+    function sendFriendRequest(userId) {
+        console.log('Sending friend request to:', userId);
+        
+        // Find the user card
+        const userCard = document.querySelector(`.suggested-friend-card[data-user-id="${userId}"]`);
+        
+        if (userCard) {
+            // Update button
+            const requestBtn = userCard.querySelector('.btn-add-friend');
+            requestBtn.disabled = true;
+            requestBtn.innerHTML = '<i class="fas fa-check"></i> Request Sent';
+            
+            // Show success notification
+            showNotification('Friend request sent!', 'success');
+        }
+    }
+    
+    function updateFriendCounts() {
+        // Update friend request count
+        const requestsContainer = document.getElementById('friend-requests-container');
+        const requestCount = requestsContainer.querySelectorAll('.friend-request-card').length;
+        
+        // Update the count in the tab
+        const requestCountBadge = document.getElementById('request-count-badge');
+        if (requestCountBadge) {
+            requestCountBadge.textContent = requestCount;
+            
+            // Hide badge if no requests
+            if (requestCount === 0) {
+                requestCountBadge.style.display = 'none';
+                
+                // Show empty state
+                requestsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <p class="empty-message">No pending friend requests</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Update friends count
+        const friendsCount = document.getElementById('friends-count');
+        if (friendsCount) {
+            const currentCount = parseInt(friendsCount.textContent);
+            friendsCount.textContent = currentCount + 1;
+        }
+    }
+    
+    function sendWaterCredits(friendId, amount) {
+        console.log('Sending water credits:', amount, 'to friend:', friendId);
+        
+        // Find the friend card
+        const friendCard = document.querySelector(`.friend-card[data-friend-id="${friendId}"]`);
+        
+        if (friendCard) {
+            // Create water drop animation
+            createWaterDropAnimation(friendCard);
+            
+            // Show success notification
+            showNotification(`Sent ${amount} water credits!`, 'success');
+        }
+    }
+    
+    function createWaterDropAnimation(targetElement) {
+        // Create container for drops
+        const dropsContainer = document.createElement('div');
+        dropsContainer.className = 'water-drops-container';
+        targetElement.appendChild(dropsContainer);
+        
+        // Create multiple drops
+        for (let i = 0; i < 5; i++) {
+            const drop = document.createElement('div');
+            drop.className = 'water-drop';
+            
+            // Randomize position and delay
+            const delay = Math.random() * 0.5;
+            const leftPos = 40 + Math.random() * 20;
+            
+            drop.style.left = `${leftPos}%`;
+            drop.style.animationDelay = `${delay}s`;
+            
+            dropsContainer.appendChild(drop);
+        }
+        
+        // Remove animation after it completes
+        setTimeout(() => {
+            dropsContainer.remove();
+        }, 2000);
+    }
+    
+    function viewFriendGarden(friendId, friendName) {
+        console.log('Viewing garden of friend:', friendId, friendName);
+        
+        // In a real implementation, this would fetch the friend's garden data
+        // For now, we'll just show a modal with placeholder content
+        
+        // Update modal title
+        document.getElementById('viewGardenModalLabel').textContent = `${friendName}'s Garden`;
+        
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('viewGardenModal'));
+        modal.show();
+    }
+    
+    function sendMessage(friendId, friendName) {
+        console.log('Opening message dialog for friend:', friendId, friendName);
+        
+        // Update modal title and recipient
+        document.getElementById('messageModalLabel').textContent = `Message ${friendName}`;
+        document.getElementById('message-recipient').textContent = friendName;
+        
+        // Clear previous message
+        document.getElementById('message-text').value = '';
+        
+        // Set friend ID in form
+        document.getElementById('message-friend-id').value = friendId;
+        
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('sendMessageModal'));
+        modal.show();
+    }
+    
+    function submitMessage() {
+        const friendId = document.getElementById('message-friend-id').value;
+        const messageText = document.getElementById('message-text').value;
+        
+        if (!messageText.trim()) {
+            showNotification('Please enter a message', 'error');
+            return;
+        }
+        
+        console.log('Sending message to friend:', friendId, 'Message:', messageText);
+        
+        // Close modal
+        bootstrap.Modal.getInstance(document.getElementById('sendMessageModal')).hide();
+        
+        // Show success notification
+        showNotification('Message sent successfully!', 'success');
+    }
+    
+    function showNotification(message, type) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        
+        const icon = document.createElement('i');
+        icon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+        
+        const text = document.createElement('span');
+        text.textContent = message;
+        
+        notification.appendChild(icon);
+        notification.appendChild(text);
+        
+        // Add to document
+        document.body.appendChild(notification);
+        
+        // Show notification
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Remove after delay
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
+    }
 
-{% block scripts %}
-<script>
     document.addEventListener('DOMContentLoaded', function() {
         // Interactive Particle System
         function createParticleSystem() {

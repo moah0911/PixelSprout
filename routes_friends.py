@@ -25,10 +25,12 @@ def friends_page():
     suggested_friends = [user for user in all_users if user.id not in friends_ids and user.id not in request_ids]
     
     return render_template(
-        'friends.html',  # Using the updated friends.html template
+        'friends.html',  # Using the fixed friends template
         friends=friends,
         friend_requests=friend_requests,
-        suggested_friends=suggested_friends
+        suggested_friends=suggested_friends,
+        username=current_user.username,
+        profile_picture_url=current_user.profile_picture_url if hasattr(current_user, 'profile_picture_url') else None
     )
 
 # API route to send a friend request

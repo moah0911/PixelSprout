@@ -269,111 +269,15 @@
         </div>
     </footer>
     
-    <!-- Interactive Garden Elements -->
-    <div class="interactive-garden">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M50,0 C30,50 30,100 50,150 C70,100 70,50 50,0' fill='%234CAF50' fill-opacity='0.7'/%3E%3Cpath d='M50,20 C40,50 40,90 50,120 C60,90 60,50 50,20' fill='%238BC34A' fill-opacity='0.5'/%3E%3C/svg%3E" class="garden-element plant-1">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M50,0 C20,50 20,100 50,150 C80,100 80,50 50,0' fill='%234CAF50' fill-opacity='0.7'/%3E%3Cpath d='M50,20 C30,50 30,90 50,120 C70,90 70,50 50,20' fill='%238BC34A' fill-opacity='0.5'/%3E%3C/svg%3E" class="garden-element plant-2">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M50,0 C35,50 35,100 50,150 C65,100 65,50 50,0' fill='%234CAF50' fill-opacity='0.7'/%3E%3Cpath d='M50,20 C40,50 40,90 50,120 C60,90 60,50 50,20' fill='%238BC34A' fill-opacity='0.5'/%3E%3C/svg%3E" class="garden-element plant-3">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M30,0 C10,50 10,100 30,150 C50,100 50,50 30,0' fill='%234CAF50' fill-opacity='0.7'/%3E%3Cpath d='M70,0 C50,50 50,100 70,150 C90,100 90,50 70,0' fill='%238BC34A' fill-opacity='0.7'/%3E%3C/svg%3E" class="garden-element plant-4">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M50,0 C25,50 25,100 50,150 C75,100 75,50 50,0' fill='%234CAF50' fill-opacity='0.7'/%3E%3Cpath d='M30,0 C15,50 15,100 30,150 C45,100 45,50 30,0' fill='%238BC34A' fill-opacity='0.5'/%3E%3Cpath d='M70,0 C55,50 55,100 70,150 C85,100 85,50 70,0' fill='%238BC34A' fill-opacity='0.5'/%3E%3C/svg%3E" class="garden-element plant-5">
-        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M50,0 C20,50 20,100 50,150 C80,100 80,50 50,0' fill='%234CAF50' fill-opacity='0.7'/%3E%3Cpath d='M30,0 C10,50 10,100 30,150 C50,100 50,50 30,0' fill='%238BC34A' fill-opacity='0.5'/%3E%3Cpath d='M70,0 C50,50 50,100 70,150 C90,100 90,50 70,0' fill='%238BC34A' fill-opacity='0.5'/%3E%3C/svg%3E" class="garden-element plant-6">
-    </div>
-    
-    <!-- Magical Cursor Effects -->
-    <div class="cursor-follower"></div>
+    <!-- No interactive garden elements -->
     
     <!-- JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Custom Scripts -->
     <script>
-        // Magical Cursor Effect
         document.addEventListener('DOMContentLoaded', function() {
-            const cursorFollower = document.querySelector('.cursor-follower');
-            
-            // Create cursor trails
-            const trailCount = 10;
-            const trails = [];
-            
-            for (let i = 0; i < trailCount; i++) {
-                const trail = document.createElement('div');
-                trail.className = 'cursor-trail';
-                document.body.appendChild(trail);
-                trails.push({
-                    element: trail,
-                    x: 0,
-                    y: 0,
-                    delay: i * 2
-                });
-            }
-            
-            // Update cursor position
-            document.addEventListener('mousemove', function(e) {
-                // Main cursor follower
-                cursorFollower.style.left = e.clientX + 'px';
-                cursorFollower.style.top = e.clientY + 'px';
-                
-                // Store position for trails
-                setTimeout(() => {
-                    trails.forEach((trail, index) => {
-                        setTimeout(() => {
-                            trail.x = e.clientX;
-                            trail.y = e.clientY;
-                            trail.element.style.left = trail.x + 'px';
-                            trail.element.style.top = trail.y + 'px';
-                            trail.element.style.opacity = 1 - (index / trailCount);
-                            trail.element.style.width = (20 - index) + 'px';
-                            trail.element.style.height = (20 - index) + 'px';
-                        }, index * 30);
-                    });
-                }, 5);
-            });
-            
-            // Hover effects on interactive elements
-            const interactiveElements = document.querySelectorAll('a, button, .card, input, select, textarea');
-            
-            interactiveElements.forEach(element => {
-                element.addEventListener('mouseenter', function() {
-                    cursorFollower.style.width = '50px';
-                    cursorFollower.style.height = '50px';
-                    cursorFollower.style.opacity = '0.8';
-                });
-                
-                element.addEventListener('mouseleave', function() {
-                    cursorFollower.style.width = '30px';
-                    cursorFollower.style.height = '30px';
-                    cursorFollower.style.opacity = '1';
-                });
-            });
-            
-            // Hide cursor when leaving window
-            document.addEventListener('mouseout', function(e) {
-                if (e.relatedTarget === null) {
-                    cursorFollower.style.opacity = '0';
-                    trails.forEach(trail => {
-                        trail.element.style.opacity = '0';
-                    });
-                }
-            });
-            
-            document.addEventListener('mouseover', function() {
-                cursorFollower.style.opacity = '1';
-            });
-            
-            // Interactive garden elements
-            const gardenElements = document.querySelectorAll('.garden-element');
-            
-            document.addEventListener('scroll', function() {
-                const scrollPosition = window.scrollY;
-                const windowHeight = window.innerHeight;
-                
-                gardenElements.forEach((element, index) => {
-                    // Parallax effect based on scroll
-                    const speed = 0.05 * (index + 1);
-                    const yPos = scrollPosition * speed;
-                    element.style.transform = `translateY(${-yPos}px) rotate(${index % 2 === 0 ? '-' : ''}${Math.sin(scrollPosition / 500) * 5}deg)`;
-                });
-            });
+            // Initialize any needed functionality here
         });
     </script>
     
