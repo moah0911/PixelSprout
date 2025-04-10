@@ -32,18 +32,18 @@ class SupabaseStorage:
             
             # Create default bucket if it doesn't exist
             if DEFAULT_BUCKET not in bucket_names:
-                supabase.storage.create_bucket(DEFAULT_BUCKET, {"public": True})
+                supabase.storage.create_bucket(id=DEFAULT_BUCKET, options={"public": True})
                 logging.info(f"Created storage bucket: {DEFAULT_BUCKET}")
                 
             # Create other buckets as needed
             profile_bucket = "profile-pictures"
             if profile_bucket not in bucket_names:
-                supabase.storage.create_bucket(profile_bucket, {"public": True})
+                supabase.storage.create_bucket(id=profile_bucket, options={"public": True})
                 logging.info(f"Created storage bucket: {profile_bucket}")
                 
             plant_bucket = "plant-images"
             if plant_bucket not in bucket_names:
-                supabase.storage.create_bucket(plant_bucket, {"public": True})
+                supabase.storage.create_bucket(id=plant_bucket, options={"public": True})
                 logging.info(f"Created storage bucket: {plant_bucket}")
                 
             return True

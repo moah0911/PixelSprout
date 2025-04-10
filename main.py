@@ -9,23 +9,16 @@ from app import app, db
 import routes
 import models
 import routes_friends
-from routes_auth import auth_bp
-from routes_storage import storage_bp
 
-# Register blueprints
-app.register_blueprint(auth_bp)
-app.register_blueprint(storage_bp)
+# Note: Blueprints are already registered in app.py
+# No need to register them again here
 
 # Import Supabase auth and storage modules
 import supabase_auth
 import supabase_storage
 
-# Initialize Supabase storage buckets
-try:
-    supabase_storage.SupabaseStorage.initialize_buckets()
-    print("Supabase storage buckets initialized successfully")
-except Exception as e:
-    print(f"Failed to initialize Supabase storage buckets: {str(e)}")
+# Note: Supabase storage buckets are already initialized in app.py
+# No need to initialize them again here
 
 # Initialize the database and create tables
 with app.app_context():
