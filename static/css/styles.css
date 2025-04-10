@@ -1,5 +1,102 @@
 /* Digital Zen Garden CSS Styles */
 
+/* Global Styles for Enhanced UI */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Enhanced Headings with Gradient */
+h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A, #CDDC39);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+    margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #4CAF50, rgba(76, 175, 80, 0.2));
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+h1:hover::after {
+    width: 100%;
+}
+
+/* Vibrant Subheadings */
+h2, h3, h4, h5, h6 {
+    color: #7deb7d;
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    margin-bottom: 1rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.75rem;
+}
+
+h4 {
+    font-size: 1.5rem;
+}
+
+h5 {
+    font-size: 1.25rem;
+}
+
+h6 {
+    font-size: 1.1rem;
+}
+
+/* Card Enhancements */
+.card {
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transition: all 0.5s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.card:hover::before {
+    left: 100%;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(76, 175, 80, 0.3);
+    border-color: rgba(76, 175, 80, 0.5);
+}
+
 /* Garden Layout */
 .garden-container {
     background-color: rgba(10, 30, 10, 0.6);
@@ -126,6 +223,393 @@
     100% {
         text-shadow: 0 0 20px rgba(76, 175, 80, 1);
     }
+}
+
+/* Login/Register Page Enhancements */
+.welcome-heading {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.login-subtitle {
+    font-size: 1.1rem;
+    color: #aaa;
+    margin-bottom: 2rem;
+}
+
+.logo-animation {
+    position: relative;
+    display: inline-block;
+}
+
+.glow-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(76, 175, 80, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+    z-index: -1;
+    animation: pulse-grow 3s infinite alternate;
+}
+
+@keyframes pulse-grow {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.3;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.6;
+    }
+}
+
+.pulse-grow {
+    animation: pulse-grow-img 3s infinite alternate;
+}
+
+@keyframes pulse-grow-img {
+    0% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1.05);
+    }
+}
+
+.input-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #e9ecef;
+}
+
+.input-group-glow {
+    transition: all 0.3s ease;
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.input-group-glow:focus-within {
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+}
+
+.fancy-input {
+    background-color: rgba(20, 40, 20, 0.7) !important;
+    border: 1px solid rgba(76, 175, 80, 0.2) !important;
+    transition: all 0.3s ease;
+}
+
+.fancy-input:focus {
+    background-color: rgba(30, 50, 30, 0.7) !important;
+    border-color: rgba(76, 175, 80, 0.5) !important;
+    box-shadow: none !important;
+}
+
+.register-prompt {
+    font-size: 1rem;
+    color: #aaa;
+}
+
+.register-link {
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.register-link:hover {
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.8);
+}
+
+.demo-title {
+    color: #f8f9fa;
+    font-weight: 600;
+}
+
+.btn-glow-alt {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(76, 175, 80, 0.5);
+}
+
+.btn-glow-alt:hover {
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+    border-color: rgba(76, 175, 80, 0.8);
+    transform: translateY(-2px);
+}
+
+/* Profile Page Enhancements */
+.profile-header {
+    position: relative;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.profile-header-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(20, 80, 20, 0.8) 0%, rgba(10, 30, 10, 0.9) 100%);
+    z-index: -1;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.profile-header-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M40 10C30 20 30 40 40 50C50 40 50 20 40 10Z' fill='%23194d19' fill-opacity='0.2'/%3E%3C/svg%3E");
+    opacity: 0.5;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+}
+
+.profile-avatar {
+    position: relative;
+    margin-right: 1.5rem;
+    color: #e9ecef;
+    filter: drop-shadow(0 0 10px rgba(76, 175, 80, 0.5));
+}
+
+.profile-status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    border: 2px solid #0a1f0a;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.8);
+}
+
+.profile-status.online {
+    background-color: #4CAF50;
+}
+
+.profile-text {
+    flex: 1;
+}
+
+.profile-name {
+    margin-bottom: 0.25rem;
+}
+
+.profile-tagline {
+    color: #aaa;
+    margin-bottom: 0;
+}
+
+/* Stats Card Enhancements */
+.card-title-glow {
+    color: #e9ecef;
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background-color: rgba(20, 40, 20, 0.3);
+    border: 1px solid rgba(76, 175, 80, 0.1);
+}
+
+.stat-item:hover {
+    background-color: rgba(30, 60, 30, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.stat-icon-container {
+    position: relative;
+    margin-right: 1rem;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.stat-icon-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    filter: blur(10px);
+    opacity: 0.5;
+    z-index: 1;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-label {
+    margin-bottom: 0.25rem;
+    color: #aaa;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e9ecef;
+}
+
+.level-badge {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+.garden-summary-content {
+    min-height: 200px;
+}
+
+.loading-text {
+    color: #aaa;
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+/* Friends Page Enhancements */
+.friends-header {
+    position: relative;
+    padding: 1.5rem;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.friends-header-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(20, 80, 20, 0.8) 0%, rgba(10, 30, 10, 0.9) 100%);
+    z-index: -1;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.friends-title-container {
+    position: relative;
+}
+
+.friends-title {
+    margin-bottom: 0.25rem;
+}
+
+.friends-subtitle {
+    color: #aaa;
+    margin-bottom: 0;
+}
+
+.friend-request-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: rgba(20, 40, 20, 0.3);
+    border: 1px solid rgba(76, 175, 80, 0.1);
+    transition: all 0.3s ease;
+}
+
+.friend-request-item:hover {
+    background-color: rgba(30, 60, 30, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.friend-request-content {
+    display: flex;
+    align-items: center;
+}
+
+.friend-request-avatar {
+    position: relative;
+    margin-right: 1rem;
+    color: #e9ecef;
+}
+
+.friend-request-indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    border: 2px solid #0a1f0a;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.8);
+}
+
+.friend-request-info {
+    flex: 1;
+}
+
+.friend-request-name {
+    margin-bottom: 0.25rem;
+    font-size: 1.1rem;
+}
+
+.friend-request-time {
+    color: #aaa;
+    font-size: 0.85rem;
+}
+
+.friend-request-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: rgba(76, 175, 80, 0.3);
+    margin-bottom: 1rem;
+}
+
+.empty-state-text {
+    color: #aaa;
+    font-size: 1.1rem;
+    margin-bottom: 0;
 }
 
 /* Plant Cards */

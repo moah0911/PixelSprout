@@ -6,30 +6,50 @@
 <div class="container py-4">
     <div class="row">
         <div class="col-lg-8 mx-auto">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="text-success">Garden Friends</h1>
-                <div id="status-container"></div>
+            <div class="friends-header mb-5">
+                <div class="friends-header-bg"></div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="friends-title-container">
+                        <h1 class="friends-title">
+                            <i class="fas fa-users me-3 text-success fa-beat-fade" style="--fa-beat-fade-opacity: 0.67; --fa-beat-fade-scale: 1.075;"></i>
+                            Garden Friends
+                        </h1>
+                        <p class="friends-subtitle">Connect with other gardeners and share resources</p>
+                    </div>
+                    <div id="status-container"></div>
+                </div>
             </div>
             
             <!-- Friend Requests Card -->
-            <div class="card bg-dark bg-opacity-50 shadow mb-4 border-success border-opacity-25">
-                <div class="card-header bg-success bg-opacity-25">
-                    <h5 class="mb-0"><i class="fas fa-user-clock me-2"></i> Friend Requests</h5>
+            <div class="card glass-panel shadow mb-4 border-success border-opacity-25">
+                <div class="card-header bg-success bg-opacity-25 border-success border-opacity-25">
+                    <h5 class="mb-0 card-title-glow">
+                        <i class="fas fa-user-clock me-2 fa-beat-fade" style="--fa-beat-fade-opacity: 0.67; --fa-beat-fade-scale: 1.075;"></i> Friend Requests
+                    </h5>
                 </div>
                 <div class="card-body">
                     {% if friend_requests %}
                     <div class="list-group bg-transparent" id="friend-requests-list">
                         {% for request in friend_requests %}
-                        <div class="list-group-item bg-dark bg-opacity-50 d-flex align-items-center justify-content-between mb-2 border-success border-opacity-25">
-                            <div>
-                                <h5 class="mb-1">{{ request.requester.username }}</h5>
-                                <small class="text-muted">Request sent: {{ request.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        <div class="friend-request-item mb-3">
+                            <div class="friend-request-content">
+                                <div class="friend-request-avatar">
+                                    <i class="fas fa-user-circle fa-2x"></i>
+                                    <div class="friend-request-indicator"></div>
+                                </div>
+                                <div class="friend-request-info">
+                                    <h5 class="friend-request-name">{{ request.requester.username }}</h5>
+                                    <div class="friend-request-time">
+                                        <i class="fas fa-clock me-1 text-success"></i>
+                                        Request sent: {{ request.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-success btn-sm accept-request-btn" data-request-id="{{ request.id }}">
+                            <div class="friend-request-actions">
+                                <button class="btn btn-success btn-glow accept-request-btn" data-request-id="{{ request.id }}">
                                     <i class="fas fa-check me-1"></i> Accept
                                 </button>
-                                <button class="btn btn-outline-light btn-sm decline-request-btn" data-request-id="{{ request.id }}">
+                                <button class="btn btn-outline-light btn-glow-alt decline-request-btn" data-request-id="{{ request.id }}">
                                     <i class="fas fa-times me-1"></i> Decline
                                 </button>
                             </div>
@@ -37,7 +57,12 @@
                         {% endfor %}
                     </div>
                     {% else %}
-                    <p class="text-muted mb-0">No pending friend requests</p>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                        <p class="empty-state-text">No pending friend requests</p>
+                    </div>
                     {% endif %}
                 </div>
             </div>
