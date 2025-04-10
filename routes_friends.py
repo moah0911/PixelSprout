@@ -25,7 +25,7 @@ def friends_page():
     suggested_friends = [user for user in all_users if user.id not in friends_ids and user.id not in request_ids]
     
     return render_template(
-        'friends.html',  # Using the fixed friends template
+        'friends_simple.html',  # Using the simplified friends template
         friends=friends,
         friend_requests=friend_requests,
         suggested_friends=suggested_friends,

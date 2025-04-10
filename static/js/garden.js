@@ -180,11 +180,30 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add water button
         const waterButton = document.createElement('button');
-        waterButton.className = 'water-plant-btn btn btn-sm btn-info mt-2';
-        waterButton.innerHTML = '<i class="fas fa-tint"></i> Water';
+        waterButton.className = 'water-plant-btn mt-3';
+        waterButton.innerHTML = '<i class="fas fa-tint"></i> Water Plant';
         waterButton.setAttribute('data-plant-id', plant.id);
         waterButton.addEventListener('click', function(e) {
             e.stopPropagation(); // Prevent plant selection
+            
+            // Add ripple effect
+            const ripple = document.createElement('span');
+            ripple.classList.add('water-ripple');
+            this.appendChild(ripple);
+            
+            // Position the ripple
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+            ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+            ripple.classList.add('active');
+            
+            // Remove ripple after animation
+            setTimeout(() => {
+                ripple.remove();
+            }, 800);
+            
             waterPlant(plant.id);
         });
         
@@ -471,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 
                 <div class="d-flex gap-2 mb-3">
-                    <button class="btn btn-info water-plant-btn" data-plant-id="${selectedPlant.id}">
+                    <button class="water-plant-btn" data-plant-id="${selectedPlant.id}">
                         <i class="fas fa-tint"></i> Water Plant
                     </button>
                     <button class="btn btn-outline-success dance-plant-btn" data-plant-id="${selectedPlant.id}">
@@ -540,8 +559,27 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event listener for water button in details panel
         const waterButton = detailsPanel.querySelector('.water-plant-btn');
         if (waterButton) {
-            waterButton.addEventListener('click', function() {
+            waterButton.addEventListener('click', function(e) {
                 const plantId = this.getAttribute('data-plant-id');
+                
+                // Add ripple effect
+                const ripple = document.createElement('span');
+                ripple.classList.add('water-ripple');
+                this.appendChild(ripple);
+                
+                // Position the ripple
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+                ripple.classList.add('active');
+                
+                // Remove ripple after animation
+                setTimeout(() => {
+                    ripple.remove();
+                }, 800);
+                
                 waterPlant(plantId);
             });
         }
