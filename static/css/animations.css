@@ -112,17 +112,27 @@
 @keyframes waterDrop {
     0% { transform: translateY(-20px); opacity: 0; }
     50% { opacity: 1; }
-    100% { transform: translateY(30px); opacity: 0; }
+    100% { transform: translateY(50px); opacity: 0; }
 }
 
 .water-drop {
     position: absolute;
-    width: 8px;
-    height: 12px;
+    width: 10px;
+    height: 15px;
     background: #4facfe;
-    border-radius: 50%;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: 0 0 10px rgba(79, 172, 254, 0.8);
     opacity: 0;
     z-index: 10;
+}
+
+.watering-effect {
+    position: absolute;
+    top: -20px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
 .watering-effect .water-drop:nth-child(1) {

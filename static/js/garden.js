@@ -242,6 +242,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Water plant function
     async function waterPlant(plantId) {
         try {
+            // Show watering effect immediately for better user feedback
+            const plantContainer = document.querySelector(`.plant-container[data-plant-id="${plantId}"]`);
+            if (plantContainer) {
+                // Add watering animation
+                const wateringEffect = document.createElement('div');
+                wateringEffect.className = 'watering-effect';
+                
+                // Add water drops
+                for (let i = 0; i < 5; i++) { // Increased to 5 drops for better visibility
+                    const waterDrop = document.createElement('div');
+                    waterDrop.className = 'water-drop';
+                    waterDrop.style.left = `${30 + (i * 10)}%`; // Distribute drops evenly
+                    waterDrop.style.animationDelay = `${i * 0.2}s`; // Stagger animation
+                    wateringEffect.appendChild(waterDrop);
+                }
+                
+                plantContainer.appendChild(wateringEffect);
+                
+                // Make plant dance briefly
+                plantContainer.classList.add('plant-dancing');
+            }
+            
             const response = await fetch(`/api/water-plant/${plantId}`, {
                 method: 'POST',
                 headers: {
@@ -262,34 +284,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     Object.assign(plant, data.plant);
                 }
                 
-                // Show watering effect
-                const plantContainer = document.querySelector(`.plant-container[data-plant-id="${plantId}"]`);
-                if (plantContainer) {
-                    // Add watering animation
-                    const wateringEffect = document.createElement('div');
-                    wateringEffect.className = 'watering-effect';
-                    
-                    // Add water drops
-                    for (let i = 0; i < 3; i++) {
-                        const waterDrop = document.createElement('div');
-                        waterDrop.className = 'water-drop';
-                        wateringEffect.appendChild(waterDrop);
-                    }
-                    
-                    plantContainer.appendChild(wateringEffect);
-                    
-                    // Make plant dance briefly
-                    plantContainer.classList.add('plant-dancing');
-                    
-                    // Remove effects after animation completes
-                    setTimeout(() => {
-                        if (wateringEffect && wateringEffect.parentNode === plantContainer) {
-                            plantContainer.removeChild(wateringEffect);
-                        }
-                        plantContainer.classList.remove('plant-dancing');
-                    }, 2000);
-                }
-                
                 // Update UI
                 renderGarden();
                 if (selectedPlant && selectedPlant.id == plantId) {
@@ -298,11 +292,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 showNotification(data.message, 'success');
             } else {
+                // Remove watering effect if failed
+                if (plantContainer) {
+                    const wateringEffect = plantContainer.querySelector('.watering-effect');
+                    if (wateringEffect) {
+                        plantContainer.removeChild(wateringEffect);
+                    }
+                    plantContainer.classList.remove('plant-dancing');
+                }
                 showNotification(data.message || 'Failed to water plant', 'error');
+            }
+            
+            // Remove effects after animation completes
+            if (plantContainer) {
+                setTimeout(() => {
+                    const wateringEffect = plantContainer.querySelector('.watering-effect');
+                    if (wateringEffect && wateringEffect.parentNode === plantContainer) {
+                        plantContainer.removeChild(wateringEffect);
+                    }
+                    plantContainer.classList.remove('plant-dancing');
+                }, 2000);
             }
         } catch (error) {
             console.error('Error watering plant:', error);
             showNotification('Error watering plant', 'error');
+            
+            // Remove watering effect if error
+            if (plantContainer) {
+                const wateringEffect = plantContainer.querySelector('.watering-effect');
+                if (wateringEffect) {
+                    plantContainer.removeChild(wateringEffect);
+                }
+                plantContainer.classList.remove('plant-dancing');
+            }
         }
     }
     
