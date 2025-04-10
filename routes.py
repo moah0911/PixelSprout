@@ -94,7 +94,7 @@ def index():
 @app.route('/garden')
 @login_required
 def garden_page():
-    return render_template('garden.html', username=current_user.username)
+    return render_template('garden_new.html', username=current_user.username)
 
 @app.route('/profile')
 @login_required

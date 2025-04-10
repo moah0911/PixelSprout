@@ -685,6 +685,164 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!document.getElementById('plant-details-modal')) {
             createPlantDetailsModal();
         }
+        
+        // Create animation effects panel if it doesn't exist
+        if (!document.getElementById('animation-effects-panel')) {
+            createAnimationEffectsPanel();
+        }
+    }
+    
+    /**
+     * Create the animation effects panel
+     * This panel allows users to toggle various visual effects
+     */
+    function createAnimationEffectsPanel() {
+        // Create the panel container
+        const panel = document.createElement('div');
+        panel.id = 'animation-effects-panel';
+        panel.className = 'animation-effects-panel';
+        
+        // Add panel content
+        panel.innerHTML = `
+            <div class="animation-panel-header">
+                <h5>Visual Effects</h5>
+                <button class="btn btn-sm btn-outline-light animation-panel-toggle">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+            </div>
+            <div class="animation-panel-body">
+                <!-- Effects will be added by the animations.js script -->
+                <div class="mb-3">
+                    <label class="form-label">Plant Animations</label>
+                    <div class="btn-group d-flex flex-wrap gap-1" role="group" aria-label="Plant animations">
+                        <button type="button" class="btn btn-sm btn-outline-success" data-animation="dance">
+                            <i class="fas fa-music me-1"></i> Dance
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-success" data-animation="wave">
+                            <i class="fas fa-wind me-1"></i> Wave
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-success" data-animation="shimmer">
+                            <i class="fas fa-sparkles me-1"></i> Shimmer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add panel to the page
+        document.body.appendChild(panel);
+        
+        // Add toggle functionality
+        const toggleButton = panel.querySelector('.animation-panel-toggle');
+        const panelBody = panel.querySelector('.animation-panel-body');
+        
+        if (toggleButton && panelBody) {
+            toggleButton.addEventListener('click', function() {
+                const isCollapsed = panelBody.classList.toggle('collapsed');
+                this.innerHTML = isCollapsed ? 
+                    '<i class="fas fa-chevron-down"></i>' : 
+                    '<i class="fas fa-chevron-up"></i>';
+            });
+        }
+        
+        // Add event listeners for animation buttons
+        const animationButtons = panel.querySelectorAll('[data-animation]');
+        animationButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const animationType = this.getAttribute('data-animation');
+                const isActive = this.classList.toggle('active');
+                
+                // Apply animation to all plants
+                const plantContainers = document.querySelectorAll('.plant-container');
+                plantContainers.forEach(container => {
+                    if (isActive) {
+                        // Remove other animations first
+                        container.classList.remove('animation-dancing', 'animation-waving', 'animation-shimmer');
+                        
+                        // Add the selected animation
+                        container.classList.add(`animation-${animationType}`);
+                    } else {
+                        // Remove the animation
+                        container.classList.remove(`animation-${animationType}`);
+                    }
+                });
+                
+                // Show notification
+                showNotification(`${isActive ? 'Enabled' : 'Disabled'} ${animationType} animation`, 'info');
+            });
+        });
+        
+        // Add CSS for the panel
+        const style = document.createElement('style');
+        style.textContent = `
+            .animation-effects-panel {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 300px;
+                background-color: rgba(33, 37, 41, 0.9);
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                z-index: 1000;
+                overflow: hidden;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .animation-panel-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 15px;
+                background-color: rgba(0, 0, 0, 0.2);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .animation-panel-header h5 {
+                margin: 0;
+                color: #fff;
+                font-size: 1rem;
+            }
+            
+            .animation-panel-body {
+                padding: 15px;
+                max-height: 400px;
+                overflow-y: auto;
+                transition: max-height 0.3s ease;
+            }
+            
+            .animation-panel-body.collapsed {
+                max-height: 0;
+                padding: 0 15px;
+                overflow: hidden;
+            }
+            
+            .animation-effects-panel .form-label {
+                color: #e9ecef;
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .animation-effects-panel .btn-group {
+                margin-bottom: 0.5rem;
+            }
+            
+            /* Animation classes */
+            .animation-dancing {
+                animation: plantDance 3s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+                transform-origin: bottom center;
+            }
+            
+            .animation-waving {
+                animation: plantWave 3s ease-in-out infinite;
+                transform-origin: bottom center;
+            }
+            
+            .animation-shimmer {
+                animation: plantShimmer 4s ease-in-out infinite;
+            }
+        `;
+        document.head.appendChild(style);
     }
     
     /**
