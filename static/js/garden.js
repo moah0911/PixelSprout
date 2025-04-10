@@ -24,6 +24,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Function to set animation mode for all plants
+    function setAnimationMode(mode) {
+        currentAnimationMode = mode;
+        
+        // Remove all animation classes from plant containers
+        const plantContainers = document.querySelectorAll('.plant-container');
+        plantContainers.forEach(container => {
+            container.classList.remove('plant-dancing', 'plant-bouncing', 'plant-shimmering', 'plant-rainbow');
+            
+            // Add the selected animation class if not default
+            if (mode !== 'default') {
+                container.classList.add(`plant-${mode}`);
+            }
+        });
+        
+        // Show notification
+        showNotification(`Animation mode set to ${mode}`, 'success');
+    }
+    
     // Add event listeners for seasonal themes
     const seasonLinks = document.querySelectorAll('[data-season]');
     seasonLinks.forEach(link => {
@@ -34,6 +53,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Function to set seasonal theme for garden
+    function setSeasonTheme(season) {
+        const gardenContainer = document.getElementById('garden-container');
+        
+        // Remove all season classes
+        gardenContainer.classList.remove('season-spring', 'season-summer', 'season-autumn', 'season-winter');
+        
+        // Add the selected season class
+        gardenContainer.classList.add(`season-${season}`);
+        
+        // Show notification
+        showNotification(`Garden theme changed to ${season}`, 'success');
+    }
+    
     // Add event listeners for sorting
     const sortLinks = document.querySelectorAll('[data-sort]');
     sortLinks.forEach(link => {
@@ -43,6 +76,26 @@ document.addEventListener('DOMContentLoaded', function() {
             setSortOrder(sortType);
         });
     });
+    
+    // Function to set sort order for plants
+    function setSortOrder(sortType) {
+        currentSort = sortType;
+        renderGarden(); // Re-render with new sort order
+        
+        // Show notification
+        const sortNames = {
+            'name-asc': 'Name (A-Z)',
+            'name-desc': 'Name (Z-A)',
+            'health-asc': 'Health (Low-High)',
+            'health-desc': 'Health (High-Low)',
+            'progress-asc': 'Progress (Low-High)',
+            'progress-desc': 'Progress (High-Low)',
+            'newest': 'Newest First',
+            'oldest': 'Oldest First'
+        };
+        
+        showNotification(`Plants sorted by: ${sortNames[sortType] || sortType}`, 'success');
+    }
     
     // Add event listener for rename form
     document.getElementById('rename-plant-form').addEventListener('submit', handleRenamePlant);
@@ -355,14 +408,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function getPlantSvg(type, stage) {
+        // Normalize type to lowercase for consistency
+        const normalizedType = type.toLowerCase();
+        
         // Try to get enhanced SVG first
-        if (window.enhancedPlantSvgs && window.enhancedPlantSvgs[type] && window.enhancedPlantSvgs[type][stage]) {
-            return window.enhancedPlantSvgs[type][stage];
+        if (window.enhancedPlantSvgs && window.enhancedPlantSvgs[normalizedType] && window.enhancedPlantSvgs[normalizedType][stage]) {
+            return window.enhancedPlantSvgs[normalizedType][stage];
         }
         
         // Fall back to regular SVGs
         const plantSvgs = window.plantSvgs || {};
-        const typeSvgs = plantSvgs[type] || plantSvgs.succulent;
+        const typeSvgs = plantSvgs[normalizedType] || plantSvgs.succulent;
         
         // If we have a specific SVG for this stage, use it
         if (typeSvgs && typeSvgs[stage]) {
@@ -371,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Fallback to a generic plant representation
         return `<svg viewBox="0 0 100 100" width="80" height="80">
-            <circle cx="50" cy="50" r="${20 + stage * 5}" fill="${getColorForPlantType(type)}" />
+            <circle cx="50" cy="50" r="${20 + stage * 5}" fill="${getColorForPlantType(normalizedType)}" />
         </svg>`;
     }
     
@@ -1089,7 +1145,47 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function showNotification(message, type = 'info') {
-        // Just log to console instead of showing notifications
+        // Get toast elements
+        const toast = document.getElementById('notification-toast');
+        const toastTitle = document.getElementById('toast-title');
+        const toastMessage = document.getElementById('toast-message');
+        const toastIcon = document.getElementById('toast-icon');
+        
+        if (!toast || !toastTitle || !toastMessage || !toastIcon) {
+            console.log(`Notification (${type}): ${message}`);
+            return;
+        }
+        
+        // Set toast content
+        toastMessage.textContent = message;
+        
+        // Set title and icon based on type
+        let title = 'Information';
+        let iconClass = 'fa-info-circle text-info';
+        
+        switch (type) {
+            case 'success':
+                title = 'Success';
+                iconClass = 'fa-check-circle text-success';
+                break;
+            case 'error':
+                title = 'Error';
+                iconClass = 'fa-exclamation-circle text-danger';
+                break;
+            case 'warning':
+                title = 'Warning';
+                iconClass = 'fa-exclamation-triangle text-warning';
+                break;
+        }
+        
+        toastTitle.textContent = title;
+        toastIcon.className = `fas ${iconClass} me-2`;
+        
+        // Show the toast
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        // Log to console as well
         console.log(`Notification (${type}): ${message}`);
     }
     
