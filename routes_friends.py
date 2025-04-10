@@ -30,7 +30,7 @@ def friends_page():
         friend_requests=friend_requests,
         suggested_friends=suggested_friends,
         username=current_user.username,
-        profile_picture_url=current_user.profile_picture_url if hasattr(current_user, 'profile_picture_url') else None
+        profile_picture_url=None
     )
 
 # API route to send a friend request
