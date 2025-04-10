@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Friends - PixelSprout{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/friends.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Friends Header -->
+    <div class="garden-header mb-4 position-relative">
+        <!-- Floating particles background -->
+        <div class="particles-container"></div>
+        
+        <div class="row align-items-center position-relative">
+            <div class="col-md-8 mb-3 mb-md-0">
+                <div class="garden-title animated-text">
+                    <i class="fas fa-user-friends me-2 text-success fa-beat-fade" style="--fa-beat-fade-opacity: 0.67; --fa-beat-fade-scale: 1.075;"></i>
+                    Garden Friends
+                </div>
+                <p class="garden-subtitle">
+                    <span class="typewriter">Connect with other gardeners and explore their gardens</span>
+                </p>
+            </div>
+            <div class="col-md-4 d-flex align-items-center justify-content-md-end justify-content-center">
+                <div class="friends-stats">
+                    <div class="friends-count">
+                        <i class="fas fa-user-friends text-success"></i>
+                        <span id="friends-count">0</span> Friends
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Friends Tabs -->
+    <ul class="nav nav-tabs friends-tabs" id="friendsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="friends-tab" data-bs-toggle="tab" data-bs-target="#friends-content" type="button" role="tab" aria-controls="friends-content" aria-selected="true">
+                <i class="fas fa-user-friends me-1"></i> My Friends
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="requests-tab" data-bs-toggle="tab" data-bs-target="#requests-content" type="button" role="tab" aria-controls="requests-content" aria-selected="false">
+                <i class="fas fa-inbox me-1"></i> Friend Requests
+                <span id="requests-count" class="badge d-none">0</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending-content" type="button" role="tab" aria-controls="pending-content" aria-selected="false">
+                <i class="fas fa-paper-plane me-1"></i> Pending Requests
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="search-tab" data-bs-toggle="tab" data-bs-target="#search-content" type="button" role="tab" aria-controls="search-content" aria-selected="false">
+                <i class="fas fa-search me-1"></i> Find Friends
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="friendsTabsContent">
+        <!-- Friends Tab -->
+        <div class="tab-pane fade show active" id="friends-content" role="tabpanel" aria-labelledby="friends-tab">
+            <div class="glass-panel">
+                <h3 class="section-title mb-4">My Friends</h3>
+                <div id="friends-list" class="friends-container">
+                    <!-- Friends will be loaded here by JavaScript -->
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2">Loading friends...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Friend Requests Tab -->
+        <div class="tab-pane fade" id="requests-content" role="tabpanel" aria-labelledby="requests-tab">
+            <div class="glass-panel">
+                <h3 class="section-title mb-4">Friend Requests</h3>
+                <div id="friend-requests-list" class="friends-container">
+                    <!-- Friend requests will be loaded here by JavaScript -->
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2">Loading friend requests...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pending Requests Tab -->
+        <div class="tab-pane fade" id="pending-content" role="tabpanel" aria-labelledby="pending-tab">
+            <div class="glass-panel">
+                <h3 class="section-title mb-4">Pending Requests</h3>
+                <div id="pending-requests-list" class="friends-container">
+                    <!-- Pending requests will be loaded here by JavaScript -->
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2">Loading pending requests...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Tab -->
+        <div class="tab-pane fade" id="search-content" role="tabpanel" aria-labelledby="search-tab">
+            <div class="glass-panel">
+                <h3 class="section-title mb-4">Find Friends</h3>
+                <form id="friend-search-form" class="search-form mb-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="friend-username" placeholder="Search by username..." required>
+                        <button class="btn btn-success" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="search-results" class="search-results">
+                    <!-- Search results will appear here -->
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <p class="empty-state-text">Search for users to add as friends</p>
+                        <p class="empty-state-subtext">Enter a username to find gardeners</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Friend Garden Modal -->
+<div class="modal fade friend-garden-modal" id="friend-garden-modal" tabindex="-1" aria-labelledby="friend-garden-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="friend-garden-title">Friend's Garden</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="friend-garden-container" class="friend-garden-container">
+                    <!-- Friend's garden will be loaded here by JavaScript -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Messages -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999; margin-top: 80px;">
+    <div id="status-container"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+<script src="{{ url_for('static', filename='svg/plant_stages.js') }}"></script>
+<script src="{{ url_for('static', filename='svg/enhanced_plants.js') }}"></script>
+<script src="{{ url_for('static', filename='js/utilities.js') }}"></script>
+<script src="{{ url_for('static', filename='js/friends.js') }}"></script>
+<script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+{% endblock %}

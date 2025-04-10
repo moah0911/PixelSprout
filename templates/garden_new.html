@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}PixelSprout - My Garden{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/garden.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Enhanced Garden Header with Particle Effects -->
+    <div class="garden-header mb-4 position-relative">
+        <!-- Floating particles background -->
+        <div class="particles-container"></div>
+        
+        <div class="row align-items-center position-relative">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <div class="garden-title animated-text">
+                    <i class="fas fa-seedling me-2 text-success fa-beat-fade" style="--fa-beat-fade-opacity: 0.67; --fa-beat-fade-scale: 1.075;"></i>
+                    My Garden
+                </div>
+                <p class="garden-subtitle">
+                    <span class="typewriter">Nurture your plants by tracking daily conditions and habits</span>
+                </p>
+            </div>
+            <div class="col-md-6 d-flex align-items-center justify-content-md-end justify-content-center">
+                <div class="water-credits-container">
+                    <div class="water-credits-display">
+                        <i class="fas fa-tint fa-bounce" style="--fa-bounce-start-scale-x: 1; --fa-bounce-start-scale-y: 1; --fa-bounce-jump-scale-x: 1; --fa-bounce-jump-scale-y: 1; --fa-bounce-land-scale-x: 1; --fa-bounce-land-scale-y: 1; --fa-bounce-rebound: 0;"></i> 
+                        <span id="water-credits-count" class="glow-text">--</span> credits
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Garden Stats -->
+    <div id="garden-stats" class="garden-stats mb-4">
+        <!-- Stats will be loaded by JavaScript -->
+        <div class="stat-item">
+            <div class="stat-value">--</div>
+            <div class="stat-label">Total Plants</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">--</div>
+            <div class="stat-label">Healthy</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">--</div>
+            <div class="stat-label">Needs Water</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">--</div>
+            <div class="stat-label">Avg. Health</div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Main Garden Area -->
+        <div class="col-lg-8 mb-4 mb-lg-0">
+            <!-- Garden Controls -->
+            <div class="garden-controls mb-3">
+                <div class="garden-controls-left">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-plant-modal">
+                        <i class="fas fa-plus me-1"></i> Add Plant
+                    </button>
+                    
+                    <button id="water-all-plants-btn" class="btn btn-info">
+                        <i class="fas fa-tint me-1"></i> Water All
+                    </button>
+                </div>
+                
+                <div class="garden-controls-right">
+                    <div class="garden-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-plants" class="form-control" placeholder="Search plants...">
+                    </div>
+                    
+                    <select id="filter-plants-dropdown" class="form-select">
+                        <option value="all">All Plants</option>
+                        <option value="healthy">Healthy</option>
+                        <option value="needs-water">Needs Water</option>
+                        <option value="growing">Growing</option>
+                        <option value="mature">Mature</option>
+                        <option value="withering">Withering</option>
+                    </select>
+                    
+                    <select id="sort-plants-dropdown" class="form-select">
+                        <option value="name">Sort by Name</option>
+                        <option value="health">Sort by Health</option>
+                        <option value="progress">Sort by Progress</option>
+                        <option value="stage">Sort by Stage</option>
+                        <option value="age">Sort by Age</option>
+                    </select>
+                    
+                    <button id="view-mode-toggle" class="btn btn-outline-secondary" title="Switch to List View">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Garden Container -->
+            <div id="garden-container" class="garden-container season-spring">
+                <!-- Plants will be loaded here by JavaScript -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="text-muted mt-2">Loading garden...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Side Panel -->
+        <div class="col-lg-4">
+            <!-- Plant Details Panel -->
+            <div class="mb-4">
+                <h3 class="mb-3">Plant Details</h3>
+                <div id="plant-details-panel" class="plant-details-panel">
+                    <div class="text-center p-4">
+                        <p class="text-muted">Select a plant to view details</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Enhanced Quick Log Condition Panel -->
+            <div class="mb-4">
+                <h3 class="mb-3 section-title">
+                    <i class="fas fa-clipboard-list text-success me-2"></i>
+                    Log Condition
+                </h3>
+                <div class="glass-panel">
+                    <form id="log-condition-form">
+                        <div class="mb-3">
+                            <label for="condition-type" class="form-label">
+                                <i class="fas fa-tag me-1 text-info"></i> Condition Type
+                            </label>
+                            <select class="form-select custom-select-dark" id="condition-type" required>
+                                <option value="" selected disabled>Select condition...</option>
+                                <!-- Options will be loaded by JavaScript -->
+                            </select>
+                            <small class="text-info mt-2 d-block" id="condition-goal-hint"></small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="condition-value" class="form-label">
+                                <i class="fas fa-chart-line me-1 text-warning"></i> Value
+                            </label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="condition-value" step="0.1" required>
+                                <span class="input-group-text" id="value-unit">units</span>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 btn-glow">
+                            <i class="fas fa-plus-circle me-1"></i> Log Condition
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Enhanced Recent Conditions Panel -->
+            <div>
+                <h3 class="mb-3 section-title">
+                    <i class="fas fa-history text-success me-2"></i>
+                    Recent Conditions
+                </h3>
+                <div class="glass-panel">
+                    <div id="recent-conditions-list" class="conditions-container">
+                        <div class="text-center p-4">
+                            <div class="spinner-grow text-success" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="text-muted mt-3">Loading your conditions...</p>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-sm btn-outline-success" id="add-custom-condition-btn" data-bs-toggle="modal" data-bs-target="#add-condition-type-modal">
+                            <i class="fas fa-plus-circle me-1"></i> Add Custom Condition
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Plant Modal -->
+<div class="modal fade" id="add-plant-modal" tabindex="-1" aria-labelledby="add-plant-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-plant-modal-label">Add New Plant</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-plant-form">
+                    <div class="mb-3">
+                        <label for="plant-name" class="form-label">Plant Name</label>
+                        <input type="text" class="form-control" id="plant-name" placeholder="Name your plant..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="plant-type" class="form-label">Plant Type</label>
+                        <select class="form-select custom-select-dark" id="plant-type" required>
+                            <option value="" selected disabled>Select plant type...</option>
+                            <!-- Options will be loaded by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-seedling me-1"></i> Create Plant
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Condition Type Modal -->
+<div class="modal fade" id="add-condition-type-modal" tabindex="-1" aria-labelledby="add-condition-type-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-condition-type-modal-label">Create Custom Condition Type</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-condition-type-form">
+                    <div class="mb-3">
+                        <label for="condition-type-name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="condition-type-name" placeholder="e.g., Meditation" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="condition-type-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="condition-type-description" rows="2" placeholder="Brief description of this condition..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="condition-type-unit" class="form-label">Unit</label>
+                        <input type="text" class="form-control" id="condition-type-unit" placeholder="e.g., minutes" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="condition-type-goal" class="form-label">Default Goal (optional)</label>
+                        <input type="number" class="form-control" id="condition-type-goal" step="0.1" placeholder="e.g., 30">
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-plus-circle me-1"></i> Create Condition Type
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Garden Status Messages -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999; margin-top: 80px;">
+    <div id="status-container"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Bootstrap is already included in base.html -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+<script src="{{ url_for('static', filename='svg/plant_stages.js') }}"></script>
+<script src="{{ url_for('static', filename='svg/enhanced_plants.js') }}"></script>
+<script src="{{ url_for('static', filename='js/utilities.js') }}"></script>
+<script src="{{ url_for('static', filename='js/garden_new.js') }}"></script>
+<script src="{{ url_for('static', filename='js/conditions.js') }}"></script>
+<script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+{% endblock %}

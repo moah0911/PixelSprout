@@ -1,37 +1,69 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from app import app, db
-from models import User, Friendship, FriendshipStatus
+from models import User, Friendship, FriendshipStatus, Plant
 import logging
+from sqlalchemy import or_, and_
 
 # Friends page route
 @app.route('/friends')
 @login_required
 def friends_page():
     """Show the friends page with a list of friends and friend requests"""
-    # Get user's friends
+    return render_template('friends_new.html')
+
+# API route to search for users
+@app.route('/api/friends/search', methods=['GET'])
+@login_required
+def search_users():
+    """API endpoint to search for users by username"""
+    username = request.args.get('username', '')
+    
+    if not username or len(username) < 3:
+        return jsonify({
+            'success': False,
+            'message': 'Please enter at least 3 characters for search'
+        })
+    
+    # Search for users with similar usernames
+    users = User.query.filter(
+        User.id != current_user.id,
+        User.username.ilike(f'%{username}%')
+    ).limit(10).all()
+    
+    if not users:
+        return jsonify({
+            'success': False,
+            'message': 'No users found with that username'
+        })
+    
+    # Get current friends and pending requests
     friends = current_user.get_friends()
+    friend_ids = [friend.id for friend in friends]
     
-    # Get pending friend requests
-    friend_requests = current_user.get_friend_requests()
+    # Get pending sent requests
+    sent_requests = Friendship.query.filter_by(
+        requester_id=current_user.id,
+        status=FriendshipStatus.PENDING.value
+    ).all()
+    sent_request_ids = [req.addressee_id for req in sent_requests]
     
-    # Get suggested friends (other users who are not friends)
-    # In a real app, you would have a more sophisticated algorithm
-    all_users = User.query.filter(User.id != current_user.id).limit(10).all()
+    # Format user data
+    user_list = []
+    for user in users:
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'garden_score': user.garden_score,
+            'is_friend': user.id in friend_ids,
+            'has_pending_request': user.id in sent_request_ids
+        }
+        user_list.append(user_data)
     
-    # Filter out users who are already friends and those who have pending requests
-    friends_ids = [friend.id for friend in friends]
-    request_ids = [request.requester_id for request in friend_requests]
-    suggested_friends = [user for user in all_users if user.id not in friends_ids and user.id not in request_ids]
-    
-    return render_template(
-        'friends_simple.html',  # Using the simplified friends template
-        friends=friends,
-        friend_requests=friend_requests,
-        suggested_friends=suggested_friends,
-        username=current_user.username,
-        profile_picture_url=None
-    )
+    return jsonify({
+        'success': True,
+        'users': user_list
+    })
 
 # API route to send a friend request
 @app.route('/api/friends/request', methods=['POST'])
@@ -66,6 +98,57 @@ def respond_to_friend_request():
     success, message = current_user.handle_friend_request(friendship_id, accept)
     return jsonify({'success': success, 'message': message})
 
+# API route to cancel a friend request
+@app.route('/api/friends/cancel/<int:request_id>', methods=['POST'])
+@login_required
+def cancel_friend_request(request_id):
+    """API endpoint to cancel a pending friend request"""
+    friendship = Friendship.query.get(request_id)
+    
+    if not friendship:
+        return jsonify({'success': False, 'message': 'Friend request not found'})
+    
+    if friendship.requester_id != current_user.id:
+        return jsonify({'success': False, 'message': 'You cannot cancel this request'})
+    
+    if friendship.status != FriendshipStatus.PENDING.value:
+        return jsonify({'success': False, 'message': 'This request is no longer pending'})
+    
+    # Delete the friendship request
+    db.session.delete(friendship)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Friend request cancelled'
+    })
+
+# API route to remove a friend
+@app.route('/api/friends/remove/<user_id>', methods=['POST'])
+@login_required
+def remove_friend(user_id):
+    """API endpoint to remove a friend"""
+    # Find the friendship
+    friendship = Friendship.query.filter(
+        or_(
+            and_(Friendship.requester_id == current_user.id, Friendship.addressee_id == user_id),
+            and_(Friendship.requester_id == user_id, Friendship.addressee_id == current_user.id)
+        ),
+        Friendship.status == FriendshipStatus.ACCEPTED.value
+    ).first()
+    
+    if not friendship:
+        return jsonify({'success': False, 'message': 'Friendship not found'})
+    
+    # Delete the friendship
+    db.session.delete(friendship)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Friend removed successfully'
+    })
+
 # API route to get all friends
 @app.route('/api/friends', methods=['GET'])
 @login_required
@@ -75,10 +158,15 @@ def get_friends():
     
     friend_list = []
     for friend in friends:
+        # Count plants
+        plants_count = Plant.query.filter_by(user_id=friend.id).count()
+        
         friend_list.append({
             'id': friend.id,
             'username': friend.username,
             'water_credits': friend.water_credits,
+            'garden_score': friend.garden_score,
+            'plants_count': plants_count,
             'created_at': friend.created_at.isoformat()
         })
     
@@ -107,6 +195,31 @@ def get_friend_requests():
     return jsonify({
         'success': True,
         'friend_requests': request_list
+    })
+
+# API route to get pending friend requests (sent by current user)
+@app.route('/api/friends/pending', methods=['GET'])
+@login_required
+def get_pending_requests():
+    """API endpoint to get all pending friend requests sent by the current user"""
+    pending_requests = Friendship.query.filter_by(
+        requester_id=current_user.id,
+        status=FriendshipStatus.PENDING.value
+    ).all()
+    
+    request_list = []
+    for request in pending_requests:
+        addressee = User.query.get(request.addressee_id)
+        request_list.append({
+            'id': request.id,
+            'addressee_id': request.addressee_id,
+            'addressee_username': addressee.username,
+            'created_at': request.created_at.isoformat()
+        })
+    
+    return jsonify({
+        'success': True,
+        'pending_requests': request_list
     })
 
 # API route to get friend's garden data
