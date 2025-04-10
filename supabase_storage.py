@@ -21,35 +21,56 @@ class SupabaseStorage:
     
     @staticmethod
     def initialize_buckets():
-        """Initialize storage buckets if they don't exist"""
+        """Check if required storage buckets exist and are accessible"""
         if not supabase:
             raise Exception("Supabase client not initialized")
             
         try:
-            # Check if the default bucket exists
-            buckets = supabase.storage.list_buckets()
-            bucket_names = [bucket["name"] for bucket in buckets]
+            # Define the required buckets
+            required_buckets = [DEFAULT_BUCKET, "profile-pictures", "plant-images"]
             
-            # Create default bucket if it doesn't exist
-            if DEFAULT_BUCKET not in bucket_names:
-                supabase.storage.create_bucket(id=DEFAULT_BUCKET, options={"public": True})
-                logging.info(f"Created storage bucket: {DEFAULT_BUCKET}")
+            # Try to list existing buckets
+            try:
+                buckets = supabase.storage.list_buckets()
+                bucket_names = [bucket["name"] for bucket in buckets]
                 
-            # Create other buckets as needed
-            profile_bucket = "profile-pictures"
-            if profile_bucket not in bucket_names:
-                supabase.storage.create_bucket(id=profile_bucket, options={"public": True})
-                logging.info(f"Created storage bucket: {profile_bucket}")
+                # Log which buckets exist
+                for bucket in required_buckets:
+                    if bucket in bucket_names:
+                        logging.info(f"Storage bucket exists: {bucket}")
+                    else:
+                        logging.warning(f"Storage bucket does not exist: {bucket}")
+                        
+                # If we can list buckets but some are missing, try to create them
+                for bucket in required_buckets:
+                    if bucket not in bucket_names:
+                        try:
+                            supabase.storage.create_bucket(id=bucket, options={"public": True})
+                            logging.info(f"Created storage bucket: {bucket}")
+                        except Exception as bucket_error:
+                            logging.warning(f"Could not create bucket {bucket}: {str(bucket_error)}")
                 
-            plant_bucket = "plant-images"
-            if plant_bucket not in bucket_names:
-                supabase.storage.create_bucket(id=plant_bucket, options={"public": True})
-                logging.info(f"Created storage bucket: {plant_bucket}")
+            except Exception as list_error:
+                # If we can't list buckets, try to access each required bucket directly
+                logging.warning(f"Could not list buckets: {str(list_error)}")
                 
+                for bucket in required_buckets:
+                    try:
+                        # Try to list files in the bucket to check if it exists and is accessible
+                        supabase.storage.from_(bucket).list()
+                        logging.info(f"Storage bucket is accessible: {bucket}")
+                    except Exception as access_error:
+                        logging.warning(f"Storage bucket is not accessible: {bucket}. Error: {str(access_error)}")
+            
+            # Return success even if we couldn't create all buckets
+            # The application will handle missing buckets gracefully
             return True
+            
         except Exception as e:
             logging.error(f"Failed to initialize storage buckets: {str(e)}")
-            return False
+            # Return True anyway to allow the application to start
+            # Individual upload operations will handle errors if buckets don't exist
+            return True
     
     @staticmethod
     def upload_file(file_data, file_name=None, bucket_name=DEFAULT_BUCKET, user_id=None):
@@ -78,6 +99,23 @@ class SupabaseStorage:
             # Create a path that includes the user ID if provided
             file_path = f"{user_id}/{file_name}" if user_id else file_name
             
+            # Check if the bucket exists by trying to list files
+            try:
+                supabase.storage.from_(bucket_name).list()
+            except Exception as bucket_error:
+                logging.warning(f"Bucket {bucket_name} may not exist or is not accessible: {str(bucket_error)}")
+                # Try to create the bucket
+                try:
+                    supabase.storage.create_bucket(id=bucket_name, options={"public": True})
+                    logging.info(f"Created storage bucket: {bucket_name}")
+                except Exception as create_error:
+                    logging.error(f"Could not create bucket {bucket_name}: {str(create_error)}")
+                    # If we can't create the bucket, use the default bucket as fallback
+                    if bucket_name != DEFAULT_BUCKET:
+                        logging.info(f"Falling back to default bucket: {DEFAULT_BUCKET}")
+                        bucket_name = DEFAULT_BUCKET
+                        file_path = f"fallback/{bucket_name}/{file_path}"
+            
             # Upload the file
             result = supabase.storage.from_(bucket_name).upload(
                 file_path,
@@ -92,13 +130,22 @@ class SupabaseStorage:
                 "success": True,
                 "file_name": file_name,
                 "file_path": file_path,
-                "file_url": file_url
+                "file_url": file_url,
+                "bucket_name": bucket_name
             }
         except Exception as e:
             logging.error(f"File upload error: {str(e)}")
+            # If upload fails, try to provide a helpful error message
+            error_msg = str(e)
+            if "not found" in error_msg.lower() or "does not exist" in error_msg.lower():
+                error_msg = f"Storage bucket '{bucket_name}' does not exist or is not accessible. Please check your Supabase configuration."
+            elif "unauthorized" in error_msg.lower() or "permission" in error_msg.lower():
+                error_msg = f"Permission denied when accessing storage bucket '{bucket_name}'. Please check your Supabase RLS policies."
+            
             return {
                 "success": False,
-                "error": str(e)
+                "error": error_msg,
+                "original_error": str(e)
             }
     
     @staticmethod

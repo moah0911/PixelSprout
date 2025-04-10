@@ -1,4 +1,3 @@
-
 import os
 import logging
 import secrets
@@ -104,8 +103,11 @@ def load_user(user_id):
 try:
     from supabase_storage import SupabaseStorage
     SupabaseStorage.initialize_buckets()
+    logging.info("Supabase Storage bucket check completed")
 except Exception as e:
-    logging.error(f"Failed to initialize Supabase Storage buckets: {str(e)}")
+    logging.error(f"Failed to check Supabase Storage buckets: {str(e)}")
+    logging.warning("Continuing application startup despite storage initialization issues")
+    # We'll continue anyway and handle storage errors at the API level
 
 # Import and register blueprints
 try:

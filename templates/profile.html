@@ -1,222 +1,411 @@
+
 {% extends "base.html" %}
 
-{% block title %}PixelSprout - Profile{% endblock %}
+{% block title %}PixelSprout - Profile Dashboard{% endblock %}
 
 {% block content %}
-<div class="profile-header mb-5">
-    <div class="profile-header-bg"></div>
-    <div class="container">
-        <!-- Error and success messages -->
-        <div id="error-message" class="alert alert-danger d-none mb-3"></div>
-        <div id="success-message" class="alert alert-success d-none mb-3"></div>
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <div class="profile-info">
-                    <div class="profile-avatar" id="profile-picture-container">
-                        <div id="profile-picture-preview">
-                            <img src="{{ profile_picture_url|default('https://via.placeholder.com/150?text=Upload+Image', true) }}" class="img-fluid rounded-circle profile-picture" alt="Profile Picture">
+<div class="profile-dashboard">
+    <!-- Profile Header -->
+    <section class="profile-hero">
+        <div class="container">
+            <div class="profile-hero-content">
+                <div class="profile-header-left">
+                    <div class="profile-avatar-container" id="profile-picture-container">
+                        <div class="profile-avatar">
+                            <img src="{{ profile_picture_url|default('https://via.placeholder.com/150?text=Upload+Image', true) }}" alt="Profile Picture" id="profile-picture-preview">
+                            <div class="avatar-status online"></div>
                         </div>
-                        <div class="profile-status online"></div>
-                        <div class="profile-picture-upload">
-                            <label for="profile-picture-input" class="btn btn-sm btn-success btn-glow-alt">
+                        <div class="avatar-upload">
+                            <label for="profile-picture-input">
                                 <i class="fas fa-camera"></i>
                             </label>
-                            <input type="file" id="profile-picture-input" class="d-none" accept="image/*">
+                            <input type="file" id="profile-picture-input" accept="image/*" class="d-none">
                         </div>
                     </div>
-                    <div class="profile-text">
-                        <h1 class="profile-name">
-                            <span class="animated-text">PixelSprout</span> - {{ username }}'s Profile
-                        </h1>
-                        <p class="profile-tagline">
-                            <i class="fas fa-seedling me-2 text-success fa-pulse"></i>
-                            Track your garden progress and habits
-                        </p>
-                        <div class="particles-container">
-                            <div class="floating-particle" style="top: 20%; left: 10%; width: 8px; height: 8px; background: rgba(76, 175, 80, 0.6); animation: float 8s infinite ease-in-out;"></div>
-                            <div class="floating-particle" style="top: 30%; left: 20%; width: 6px; height: 6px; background: rgba(139, 195, 74, 0.5); animation: float 12s infinite ease-in-out;"></div>
-                            <div class="floating-particle" style="top: 15%; left: 30%; width: 10px; height: 10px; background: rgba(205, 220, 57, 0.4); animation: float 10s infinite ease-in-out;"></div>
+                    
+                    <div class="profile-info">
+                        <h1 class="profile-name">{{ username }}</h1>
+                        <div class="profile-level">
+                            <span class="level-badge" id="garden-level">--</span>
+                            <div class="level-progress">
+                                <div class="progress-bar" id="level-progress-bar" style="width: 0%"></div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 d-flex justify-content-end align-items-center">
-                <button class="btn btn-success btn-lg btn-glow" data-bs-toggle="modal" data-bs-target="#log-condition-modal">
-                    <i class="fas fa-clipboard-list me-2"></i> Log Condition
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <!-- User Stats Card -->
-    <div class="col-lg-4 mb-4">
-        <div class="card h-100 glass-panel">
-            <div class="card-header bg-success bg-opacity-25 border-success border-opacity-25">
-                <h5 class="mb-0 card-title-glow">
-                    <i class="fas fa-chart-line me-2 fa-beat-fade" style="--fa-beat-fade-opacity: 0.67; --fa-beat-fade-scale: 1.075;"></i> Garden Statistics
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="stat-item mb-4">
-                    <div class="stat-icon-container">
-                        <div class="stat-icon bg-success">
-                            <i class="fas fa-seedling fa-bounce"></i>
+                        <div class="profile-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span id="member-since">--</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Digital Garden</span>
+                            </div>
                         </div>
-                        <div class="stat-icon-glow bg-success"></div>
-                    </div>
-                    <div class="stat-content">
-                        <h6 class="stat-label">Plants in Garden</h6>
-                        <div class="stat-value" id="plants-count">--</div>
                     </div>
                 </div>
                 
-                <div class="stat-item mb-4">
-                    <div class="stat-icon-container">
-                        <div class="stat-icon bg-info">
-                            <i class="fas fa-clipboard-list fa-bounce"></i>
+                <div class="profile-header-right">
+                    <div class="profile-actions">
+                        <button class="btn-log-habit" data-bs-toggle="modal" data-bs-target="#log-condition-modal">
+                            <i class="fas fa-plus"></i>
+                            <span>Log Habit</span>
+                        </button>
+                        
+                        <a href="/garden" class="btn-view-garden">
+                            <i class="fas fa-leaf"></i>
+                            <span>View Garden</span>
+                        </a>
+                    </div>
+                    
+                    <div class="water-credits">
+                        <div class="water-icon">
+                            <i class="fas fa-tint"></i>
                         </div>
-                        <div class="stat-icon-glow bg-info"></div>
-                    </div>
-                    <div class="stat-content">
-                        <h6 class="stat-label">Conditions Logged</h6>
-                        <div class="stat-value" id="conditions-count">--</div>
-                    </div>
-                </div>
-                
-                <div class="stat-item mb-4">
-                    <div class="stat-icon-container">
-                        <div class="stat-icon bg-primary">
-                            <i class="fas fa-trophy fa-bounce"></i>
+                        <div class="water-info">
+                            <span class="water-count" id="water-credits-count">25</span>
+                            <span class="water-label">Water Credits</span>
                         </div>
-                        <div class="stat-icon-glow bg-primary"></div>
-                    </div>
-                    <div class="stat-content">
-                        <h6 class="stat-label">Garden Score</h6>
-                        <div class="stat-value" id="garden-score">--</div>
-                        <span class="badge bg-success mt-1 level-badge" id="garden-level">--</span>
-                    </div>
-                </div>
-                
-                <div class="stat-item">
-                    <div class="stat-icon-container">
-                        <div class="stat-icon bg-warning">
-                            <i class="fas fa-calendar-alt fa-bounce"></i>
-                        </div>
-                        <div class="stat-icon-glow bg-warning"></div>
-                    </div>
-                    <div class="stat-content">
-                        <h6 class="stat-label">Member Since</h6>
-                        <div class="stat-value" id="member-since">--</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
     
-    <!-- Garden Summary Card -->
-    <div class="col-lg-8 mb-4">
-        <div class="card h-100 glass-panel">
-            <div class="card-header bg-success bg-opacity-25 border-success border-opacity-25 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 card-title-glow">
-                    <i class="fas fa-leaf me-2 fa-beat-fade" style="--fa-beat-fade-opacity: 0.67; --fa-beat-fade-scale: 1.075;"></i> Garden Summary
-                </h5>
-                <a href="/garden" class="btn btn-success btn-glow-alt">
-                    <i class="fas fa-external-link-alt me-1"></i> View Garden
-                </a>
-            </div>
-            <div class="card-body">
-                <div id="plant-summary-container" class="garden-summary-content">
-                    <div class="text-center p-5">
-                        <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
-                            <span class="visually-hidden">Loading plants...</span>
+    <!-- Dashboard Content -->
+    <section class="dashboard-content">
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-8">
+                    <!-- Garden Overview -->
+                    <div class="dashboard-card garden-overview-card">
+                        <div class="card-header">
+                            <div class="card-header-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <h2 class="card-title">Garden Overview</h2>
+                            <div class="card-actions">
+                                <a href="/garden" class="btn-card-action">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
                         </div>
-                        <p class="mt-3 loading-text">Loading your garden data...</p>
+                        
+                        <div class="card-body">
+                            <div class="garden-stats">
+                                <div class="garden-stat">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-seedling"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-value" id="plants-count">--</span>
+                                        <span class="stat-label">Plants</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="garden-stat">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-clipboard-list"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-value" id="conditions-count">--</span>
+                                        <span class="stat-label">Habits Logged</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="garden-stat">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-trophy"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-value" id="garden-score">--</span>
+                                        <span class="stat-label">Garden Score</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="garden-stat">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-value" id="streak-count">0</span>
+                                        <span class="stat-label">Day Streak</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="garden-preview" id="plant-summary-container">
+                                <div class="loading-state">
+                                    <div class="spinner">
+                                        <i class="fas fa-seedling fa-spin"></i>
+                                    </div>
+                                    <p>Loading garden data...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="dashboard-card activity-card">
+                        <div class="card-header">
+                            <div class="card-header-icon">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <h2 class="card-title">Recent Activity</h2>
+                            <div class="card-actions">
+                                <button class="btn-card-action" id="refresh-activity">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="activity-timeline" id="recent-activity-list">
+                                <div class="loading-state">
+                                    <div class="spinner">
+                                        <i class="fas fa-seedling fa-spin"></i>
+                                    </div>
+                                    <p>Loading activity data...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Charts -->
+                    <div class="dashboard-card progress-card">
+                        <div class="card-header">
+                            <div class="card-header-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h2 class="card-title">Habit Progress</h2>
+                            <div class="card-actions">
+                                <div class="time-range-selector">
+                                    <button class="time-btn active" data-range="week">Week</button>
+                                    <button class="time-btn" data-range="month">Month</button>
+                                    <button class="time-btn" data-range="year">Year</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="progress-charts">
+                                <div class="chart-container">
+                                    <div class="chart-placeholder">
+                                        <div class="chart-icon">
+                                            <i class="fas fa-chart-bar"></i>
+                                        </div>
+                                        <p>Progress visualization coming soon</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="col-lg-4">
+                    <!-- Habit Tracking -->
+                    <div class="dashboard-card habits-card">
+                        <div class="card-header">
+                            <div class="card-header-icon">
+                                <i class="fas fa-heartbeat"></i>
+                            </div>
+                            <h2 class="card-title">My Habits</h2>
+                            <div class="card-actions">
+                                <button class="btn-card-action" data-bs-toggle="modal" data-bs-target="#add-condition-type-modal">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="habits-list" id="condition-types-list">
+                                <div class="loading-state">
+                                    <div class="spinner">
+                                        <i class="fas fa-seedling fa-spin"></i>
+                                    </div>
+                                    <p>Loading habits...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Achievements -->
+                    <div class="dashboard-card achievements-card">
+                        <div class="card-header">
+                            <div class="card-header-icon">
+                                <i class="fas fa-award"></i>
+                            </div>
+                            <h2 class="card-title">Achievements</h2>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="achievements-grid">
+                                <div class="achievement-item unlocked">
+                                    <div class="achievement-icon">
+                                        <i class="fas fa-seedling"></i>
+                                    </div>
+                                    <div class="achievement-info">
+                                        <h3>First Sprout</h3>
+                                        <p>Plant your first seed</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="achievement-item unlocked">
+                                    <div class="achievement-icon">
+                                        <i class="fas fa-clipboard-check"></i>
+                                    </div>
+                                    <div class="achievement-info">
+                                        <h3>Habit Tracker</h3>
+                                        <p>Log 10 habits</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="achievement-item">
+                                    <div class="achievement-icon">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div class="achievement-info">
+                                        <h3>Weekly Streak</h3>
+                                        <p>Log habits for 7 days in a row</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="achievement-item">
+                                    <div class="achievement-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="achievement-info">
+                                        <h3>Community Gardener</h3>
+                                        <p>Add 3 friends to your network</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="achievement-item">
+                                    <div class="achievement-icon">
+                                        <i class="fas fa-tint"></i>
+                                    </div>
+                                    <div class="achievement-info">
+                                        <h3>Water Donor</h3>
+                                        <p>Send water credits to friends</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="view-all-achievements">
+                                <button class="btn-view-all">
+                                    <span>View All Achievements</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Friend Activity -->
+                    <div class="dashboard-card friend-activity-card">
+                        <div class="card-header">
+                            <div class="card-header-icon">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <h2 class="card-title">Friend Activity</h2>
+                            <div class="card-actions">
+                                <a href="/friends" class="btn-card-action">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="friend-activity-list">
+                                <div class="friend-activity-item">
+                                    <div class="friend-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="friend-activity-info">
+                                        <p><strong>Sarah</strong> reached level 5</p>
+                                        <span class="activity-time">2 hours ago</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="friend-activity-item">
+                                    <div class="friend-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="friend-activity-info">
+                                        <p><strong>Michael</strong> planted a new Zen Lily</p>
+                                        <span class="activity-time">Yesterday</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="friend-activity-item">
+                                    <div class="friend-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="friend-activity-info">
+                                        <p><strong>Emma</strong> sent you water credits</p>
+                                        <span class="activity-time">2 days ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="view-all-friends">
+                                <a href="/friends" class="btn-view-all">
+                                    <span>View All Friends</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 
-<div class="row">
-    <!-- Habit Tracking -->
-    <div class="col-lg-6 mb-4">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-heartbeat me-2"></i> Habit Tracking
-                </h5>
-            </div>
-            <div class="card-body">
-                <ul id="condition-types-list" class="list-group">
-                    <div class="text-center p-3">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading habits...</span>
-                        </div>
-                    </div>
-                </ul>
-            </div>
-            <div class="card-footer">
-                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#add-condition-type-modal">
-                    <i class="fas fa-plus me-1"></i> Add Custom Habit
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Recent Activity -->
-    <div class="col-lg-6 mb-4">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-history me-2"></i> Recent Activity
-                </h5>
-            </div>
-            <div class="card-body">
-                <ul id="recent-activity-list" class="list-group">
-                    <div class="text-center p-3">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading activity...</span>
-                        </div>
-                    </div>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Log Condition Modal -->
+<!-- Log Habit Modal -->
 <div class="modal fade" id="log-condition-modal" tabindex="-1" aria-labelledby="log-condition-modal-label" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="log-condition-modal-label">Log a Condition</h5>
+                <h5 class="modal-title" id="log-condition-modal-label">
+                    <i class="fas fa-clipboard-list"></i>
+                    Log a Habit
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="log-condition-form">
-                    <div class="mb-3">
-                        <label for="condition-type" class="form-label">Condition Type</label>
+                    <div class="form-group mb-4">
+                        <label for="condition-type">Habit Type</label>
                         <select class="form-select" id="condition-type" required>
-                            <!-- Condition types will be populated via JavaScript -->
-                            <option value="" disabled selected>Loading condition types...</option>
+                            <option value="" disabled selected>Loading habit types...</option>
                         </select>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="condition-value" class="form-label">Value</label>
+                    <div class="form-group mb-4">
+                        <label for="condition-value">Value</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="condition-value" min="0" step="0.1" required>
                             <span class="input-group-text" id="condition-unit-label">units</span>
                         </div>
-                        <div id="condition-goal-hint" class="form-text d-none"></div>
+                        <div id="condition-goal-hint" class="form-hint d-none"></div>
                     </div>
                     
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-plus me-1"></i> Log Condition
+                    <div class="form-group mb-4">
+                        <label for="condition-date">Date</label>
+                        <input type="date" class="form-control" id="condition-date" required>
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label for="condition-notes">Notes (Optional)</label>
+                        <textarea class="form-control" id="condition-notes" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-plus"></i>
+                            Log Habit
                         </button>
                     </div>
                 </form>
@@ -225,42 +414,82 @@
     </div>
 </div>
 
-<!-- Add Custom Condition Type Modal -->
+<!-- Add Custom Habit Modal -->
 <div class="modal fade" id="add-condition-type-modal" tabindex="-1" aria-labelledby="add-condition-type-modal-label" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="add-condition-type-modal-label">Add Custom Condition Type</h5>
+                <h5 class="modal-title" id="add-condition-type-modal-label">
+                    <i class="fas fa-plus-circle"></i>
+                    Create Custom Habit
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="add-condition-type-form">
-                    <div class="mb-3">
-                        <label for="condition-type-name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="condition-type-name" required>
-                        <div class="form-text">Enter a descriptive name for your condition (e.g., "meditation").</div>
+                    <div class="form-group mb-4">
+                        <label for="condition-type-name">Habit Name</label>
+                        <input type="text" class="form-control" id="condition-type-name" placeholder="e.g., Meditation" required>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="condition-type-description" class="form-label">Description</label>
-                        <textarea class="form-control" id="condition-type-description" rows="2" required></textarea>
+                    <div class="form-group mb-4">
+                        <label for="condition-type-description">Description</label>
+                        <textarea class="form-control" id="condition-type-description" rows="2" placeholder="Describe your habit..." required></textarea>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="condition-type-unit" class="form-label">Unit</label>
-                        <input type="text" class="form-control" id="condition-type-unit" required>
-                        <div class="form-text">E.g., "minutes", "glasses", "hours", etc.</div>
+                    <div class="form-group mb-4">
+                        <label for="condition-type-unit">Unit of Measurement</label>
+                        <input type="text" class="form-control" id="condition-type-unit" placeholder="e.g., minutes, glasses, hours" required>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="condition-type-goal" class="form-label">Default Goal (optional)</label>
-                        <input type="number" class="form-control" id="condition-type-goal" min="0" step="0.1">
-                        <div class="form-text">A suggested target value for this condition.</div>
+                    <div class="form-group mb-4">
+                        <label for="condition-type-goal">Daily Goal (Optional)</label>
+                        <input type="number" class="form-control" id="condition-type-goal" min="0" step="0.1" placeholder="e.g., 30">
+                        <div class="form-hint">A target value to aim for each day</div>
                     </div>
                     
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-plus me-1"></i> Create Condition Type
+                    <div class="form-group mb-4">
+                        <label>Plant Type Association</label>
+                        <div class="plant-type-options">
+                            <div class="plant-type-option">
+                                <input type="radio" name="plant-type" id="plant-type-1" value="succulent" checked>
+                                <label for="plant-type-1">
+                                    <i class="fas fa-seedling"></i>
+                                    <span>Succulent</span>
+                                </label>
+                            </div>
+                            
+                            <div class="plant-type-option">
+                                <input type="radio" name="plant-type" id="plant-type-2" value="flower">
+                                <label for="plant-type-2">
+                                    <i class="fas fa-spa"></i>
+                                    <span>Flower</span>
+                                </label>
+                            </div>
+                            
+                            <div class="plant-type-option">
+                                <input type="radio" name="plant-type" id="plant-type-3" value="tree">
+                                <label for="plant-type-3">
+                                    <i class="fas fa-tree"></i>
+                                    <span>Tree</span>
+                                </label>
+                            </div>
+                            
+                            <div class="plant-type-option">
+                                <input type="radio" name="plant-type" id="plant-type-4" value="herb">
+                                <label for="plant-type-4">
+                                    <i class="fas fa-leaf"></i>
+                                    <span>Herb</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-plus"></i>
+                            Create Habit
                         </button>
                     </div>
                 </form>
@@ -282,6 +511,29 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize
     initProfile();
+    
+    // Set current date for habit logging
+    document.getElementById('condition-date').valueAsDate = new Date();
+    
+    // Initialize time range buttons
+    document.querySelectorAll('.time-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            // Would update charts based on selected time range
+            console.log('Selected time range:', this.dataset.range);
+        });
+    });
+    
+    // Initialize refresh button
+    document.getElementById('refresh-activity').addEventListener('click', function() {
+        this.classList.add('spinning');
+        fetchRecentActivity().then(() => {
+            setTimeout(() => {
+                this.classList.remove('spinning');
+            }, 500);
+        });
+    });
     
     async function initProfile() {
         await fetchUserStats();
@@ -316,7 +568,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (scoreData.success) {
                 document.getElementById('garden-score').textContent = scoreData.garden_score.toLocaleString();
-                document.getElementById('garden-level').textContent = scoreData.level;
+                document.getElementById('garden-level').textContent = `Level ${scoreData.level}`;
+                
+                // Update progress bar (assuming levels go from 1-10 for simplicity)
+                const progressPercent = (scoreData.level / 10) * 100;
+                document.getElementById('level-progress-bar').style.width = `${progressPercent}%`;
             }
             
             // Member since date - using the created_at of the first plant as a proxy
@@ -326,7 +582,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, plants[0]);
                 
                 const memberSince = new Date(oldestPlant.created_at);
-                document.getElementById('member-since').textContent = memberSince.toLocaleDateString();
+                document.getElementById('member-since').textContent = `Member since ${memberSince.toLocaleDateString('en-US', {month: 'short', year: 'numeric'})}`;
             } else {
                 document.getElementById('member-since').textContent = 'New Member';
             }
@@ -351,10 +607,14 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (plants.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center p-4">
-                        <p class="text-muted">You haven't planted anything yet. Visit your garden to get started!</p>
-                        <a href="/garden" class="btn btn-success mt-3">
-                            <i class="fas fa-seedling me-1"></i> Go to Garden
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <p class="empty-message">You haven't planted anything yet</p>
+                        <a href="/garden" class="btn-start-garden">
+                            <i class="fas fa-plus"></i>
+                            <span>Start Your Garden</span>
                         </a>
                     </div>
                 `;
@@ -375,61 +635,70 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Create summary HTML
-            let html = '<div class="row">';
-            
-            // Plant types summary
-            html += `
-                <div class="col-md-6">
-                    <h6 class="mb-3">Plants by Type</h6>
-                    <ul class="list-group">
+            let html = `
+                <div class="garden-summary">
+                    <div class="garden-summary-section">
+                        <h3>Plants by Type</h3>
+                        <div class="summary-chart">
             `;
             
+            // Plant types chart
             Object.entries(typeCount).forEach(([type, count]) => {
                 const displayType = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const percentage = (count / plants.length) * 100;
+                
                 html += `
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        ${displayType}
-                        <span class="badge bg-primary rounded-pill">${count}</span>
-                    </li>
+                    <div class="chart-item">
+                        <div class="chart-label">${displayType}</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar" style="width: ${percentage}%"></div>
+                            <span class="chart-value">${count}</span>
+                        </div>
+                    </div>
                 `;
             });
             
             html += `
-                    </ul>
-                </div>
+                        </div>
+                    </div>
+                    
+                    <div class="garden-summary-section">
+                        <h3>Growth Stages</h3>
+                        <div class="summary-chart">
             `;
             
-            // Plant stages summary
-            html += `
-                <div class="col-md-6">
-                    <h6 class="mb-3">Plants by Growth Stage</h6>
-                    <ul class="list-group">
-            `;
-            
+            // Growth stages chart
             stageNames.forEach((stageName, index) => {
                 const count = stageCount[index] || 0;
                 if (count > 0) {
+                    const percentage = (count / plants.length) * 100;
+                    
                     html += `
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            ${stageName}
-                            <span class="badge bg-success rounded-pill">${count}</span>
-                        </li>
+                        <div class="chart-item">
+                            <div class="chart-label">${stageName}</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" style="width: ${percentage}%"></div>
+                                <span class="chart-value">${count}</span>
+                            </div>
+                        </div>
                     `;
                 }
             });
             
             html += `
-                    </ul>
+                        </div>
+                    </div>
                 </div>
             `;
-            
-            html += '</div>';
             
             container.innerHTML = html;
         } catch (error) {
             console.error('Error fetching plant summary:', error);
             document.getElementById('plant-summary-container').innerHTML = `
-                <div class="alert alert-danger">Failed to load plant summary.</div>
+                <div class="error-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Failed to load garden data</p>
+                </div>
             `;
         }
     }
@@ -442,11 +711,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 conditionTypes = data.condition_types;
                 displayConditionTypes();
+                populateConditionTypeSelect();
             }
         } catch (error) {
             console.error('Error fetching condition types:', error);
             document.getElementById('condition-types-list').innerHTML = `
-                <div class="alert alert-danger">Failed to load habit types.</div>
+                <div class="error-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Failed to load habits</p>
+                </div>
             `;
         }
     }
@@ -458,8 +731,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (conditionTypes.length === 0) {
             container.innerHTML = `
-                <div class="text-center p-4">
-                    <p class="text-muted">No habits configured yet</p>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <p class="empty-message">No habits configured yet</p>
+                    <button class="btn-add-habit" data-bs-toggle="modal" data-bs-target="#add-condition-type-modal">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Your First Habit</span>
+                    </button>
                 </div>
             `;
             return;
@@ -479,134 +759,360 @@ document.addEventListener('DOMContentLoaded', function() {
             const displayName = type.display_name || type.name
                 .replace(/_/g, ' ')
                 .replace(/\b\w/g, l => l.toUpperCase());
-                
-            const listItem = document.createElement('li');
-            listItem.className = 'list-group-item';
-            listItem.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="fw-bold">${displayName}</span>
-                        ${type.is_custom ? '<span class="badge bg-info ms-2">Custom</span>' : ''}
-                        <br>
-                        <small class="text-muted">${type.description}</small>
+            
+            // Get the most recent condition of this type
+            const recentCondition = recentConditions.find(c => c.type_name === type.name);
+            const lastLogged = recentCondition ? new Date(recentCondition.date_logged).toLocaleDateString() : 'Never';
+            
+            const habitItem = document.createElement('div');
+            habitItem.className = 'habit-item';
+            habitItem.innerHTML = `
+                <div class="habit-icon">
+                    <i class="fas fa-${getIconForHabit(type.name)}"></i>
+                </div>
+                <div class="habit-info">
+                    <h3 class="habit-name">${displayName}</h3>
+                    <div class="habit-meta">
+                        <span class="habit-unit">${type.unit}</span>
+                        ${type.default_goal ? `<span class="habit-goal">Goal: ${type.default_goal}</span>` : ''}
                     </div>
-                    ${type.default_goal ? `<span class="badge bg-secondary">Goal: ${type.default_goal} ${type.unit}</span>` : ''}
+                </div>
+                <div class="habit-status">
+                    <span class="last-logged">Last: ${lastLogged}</span>
+                    <button class="btn-log-now" data-type-id="${type.id}" data-type-name="${type.name}">
+                        <i class="fas fa-plus"></i>
+                    </button>
                 </div>
             `;
             
-            container.appendChild(listItem);
+            // Add event listener to the log now button
+            habitItem.querySelector('.btn-log-now').addEventListener('click', function() {
+                openLogModal(type.id, type.name);
+            });
+            
+            container.appendChild(habitItem);
         });
+    }
+    
+    function getIconForHabit(habitName) {
+        // Map habit names to appropriate Font Awesome icons
+        const iconMap = {
+            water_intake: 'tint',
+            focus_time: 'brain',
+            deep_work: 'laptop-code',
+            sunlight: 'sun',
+            exercise: 'running',
+            meditation: 'om',
+            reading: 'book',
+            sleep: 'bed',
+            gratitude: 'heart',
+            journaling: 'pen-fancy',
+            nature_time: 'tree',
+            digital_detox: 'power-off'
+        };
+        
+        return iconMap[habitName] || 'clipboard-check';
+    }
+    
+    function populateConditionTypeSelect() {
+        const select = document.getElementById('condition-type');
+        
+        if (!select) return;
+        
+        // Clear existing options except the placeholder
+        while (select.options.length > 1) {
+            select.remove(1);
+        }
+        
+        // Sort condition types: system first, then user-defined
+        const sortedTypes = [...conditionTypes].sort((a, b) => {
+            if (a.is_custom && !b.is_custom) return 1;
+            if (!a.is_custom && b.is_custom) return -1;
+            return a.name.localeCompare(b.name);
+        });
+        
+        // Add options for each condition type
+        sortedTypes.forEach(type => {
+            const displayName = type.display_name || type.name
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, l => l.toUpperCase());
+                
+            const option = document.createElement('option');
+            option.value = type.id;
+            option.textContent = displayName;
+            option.dataset.unit = type.unit;
+            option.dataset.goal = type.default_goal || '';
+            
+            select.appendChild(option);
+        });
+        
+        // Update unit label when selection changes
+        select.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const unitLabel = document.getElementById('condition-unit-label');
+            const goalHint = document.getElementById('condition-goal-hint');
+            
+            if (selectedOption && selectedOption.dataset.unit) {
+                unitLabel.textContent = selectedOption.dataset.unit;
+                
+                if (selectedOption.dataset.goal) {
+                    goalHint.textContent = `Suggested goal: ${selectedOption.dataset.goal} ${selectedOption.dataset.unit}`;
+                    goalHint.classList.remove('d-none');
+                } else {
+                    goalHint.classList.add('d-none');
+                }
+            } else {
+                unitLabel.textContent = 'units';
+                goalHint.classList.add('d-none');
+            }
+        });
+    }
+    
+    function openLogModal(typeId, typeName) {
+        const select = document.getElementById('condition-type');
+        
+        // Set the selected condition type
+        for (let i = 0; i < select.options.length; i++) {
+            if (select.options[i].value == typeId) {
+                select.selectedIndex = i;
+                select.dispatchEvent(new Event('change'));
+                break;
+            }
+        }
+        
+        // Open the modal
+        const modal = new bootstrap.Modal(document.getElementById('log-condition-modal'));
+        modal.show();
     }
     
     async function fetchRecentActivity() {
         try {
-            if (recentConditions.length === 0) {
-                const response = await fetch('/api/conditions');
-                const data = await response.json();
-                
-                if (data.success) {
-                    recentConditions = data.conditions;
-                }
+            const response = await fetch('/api/conditions');
+            const data = await response.json();
+            
+            if (data.success) {
+                recentConditions = data.conditions;
+                displayRecentActivity();
             }
-            
-            const container = document.getElementById('recent-activity-list');
-            
-            if (!container) return;
-            
-            if (recentConditions.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center p-4">
-                        <p class="text-muted">No activity recorded yet</p>
+        } catch (error) {
+            console.error('Error fetching recent activity:', error);
+            document.getElementById('recent-activity-list').innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Failed to load activity data</p>
+                </div>
+            `;
+        }
+    }
+    
+    function displayRecentActivity() {
+        const container = document.getElementById('recent-activity-list');
+        
+        if (!container) return;
+        
+        if (recentConditions.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-history"></i>
                     </div>
-                `;
-                return;
+                    <p class="empty-message">No activity recorded yet</p>
+                    <button class="btn-log-first" data-bs-toggle="modal" data-bs-target="#log-condition-modal">
+                        <i class="fas fa-plus"></i>
+                        <span>Log Your First Activity</span>
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = '';
+        
+        // Only show the most recent 10 activities
+        const recentActivities = recentConditions.slice(0, 10);
+        
+        // Group activities by date
+        const groupedActivities = {};
+        
+        recentActivities.forEach(condition => {
+            const date = new Date(condition.date_logged);
+            const dateKey = date.toISOString().split('T')[0];
+            
+            if (!groupedActivities[dateKey]) {
+                groupedActivities[dateKey] = [];
             }
             
-            container.innerHTML = '';
+            groupedActivities[dateKey].push(condition);
+        });
+        
+        // Create timeline
+        Object.entries(groupedActivities).sort((a, b) => b[0].localeCompare(a[0])).forEach(([dateKey, conditions]) => {
+            const date = new Date(dateKey);
+            const formattedDate = date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'short',
+                day: 'numeric'
+            });
             
-            // Only show the most recent 10 activities
-            const recentActivities = recentConditions.slice(0, 10);
+            const timelineDay = document.createElement('div');
+            timelineDay.className = 'timeline-day';
+            timelineDay.innerHTML = `
+                <div class="timeline-date">
+                    <div class="date-indicator"></div>
+                    <h3>${formattedDate}</h3>
+                </div>
+                <div class="timeline-events">
+                </div>
+            `;
             
-            recentActivities.forEach(condition => {
+            const eventsContainer = timelineDay.querySelector('.timeline-events');
+            
+            conditions.forEach(condition => {
                 // Find condition type to get unit and display name
                 const conditionType = conditionTypes.find(t => t.name === condition.type_name);
                 const unit = conditionType ? conditionType.unit : '';
                 
-                // Format date
-                const date = new Date(condition.date_logged);
-                const formattedDate = date.toLocaleString();
+                // Format time
+                const time = new Date(condition.date_logged).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
                 
                 // Get display name from condition type or format it
                 const displayName = conditionType ? 
                     (conditionType.display_name || conditionType.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())) : 
                     condition.type_name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 
-                const listItem = document.createElement('li');
-                listItem.className = 'list-group-item';
-                listItem.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <i class="fas fa-clipboard-check text-success me-2"></i>
-                            Logged <span class="fw-bold">${displayName}</span>: ${condition.value} ${unit}
-                            <br>
-                            <small class="text-muted">${formattedDate}</small>
+                const event = document.createElement('div');
+                event.className = 'timeline-event';
+                event.innerHTML = `
+                    <div class="event-time">${time}</div>
+                    <div class="event-content">
+                        <div class="event-icon">
+                            <i class="fas fa-${getIconForHabit(condition.type_name)}"></i>
+                        </div>
+                        <div class="event-details">
+                            <h4>${displayName}</h4>
+                            <p>${condition.value} ${unit}</p>
                         </div>
                     </div>
                 `;
                 
-                container.appendChild(listItem);
+                eventsContainer.appendChild(event);
             });
-        } catch (error) {
-            console.error('Error fetching recent activity:', error);
-            document.getElementById('recent-activity-list').innerHTML = `
-                <div class="alert alert-danger">Failed to load recent activity.</div>
-            `;
-        }
+            
+            container.appendChild(timelineDay);
+        });
     }
     
-    function showNotification(message, type = 'info') {
-        // Get or create notifications container
-        let notificationsContainer = document.getElementById('notifications-container');
-        if (!notificationsContainer) {
-            notificationsContainer = document.createElement('div');
-            notificationsContainer.id = 'notifications-container';
-            notificationsContainer.className = 'position-fixed top-0 end-0 p-3';
-            notificationsContainer.style.zIndex = '1050';
-            document.body.appendChild(notificationsContainer);
+    // Handle form submissions
+    document.getElementById('log-condition-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const typeId = document.getElementById('condition-type').value;
+        const value = document.getElementById('condition-value').value;
+        const date = document.getElementById('condition-date').value;
+        const notes = document.getElementById('condition-notes').value;
+        
+        if (!typeId || !value || !date) {
+            showNotification('Please fill in all required fields', 'error');
+            return;
         }
         
-        // Create toast element
-        const toastId = 'toast-' + Date.now();
-        const toast = document.createElement('div');
-        toast.id = toastId;
-        toast.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : type}`;
-        toast.setAttribute('role', 'alert');
-        toast.setAttribute('aria-live', 'assertive');
-        toast.setAttribute('aria-atomic', 'true');
+        // Log the condition (would be an API call in a real implementation)
+        console.log('Logging condition:', { typeId, value, date, notes });
         
-        toast.innerHTML = `
-            <div class="d-flex">
-                <div class="toast-body">
-                    ${message}
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        `;
+        // Close the modal
+        bootstrap.Modal.getInstance(document.getElementById('log-condition-modal')).hide();
         
-        // Add toast to container
-        notificationsContainer.appendChild(toast);
+        // Show success notification
+        showNotification('Habit logged successfully!', 'success');
         
-        // Initialize and show toast
-        const toastInstance = new bootstrap.Toast(toast, {
-            autohide: true,
-            delay: 5000
-        });
-        toastInstance.show();
+        // Refresh data
+        fetchUserStats();
+        fetchRecentActivity();
+    });
+    
+    document.getElementById('add-condition-type-form').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // Remove toast after hiding
-        toast.addEventListener('hidden.bs.toast', function() {
-            toast.remove();
-        });
+        const name = document.getElementById('condition-type-name').value;
+        const description = document.getElementById('condition-type-description').value;
+        const unit = document.getElementById('condition-type-unit').value;
+        const goal = document.getElementById('condition-type-goal').value;
+        const plantType = document.querySelector('input[name="plant-type"]:checked').value;
+        
+        if (!name || !description || !unit) {
+            showNotification('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        // Create the condition type (would be an API call in a real implementation)
+        console.log('Creating condition type:', { name, description, unit, goal, plantType });
+        
+        // Close the modal
+        bootstrap.Modal.getInstance(document.getElementById('add-condition-type-modal')).hide();
+        
+        // Show success notification
+        showNotification('Custom habit created successfully!', 'success');
+        
+        // Refresh data
+        fetchConditionTypes();
+    });
+    
+    // Profile picture upload handling
+    document.getElementById('profile-picture-input').addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                document.getElementById('profile-picture-preview').src = e.target.result;
+                
+                // Upload the profile picture (would be an API call in a real implementation)
+                console.log('Uploading profile picture...');
+                
+                // Show success notification after a delay to simulate upload
+                setTimeout(() => {
+                    showNotification('Profile picture updated successfully!', 'success');
+                }, 1000);
+            };
+            
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+    
+    function showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        
+        const icon = document.createElement('i');
+        icon.className = type === 'success' ? 'fas fa-check-circle' : 
+                        type === 'error' ? 'fas fa-exclamation-circle' : 
+                        'fas fa-info-circle';
+        
+        const text = document.createElement('span');
+        text.textContent = message;
+        
+        notification.appendChild(icon);
+        notification.appendChild(text);
+        
+        // Add to document
+        document.body.appendChild(notification);
+        
+        // Show notification
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Remove after delay
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
     }
 });
 </script>

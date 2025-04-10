@@ -19,12 +19,13 @@ def friends_page():
     # In a real app, you would have a more sophisticated algorithm
     all_users = User.query.filter(User.id != current_user.id).limit(10).all()
     
-    # Filter out users who are already friends
+    # Filter out users who are already friends and those who have pending requests
     friends_ids = [friend.id for friend in friends]
-    suggested_friends = [user for user in all_users if user.id not in friends_ids]
+    request_ids = [request.requester_id for request in friend_requests]
+    suggested_friends = [user for user in all_users if user.id not in friends_ids and user.id not in request_ids]
     
     return render_template(
-        'friends.html',
+        'friends.html',  # Using the updated friends.html template
         friends=friends,
         friend_requests=friend_requests,
         suggested_friends=suggested_friends
