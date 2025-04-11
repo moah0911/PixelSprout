@@ -78,33 +78,64 @@ class AdvancedFeatures {
                 return Promise.resolve();
             }
             
-            // Load user preferences
-            await this.loadUserPreferences();
+            try {
+                // Load user preferences
+                await this.loadUserPreferences();
+            } catch (prefError) {
+                console.warn("Error loading user preferences:", prefError);
+                // Continue with default preferences
+            }
             
             // Create containers if they don't exist
-            this.createContainers();
+            try {
+                this.createContainers();
+            } catch (containerError) {
+                console.warn("Error creating containers:", containerError);
+                // Continue without containers
+            }
             
             // Initialize features based on user preferences
             const initPromises = [];
             
             if (this.userPreferences.enableInteractiveEffects) {
-                initPromises.push(this.initializeInteractiveGrowth());
+                try {
+                    initPromises.push(this.initializeInteractiveGrowth());
+                } catch (growthError) {
+                    console.warn("Error initializing interactive growth:", growthError);
+                }
             }
             
             if (this.userPreferences.enableAIAdvisor) {
-                initPromises.push(this.initializeAIAdvisor());
+                try {
+                    initPromises.push(this.initializeAIAdvisor());
+                } catch (advisorError) {
+                    console.warn("Error initializing AI advisor:", advisorError);
+                }
             }
             
             if (this.userPreferences.enable3DVisualization) {
-                initPromises.push(this.initialize3DVisualizer());
+                try {
+                    initPromises.push(this.initialize3DVisualizer());
+                } catch (visualizerError) {
+                    console.warn("Error initializing 3D visualizer:", visualizerError);
+                }
             }
             
             if (this.userPreferences.enableGamification) {
-                initPromises.push(this.initializeGamification());
+                try {
+                    initPromises.push(this.initializeGamification());
+                } catch (gamificationError) {
+                    console.warn("Error initializing gamification:", gamificationError);
+                }
             }
             
             // Wait for all initializations to complete
-            await Promise.all(initPromises);
+            try {
+                await Promise.all(initPromises);
+            } catch (promiseError) {
+                console.warn("Error during feature initialization:", promiseError);
+                // Continue with partial initialization
+            }
             
             // Set up event listeners
             this.setupEventListeners();
@@ -696,13 +727,14 @@ class AdvancedFeatures {
             if (inputField && sendButton) {
                 // Send button click
                 sendButton.addEventListener('click', async () => {
-                    const query = inputField.value.trim();
+                    const query = inputField.value ? inputField.value.trim() : '';
                     if (query) {
-                        const advice = await this.aiAdvisor.getPersonalizedAdvice(
+                        const topic = 
                             query.includes('water') ? 'watering' : 
                             query.includes('sun') ? 'sunlight' : 
-                            query.includes('habit') ? 'motivation' : 'general'
-                        );
+                            query.includes('habit') ? 'motivation' : 'general';
+                        
+                        const advice = await this.aiAdvisor.getPersonalizedAdvice(topic);
                         
                         // Display response
                         const responseElement = document.createElement('div');

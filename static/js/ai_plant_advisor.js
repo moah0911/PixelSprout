@@ -114,12 +114,17 @@ class AIPlantAdvisor {
             }
 
             // Fetch initial data
-            await Promise.all([
-                this.fetchUserData(),
-                this.fetchPlantData(),
-                this.fetchHabitData(),
-                this.config.enableWeatherIntegration ? this.fetchWeatherData() : Promise.resolve()
-            ]);
+            try {
+                await Promise.all([
+                    this.fetchUserData(),
+                    this.fetchPlantData(),
+                    this.fetchHabitData(),
+                    this.config.enableWeatherIntegration ? this.fetchWeatherData() : Promise.resolve()
+                ]);
+            } catch (fetchError) {
+                this.log(`Error fetching initial data: ${fetchError.message}`, true);
+                // Continue initialization with default/cached data
+            }
 
             // Generate initial recommendations
             await this.generateRecommendations();
@@ -177,6 +182,11 @@ class AIPlantAdvisor {
      */
     async fetchUserData() {
         try {
+            // Check if endpoint is available
+            if (!this.config.userDataEndpoint) {
+                throw new Error('User data endpoint not configured');
+            }
+            
             const response = await fetch(this.config.userDataEndpoint);
             if (!response.ok) throw new Error(`HTTP error ${response.status}`);
             
@@ -813,8 +823,14 @@ class AIPlantAdvisor {
      * @param {string} topic - Advice topic
      * @returns {Promise<string>} Advice text
      */
-    async getPersonalizedAdvice(topic) {
+    async getPersonalizedAdvice(topic = 'general') {
         try {
+            // Validate input
+            if (!topic || typeof topic !== 'string') {
+                console.warn('Invalid topic provided to getPersonalizedAdvice, using "general" instead');
+                topic = 'general';
+            }
+            
             // In a real implementation, this might call an AI service
             // For this demo, we'll use predefined advice templates
             

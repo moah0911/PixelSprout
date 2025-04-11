@@ -545,7 +545,11 @@
             setInterval(updateLocalTime, 60000); // Update every minute
             
             // Initialize advanced features only for authenticated users
-            var isAuthenticated = true; // This will be replaced by Jinja2: {% if session.get('user_id') %}true{% else %}false{% endif %}
+            /* @preserve
+             * The following line uses Jinja2 template syntax to check if the user is logged in.
+             * It will be processed by the server before being sent to the browser.
+             */
+            var isAuthenticated = "{{ 'true' if session.get('user_id') else 'false' }}" === "true";
             if (isAuthenticated) {
                 if (window.pixelSproutFeatures) {
                     console.log("Advanced features already initialized");
@@ -564,6 +568,9 @@
             const timeElement = document.getElementById('current-time');
             if (!timeElement) return;
             
+            const timeSpan = timeElement.querySelector('span');
+            if (!timeSpan) return;
+            
             const now = new Date();
             const options = { 
                 weekday: 'long', 
@@ -576,10 +583,10 @@
             
             try {
                 const formattedTime = now.toLocaleString(navigator.language || 'en-US', options);
-                timeElement.querySelector('span').textContent = formattedTime;
+                timeSpan.textContent = formattedTime;
             } catch (e) {
                 console.error('Error formatting time:', e);
-                timeElement.querySelector('span').textContent = now.toLocaleString();
+                timeSpan.textContent = now.toLocaleString();
             }
         }
         
@@ -687,7 +694,11 @@
         }
         
         // Simulate plant selection for demo purposes - only for authenticated users
-        var isUserAuthenticated = true; // This will be replaced by Jinja2: {% if session.get('user_id') %}true{% else %}false{% endif %}
+        /* @preserve
+         * The following line uses Jinja2 template syntax to check if the user is logged in.
+         * It will be processed by the server before being sent to the browser.
+         */
+        var isUserAuthenticated = "{{ 'true' if session.get('user_id') else 'false' }}" === "true";
         if (isUserAuthenticated) {
             function simulatePlantSelection() {
                 if (window.pixelSproutFeatures) {
