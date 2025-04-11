@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/performance.css') }}">
     <style>
         /* Base styles - Will be extended by specific CSS files */
         :root {
@@ -517,6 +518,9 @@
     
     <!-- JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Performance Optimizations -->
+    <script src="{{ url_for('static', filename='js/optimized.js') }}"></script>
     
     <!-- Advanced Features Scripts - only load for authenticated users -->
     {% if session.get('user_id') %}

@@ -1,0 +1,132 @@
+/* Performance optimizations for PixelSprout */
+
+/* Optimize animations */
+@media (max-width: 768px) {
+    /* Reduce animation complexity on mobile */
+    * {
+        transition-duration: 0.2s !important;
+        animation-duration: 0.3s !important;
+    }
+    
+    /* Disable complex background animations on mobile */
+    .bg-animated,
+    .bg-plants,
+    .bg-stars,
+    .auth-bg-circle,
+    .auth-bg-line,
+    .particles-container,
+    .cursor-trail-container {
+        display: none !important;
+    }
+    
+    /* Simplify shadows on mobile */
+    .card,
+    .btn,
+    .auth-card,
+    .plant-card,
+    .water-credits-display {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+}
+
+/* Use hardware acceleration for animations */
+.plant-card,
+.plant-container,
+.water-credits-display,
+.btn-garden,
+.auth-card,
+.navbar-brand,
+.nav-link,
+.btn-success {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+/* Optimize layout shifts */
+.main-content {
+    min-height: 70vh;
+}
+
+.garden-container {
+    min-height: 300px;
+}
+
+/* Optimize image rendering */
+img {
+    image-rendering: auto;
+}
+
+/* Reduce repaints */
+.plant-progress-fill {
+    transform: translateZ(0);
+}
+
+/* Optimize font rendering */
+body {
+    text-rendering: optimizeSpeed;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Reduce animation complexity */
+@keyframes simplified-float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.reduce-animations .auth-logo,
+.reduce-animations .logo-img {
+    animation: simplified-float 3s ease-in-out infinite !important;
+}
+
+/* Optimize modal transitions */
+.modal {
+    transition: opacity 0.2s ease !important;
+}
+
+.modal-dialog {
+    transition: transform 0.2s ease !important;
+}
+
+/* Optimize form transitions */
+input, select, textarea {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Optimize button transitions */
+.btn {
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Optimize navbar transitions */
+.navbar {
+    transition: background-color 0.2s ease !important;
+}
+
+/* Optimize card transitions */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Optimize loading indicators */
+.spinner-border, .spinner-grow {
+    animation-duration: 0.8s !important;
+}
+
+/* Optimize scrolling */
+html {
+    scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

@@ -666,24 +666,34 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize garden
     async function initGarden() {
-        // Fetch plant types for the select dropdown
-        await fetchPlantTypes();
-        
-        // Fetch water credits
-        await fetchWaterCredits();
-        
-        // Fetch and display plants
-        await fetchPlants();
-        
-        // Initialize plant details panel
-        updatePlantDetailsPanel();
-        
-        // Initialize garden stats
-        updateGardenStats();
-        
-        // Add plant details modal to the page if it doesn't exist
-        if (!document.getElementById('plant-details-modal')) {
-            createPlantDetailsModal();
+        try {
+            // Show loading indicator
+            showNotification('Loading your garden...', 'info', 2000);
+            
+            // Load plant types for the add plant form first (faster response)
+            await loadPlantTypes();
+            
+            // Fetch water credits
+            await fetchWaterCredits();
+            
+            // Fetch and display plants
+            await fetchPlants();
+            
+            // Initialize plant details panel
+            updatePlantDetailsPanel();
+            
+            // Initialize garden stats
+            updateGardenStats();
+            
+            // Add plant details modal to the page if it doesn't exist
+            if (!document.getElementById('plant-details-modal')) {
+                createPlantDetailsModal();
+            }
+            
+            console.log('Garden initialized successfully');
+        } catch (error) {
+            console.error('Error initializing garden:', error);
+            showNotification('Error loading garden', 'error');
         }
         
         // Create animation effects panel if it doesn't exist
@@ -1031,15 +1041,22 @@ document.addEventListener('DOMContentLoaded', function() {
     async function fetchPlants() {
         try {
             const response = await fetch('/api/plants');
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch plants');
+            }
+            
             const data = await response.json();
             
-            if (data.success) {
-                plants = data.plants;
-                renderGarden();
-            }
+            // The API now returns an array directly
+            plants = data;
+            renderGarden();
+            
+            return plants;
         } catch (error) {
             console.error('Error fetching plants:', error);
             showNotification('Failed to load garden', 'error');
+            return [];
         }
     }
     
@@ -1702,6 +1719,50 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 plantContainer.classList.remove('plant-dancing');
             }
+        }
+    }
+    
+    // Load plant types for the dropdown
+    async function loadPlantTypes() {
+        try {
+            const typeSelect = document.getElementById('plant-type');
+            if (!typeSelect) return;
+            
+            // Clear existing options except the first one
+            while (typeSelect.options.length > 1) {
+                typeSelect.remove(1);
+            }
+            
+            // Add loading option
+            const loadingOption = document.createElement('option');
+            loadingOption.text = 'Loading plant types...';
+            loadingOption.disabled = true;
+            typeSelect.add(loadingOption);
+            
+            // Fetch plant types from API
+            const response = await fetch('/api/plant-types');
+            
+            if (!response.ok) {
+                throw new Error('Failed to load plant types');
+            }
+            
+            const plantTypes = await response.json();
+            
+            // Remove loading option
+            typeSelect.remove(typeSelect.options.length - 1);
+            
+            // Add plant types to dropdown
+            plantTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type.id;
+                option.text = type.name;
+                typeSelect.add(option);
+            });
+            
+            console.log('Plant types loaded successfully');
+        } catch (error) {
+            console.error('Error loading plant types:', error);
+            showNotification('Error loading plant types', 'error');
         }
     }
     

@@ -179,5 +179,9 @@ try:
     from routes_advanced import advanced_bp
     app.register_blueprint(advanced_bp)
     logging.info("Advanced features API routes registered")
+    
+    from routes_plants import plants_bp
+    app.register_blueprint(plants_bp)
+    logging.info("Plant API routes registered")
 except Exception as e:
     logging.error(f"Failed to register blueprints: {str(e)}")
