@@ -209,6 +209,47 @@ function optimizeAPICalls() {
     };
 }
 
+// Show notification with improved performance
+function showNotification(message, type = 'info', duration = 3000) {
+    const statusContainer = document.getElementById('status-container');
+    if (!statusContainer) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${type} border-0`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    
+    // Get icon based on notification type
+    let icon = 'info-circle';
+    if (type === 'success') icon = 'check-circle';
+    if (type === 'warning') icon = 'exclamation-triangle';
+    if (type === 'error' || type === 'danger') icon = 'times-circle';
+    
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-${icon} me-2"></i>
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    `;
+    
+    statusContainer.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast, {
+        autohide: true,
+        delay: duration
+    });
+    
+    bsToast.show();
+    
+    toast.addEventListener('hidden.bs.toast', function() {
+        statusContainer.removeChild(toast);
+    });
+}
+
 // Initialize all optimizations
 function initOptimizations() {
     // Apply optimizations
@@ -217,6 +258,9 @@ function initOptimizations() {
     optimizeEventListeners();
     optimizeCSSAnimations();
     optimizeAPICalls();
+    
+    // Make showNotification available globally
+    window.showNotification = showNotification;
     
     // Log optimization status
     console.log('Performance optimizations applied');

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelSprout API Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            padding-top: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        .response-area {
+            background-color: #212529;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .btn-test {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">PixelSprout API Test Page</h1>
+        
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> This page allows you to test the PixelSprout API endpoints.
+        </div>
+        
+        <div class="test-section">
+            <h2>Authentication</h2>
+            <button id="test-login" class="btn btn-primary btn-test">Test Login</button>
+            <button id="test-logout" class="btn btn-danger btn-test">Logout</button>
+            <div id="auth-response" class="response-area mt-3">Response will appear here...</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Plants API</h2>
+            <button id="test-plants-health" class="btn btn-success btn-test">Test API Health</button>
+            <button id="test-get-plants" class="btn btn-primary btn-test">Get Plants</button>
+            <button id="test-get-plant-types" class="btn btn-info btn-test">Get Plant Types</button>
+            <button id="test-get-water-credits" class="btn btn-warning btn-test">Get Water Credits</button>
+            <div id="plants-response" class="response-area mt-3">Response will appear here...</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Add Plant</h2>
+            <form id="add-plant-form" class="mb-3">
+                <div class="mb-3">
+                    <label for="plant-name" class="form-label">Plant Name</label>
+                    <input type="text" class="form-control" id="plant-name" placeholder="Enter plant name">
+                </div>
+                <div class="mb-3">
+                    <label for="plant-type" class="form-label">Plant Type</label>
+                    <select class="form-select" id="plant-type">
+                        <option value="" selected disabled>Select plant type...</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">Add Plant</button>
+            </form>
+            <div id="add-plant-response" class="response-area">Response will appear here...</div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Water Plant</h2>
+            <div class="mb-3">
+                <label for="plant-id" class="form-label">Plant ID</label>
+                <input type="text" class="form-control" id="plant-id" placeholder="Enter plant ID">
+            </div>
+            <button id="water-plant-btn" class="btn btn-primary">Water Plant</button>
+            <div id="water-plant-response" class="response-area mt-3">Response will appear here...</div>
+        </div>
+    </div>
+    
+    <script>
+        // Authentication Tests
+        document.getElementById('test-login').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/auth/test-login');
+                const data = await response.json();
+                document.getElementById('auth-response').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('auth-response').textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        document.getElementById('test-logout').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/auth/logout');
+                const data = await response.json();
+                document.getElementById('auth-response').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('auth-response').textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        // Plants API Tests
+        document.getElementById('test-plants-health').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/plants/health');
+                const data = await response.json();
+                document.getElementById('plants-response').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('plants-response').textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        document.getElementById('test-get-plants').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/plants');
+                const data = await response.json();
+                document.getElementById('plants-response').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('plants-response').textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        document.getElementById('test-get-plant-types').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/plant-types');
+                const data = await response.json();
+                document.getElementById('plants-response').textContent = JSON.stringify(data, null, 2);
+                
+                // Populate the plant type dropdown
+                const plantTypeSelect = document.getElementById('plant-type');
+                
+                // Clear existing options except the first one
+                while (plantTypeSelect.options.length > 1) {
+                    plantTypeSelect.remove(1);
+                }
+                
+                // Add plant types to dropdown
+                data.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type.id;
+                    option.text = type.name;
+                    plantTypeSelect.add(option);
+                });
+            } catch (error) {
+                document.getElementById('plants-response').textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        document.getElementById('test-get-water-credits').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/water-credits');
+                const data = await response.json();
+                document.getElementById('plants-response').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('plants-response').textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        // Add Plant Form
+        document.getElementById('add-plant-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const name = document.getElementById('plant-name').value.trim();
+            const type = document.getElementById('plant-type').value;
+            
+            if (!name) {
+                document.getElementById('add-plant-response').textContent = 'Error: Plant name is required';
+                return;
+            }
+            
+            if (!type) {
+                document.getElementById('add-plant-response').textContent = 'Error: Plant type is required';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/plants', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, type })
+                });
+                
+                const data = await response.json();
+                document.getElementById('add-plant-response').textContent = JSON.stringify(data, null, 2);
+                
+                // Reset form on success
+                if (data.success) {
+                    document.getElementById('plant-name').value = '';
+                    document.getElementById('plant-type').selectedIndex = 0;
+                }
+            } catch (error) {
+                document.getElementById('add-plant-response').textContent = `Error: ${error.message}`;
+            }
+        });
+        
+        // Water Plant
+        document.getElementById('water-plant-btn').addEventListener('click', async () => {
+            const plantId = document.getElementById('plant-id').value.trim();
+            
+            if (!plantId) {
+                document.getElementById('water-plant-response').textContent = 'Error: Plant ID is required';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/plants/${plantId}/water`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                document.getElementById('water-plant-response').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('water-plant-response').textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

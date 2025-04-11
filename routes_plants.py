@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, session, g, redirect, url_for
+from flask_login import login_required, current_user
 import logging
 import json
 import os
@@ -6,300 +7,39 @@ import time
 from datetime import datetime, timedelta
 import random
 from functools import wraps
+from app import db
+from models import Plant, PlantType, User
 
 # Create blueprint
 plants_bp = Blueprint('plants', __name__)
 
-# Authentication decorator
-def login_required(f):
+# Simple health check route that doesn't require authentication
+@plants_bp.route('/api/plants/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for the plants API"""
+    return jsonify({
+        'status': 'ok',
+        'message': 'Plants API is working'
+    })
+
+# Authentication decorator for API endpoints
+def api_login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
             # Return 401 Unauthorized for API requests
-            if request.path.startswith('/api/'):
-                return jsonify({'error': 'Authentication required', 'code': 'auth_required'}), 401
-            # Redirect to login page for regular requests
-            return redirect(url_for('login'))
+            return jsonify({'error': 'Authentication required', 'code': 'auth_required'}), 401
         return f(*args, **kwargs)
     return decorated_function
 
-# Mock data storage (in a real app, this would be in a database)
-PLANTS_DATA = {}
-
-# Load mock data from JSON files if they exist
-def load_plants_data():
-    data_dir = os.path.join(os.path.dirname(__file__), 'mock_data')
-    os.makedirs(data_dir, exist_ok=True)
+# Initialize plant types if they don't exist
+def initialize_plant_types():
+    # Check if we already have plant types
+    if PlantType.query.count() > 0:
+        return
     
-    file_path = os.path.join(data_dir, 'plants.json')
-    if os.path.exists(file_path):
-        try:
-            with open(file_path, 'r') as f:
-                global PLANTS_DATA
-                PLANTS_DATA = json.load(f)
-            logging.info(f"Loaded mock data for plants")
-        except Exception as e:
-            logging.error(f"Error loading mock data for plants: {str(e)}")
-
-# Save mock data to JSON files
-def save_plants_data():
-    data_dir = os.path.join(os.path.dirname(__file__), 'mock_data')
-    os.makedirs(data_dir, exist_ok=True)
-    
-    file_path = os.path.join(data_dir, 'plants.json')
-    try:
-        with open(file_path, 'w') as f:
-            json.dump(PLANTS_DATA, f, indent=2)
-        logging.info(f"Saved mock data for plants")
-    except Exception as e:
-        logging.error(f"Error saving mock data for plants: {str(e)}")
-
-# Initialize data when module is loaded
-load_plants_data()
-
-# Get all plants for a user
-@plants_bp.route('/api/plants', methods=['GET'])
-@login_required
-def get_plants():
-    """Get all plants for the current user"""
-    user_id = session.get('user_id')
-    
-    # Filter plants by user ID
-    user_plants = []
-    for plant_id, plant in PLANTS_DATA.items():
-        if plant.get('user_id') == user_id:
-            user_plants.append(plant)
-    
-    # If no plants exist, create some sample plants
-    if not user_plants:
-        sample_plants = [
-            {
-                'id': f'plant-1-{user_id}',
-                'name': 'Emerald Fern',
-                'type': 'fern',
-                'stage': 2,
-                'health': 85,
-                'progress': 45,
-                'created_at': (datetime.now() - timedelta(days=30)).isoformat(),
-                'last_watered': (datetime.now() - timedelta(days=2)).isoformat(),
-                'user_id': user_id
-            },
-            {
-                'id': f'plant-2-{user_id}',
-                'name': 'Sunset Succulent',
-                'type': 'succulent',
-                'stage': 1,
-                'health': 90,
-                'progress': 25,
-                'created_at': (datetime.now() - timedelta(days=15)).isoformat(),
-                'last_watered': (datetime.now() - timedelta(days=5)).isoformat(),
-                'user_id': user_id
-            }
-        ]
-        
-        for plant in sample_plants:
-            PLANTS_DATA[plant['id']] = plant
-            user_plants.append(plant)
-        
-        save_plants_data()
-    
-    return jsonify(user_plants)
-
-# Add a new plant
-@plants_bp.route('/api/plants', methods=['POST'])
-@login_required
-def add_plant():
-    """Add a new plant for the current user"""
-    user_id = session.get('user_id')
-    
-    data = request.json
-    name = data.get('name')
-    plant_type = data.get('type')
-    
-    if not name or not plant_type:
-        return jsonify({
-            'success': False,
-            'message': 'Plant name and type are required'
-        }), 400
-    
-    # Generate a unique ID
-    plant_id = f'plant-{len(PLANTS_DATA) + 1}-{user_id}'
-    
-    # Create the new plant
-    new_plant = {
-        'id': plant_id,
-        'name': name,
-        'type': plant_type,
-        'stage': 0,  # Start at seed stage
-        'health': 100,
-        'progress': 0,
-        'created_at': datetime.now().isoformat(),
-        'last_watered': datetime.now().isoformat(),
-        'user_id': user_id
-    }
-    
-    # Add to storage
-    PLANTS_DATA[plant_id] = new_plant
-    save_plants_data()
-    
-    return jsonify({
-        'success': True,
-        'message': f'Plant {name} added successfully',
-        'plant': new_plant
-    })
-
-# Get a specific plant
-@plants_bp.route('/api/plants/<plant_id>', methods=['GET'])
-@login_required
-def get_plant(plant_id):
-    """Get a specific plant by ID"""
-    user_id = session.get('user_id')
-    
-    if plant_id not in PLANTS_DATA:
-        return jsonify({
-            'success': False,
-            'message': 'Plant not found'
-        }), 404
-    
-    plant = PLANTS_DATA[plant_id]
-    
-    # Check if the plant belongs to the current user
-    if plant.get('user_id') != user_id:
-        return jsonify({
-            'success': False,
-            'message': 'Plant not found'
-        }), 404
-    
-    return jsonify(plant)
-
-# Update a plant
-@plants_bp.route('/api/plants/<plant_id>', methods=['PUT'])
-@login_required
-def update_plant(plant_id):
-    """Update a plant's details"""
-    user_id = session.get('user_id')
-    
-    if plant_id not in PLANTS_DATA:
-        return jsonify({
-            'success': False,
-            'message': 'Plant not found'
-        }), 404
-    
-    plant = PLANTS_DATA[plant_id]
-    
-    # Check if the plant belongs to the current user
-    if plant.get('user_id') != user_id:
-        return jsonify({
-            'success': False,
-            'message': 'Plant not found'
-        }), 404
-    
-    data = request.json
-    
-    # Update allowed fields
-    if 'name' in data:
-        plant['name'] = data['name']
-    
-    if 'health' in data:
-        plant['health'] = max(0, min(100, data['health']))
-    
-    if 'progress' in data:
-        plant['progress'] = max(0, min(100, data['progress']))
-    
-    if 'stage' in data:
-        plant['stage'] = max(0, min(6, data['stage']))
-    
-    # Save changes
-    PLANTS_DATA[plant_id] = plant
-    save_plants_data()
-    
-    return jsonify({
-        'success': True,
-        'message': 'Plant updated successfully',
-        'plant': plant
-    })
-
-# Water a plant
-@plants_bp.route('/api/plants/<plant_id>/water', methods=['POST'])
-@login_required
-def water_plant(plant_id):
-    """Water a specific plant"""
-    user_id = session.get('user_id')
-    
-    if plant_id not in PLANTS_DATA:
-        return jsonify({
-            'success': False,
-            'message': 'Plant not found'
-        }), 404
-    
-    plant = PLANTS_DATA[plant_id]
-    
-    # Check if the plant belongs to the current user
-    if plant.get('user_id') != user_id:
-        return jsonify({
-            'success': False,
-            'message': 'Plant not found'
-        }), 404
-    
-    # Update plant health and last watered time
-    plant['health'] = min(100, plant['health'] + 10)
-    plant['last_watered'] = datetime.now().isoformat()
-    
-    # Increase progress a bit
-    plant['progress'] = min(100, plant['progress'] + 5)
-    
-    # Check if plant should advance to next stage
-    if plant['progress'] >= 100 and plant['stage'] < 6:
-        plant['stage'] += 1
-        plant['progress'] = 0
-    
-    # Save changes
-    PLANTS_DATA[plant_id] = plant
-    save_plants_data()
-    
-    return jsonify({
-        'success': True,
-        'message': 'Plant watered successfully',
-        'plant': plant
-    })
-
-# Delete a plant
-@plants_bp.route('/api/plants/<plant_id>', methods=['DELETE'])
-@login_required
-def delete_plant(plant_id):
-    """Delete a specific plant"""
-    user_id = session.get('user_id')
-    
-    if plant_id not in PLANTS_DATA:
-        return jsonify({
-            'success': False,
-            'message': 'Plant not found'
-        }), 404
-    
-    plant = PLANTS_DATA[plant_id]
-    
-    # Check if the plant belongs to the current user
-    if plant.get('user_id') != user_id:
-        return jsonify({
-            'success': False,
-            'message': 'Plant not found'
-        }), 404
-    
-    # Delete the plant
-    del PLANTS_DATA[plant_id]
-    save_plants_data()
-    
-    return jsonify({
-        'success': True,
-        'message': 'Plant deleted successfully'
-    })
-
-# Get plant types
-@plants_bp.route('/api/plant-types', methods=['GET'])
-@login_required
-def get_plant_types():
-    """Get available plant types"""
-    plant_types = [
+    # Create default plant types
+    default_types = [
         {
             'id': 'fern',
             'name': 'Fern',
@@ -344,4 +84,367 @@ def get_plant_types():
         }
     ]
     
-    return jsonify(plant_types)
+    for type_data in default_types:
+        plant_type = PlantType(
+            id=type_data['id'],
+            name=type_data['name'],
+            description=type_data['description'],
+            water_frequency=type_data['water_frequency'],
+            light_needs=type_data['light_needs']
+        )
+        db.session.add(plant_type)
+    
+    try:
+        db.session.commit()
+        logging.info("Initialized default plant types")
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error initializing plant types: {str(e)}")
+
+# Initialize data when module is loaded
+try:
+    initialize_plant_types()
+except Exception as e:
+    logging.error(f"Error during initialization: {str(e)}")
+
+# Get all plants for a user
+@plants_bp.route('/api/plants', methods=['GET'])
+@api_login_required
+def get_plants():
+    """Get all plants for the current user"""
+    user_id = session.get('user_id')
+    
+    try:
+        # Get all plants for the current user
+        plants = Plant.query.filter_by(user_id=user_id).all()
+        
+        # Convert to dictionary format
+        plants_data = [plant.to_dict() for plant in plants]
+        
+        return jsonify(plants_data)
+    except Exception as e:
+        logging.error(f"Error getting plants: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'Error retrieving plants'
+        }), 500
+
+# Add a new plant
+@plants_bp.route('/api/plants', methods=['POST'])
+@api_login_required
+def add_plant():
+    """Add a new plant for the current user"""
+    user_id = session.get('user_id')
+    
+    try:
+        data = request.json
+        name = data.get('name')
+        plant_type_id = data.get('type')
+        
+        if not name or not plant_type_id:
+            return jsonify({
+                'success': False,
+                'message': 'Plant name and type are required'
+            }), 400
+        
+        # Check if plant type exists
+        plant_type = PlantType.query.get(plant_type_id)
+        if not plant_type:
+            return jsonify({
+                'success': False,
+                'message': f'Plant type {plant_type_id} not found'
+            }), 400
+        
+        # Create new plant
+        new_plant = Plant(
+            user_id=user_id,
+            name=name,
+            plant_type_id=plant_type_id,
+            stage=0,  # Start at seed stage
+            health=100,
+            progress=0,
+            created_at=datetime.now(),
+            last_watered=datetime.now()
+        )
+        
+        # Add to database
+        db.session.add(new_plant)
+        db.session.commit()
+        
+        # Get the user and increase their garden score
+        from models import User
+        user = User.query.get(user_id)
+        if user:
+            user.increase_garden_score(25, "Added a new plant")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Plant {name} added successfully',
+            'plant': new_plant.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error adding plant: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'Error adding plant'
+        }), 500
+
+# Get a specific plant
+@plants_bp.route('/api/plants/<int:plant_id>', methods=['GET'])
+@api_login_required
+def get_plant(plant_id):
+    """Get a specific plant by ID"""
+    user_id = session.get('user_id')
+    
+    try:
+        # Get the plant
+        plant = Plant.query.get(plant_id)
+        
+        if not plant:
+            return jsonify({
+                'success': False,
+                'message': 'Plant not found'
+            }), 404
+        
+        # Check if the plant belongs to the current user
+        if str(plant.user_id) != str(user_id):
+            return jsonify({
+                'success': False,
+                'message': 'Plant not found'
+            }), 404
+        
+        return jsonify(plant.to_dict())
+    except Exception as e:
+        logging.error(f"Error getting plant: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'Error retrieving plant'
+        }), 500
+
+# Update a plant
+@plants_bp.route('/api/plants/<int:plant_id>', methods=['PUT'])
+@api_login_required
+def update_plant(plant_id):
+    """Update a plant's details"""
+    user_id = session.get('user_id')
+    
+    try:
+        # Get the plant
+        plant = Plant.query.get(plant_id)
+        
+        if not plant:
+            return jsonify({
+                'success': False,
+                'message': 'Plant not found'
+            }), 404
+        
+        # Check if the plant belongs to the current user
+        if str(plant.user_id) != str(user_id):
+            return jsonify({
+                'success': False,
+                'message': 'Plant not found'
+            }), 404
+        
+        data = request.json
+        
+        # Update allowed fields
+        if 'name' in data:
+            plant.name = data['name']
+        
+        if 'health' in data:
+            plant.health = max(0, min(100, data['health']))
+        
+        if 'progress' in data:
+            plant.progress = max(0, min(100, data['progress']))
+        
+        if 'stage' in data:
+            plant.stage = max(0, min(6, data['stage']))
+        
+        # Save changes
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Plant updated successfully',
+            'plant': plant.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error updating plant: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'Error updating plant'
+        }), 500
+
+# Water a plant
+@plants_bp.route('/api/plants/<int:plant_id>/water', methods=['POST'])
+@api_login_required
+def water_plant(plant_id):
+    """Water a specific plant"""
+    user_id = session.get('user_id')
+    
+    try:
+        # Get the plant
+        plant = Plant.query.get(plant_id)
+        
+        if not plant:
+            return jsonify({
+                'success': False,
+                'message': 'Plant not found'
+            }), 404
+        
+        # Check if the plant belongs to the current user
+        if str(plant.user_id) != str(user_id):
+            return jsonify({
+                'success': False,
+                'message': 'Plant not found'
+            }), 404
+        
+        # Get the user to update water credits
+        user = User.query.get(user_id)
+        
+        # For now, allow watering even without credits
+        water_credits = 20
+        if user:
+            water_credits = user.water_credits
+        
+        # Update plant health and last watered time
+        plant.health = min(100, plant.health + 10)
+        plant.last_watered = datetime.now()
+        
+        # Increase progress a bit
+        plant.progress = min(100, plant.progress + 5)
+        
+        # Check if plant should advance to next stage
+        if plant.progress >= 100 and plant.stage < 6:
+            plant.stage += 1
+            plant.progress = 0
+            
+            # Award points for advancing a stage
+            if user:
+                try:
+                    user.increase_garden_score(50, f"Plant {plant.name} advanced to stage {plant.stage}")
+                except Exception as score_error:
+                    logging.error(f"Error increasing garden score: {str(score_error)}")
+        
+        # Decrease water credits if user exists
+        if user:
+            try:
+                user.water_credits = max(0, user.water_credits - 1)
+            except Exception as credit_error:
+                logging.error(f"Error updating water credits: {str(credit_error)}")
+        
+        # Save changes
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Plant watered successfully',
+            'plant': plant.to_dict(),
+            'water_credits': user.water_credits if user else water_credits
+        })
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error watering plant: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error watering plant: {str(e)}'
+        }), 500
+
+# Delete a plant
+@plants_bp.route('/api/plants/<int:plant_id>', methods=['DELETE'])
+@api_login_required
+def delete_plant(plant_id):
+    """Delete a specific plant"""
+    user_id = session.get('user_id')
+    
+    try:
+        # Get the plant
+        plant = Plant.query.get(plant_id)
+        
+        if not plant:
+            return jsonify({
+                'success': False,
+                'message': 'Plant not found'
+            }), 404
+        
+        # Check if the plant belongs to the current user
+        if str(plant.user_id) != str(user_id):
+            return jsonify({
+                'success': False,
+                'message': 'Plant not found'
+            }), 404
+        
+        # Delete the plant
+        db.session.delete(plant)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Plant deleted successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error deleting plant: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'Error deleting plant'
+        }), 500
+
+# Get plant types
+@plants_bp.route('/api/plant-types', methods=['GET'])
+@api_login_required
+def get_plant_types():
+    """Get available plant types"""
+    try:
+        # Get all plant types
+        plant_types = PlantType.query.all()
+        
+        # Convert to dictionary format
+        types_data = []
+        for pt in plant_types:
+            types_data.append({
+                'id': pt.id,
+                'name': pt.name,
+                'description': pt.description,
+                'water_frequency': pt.water_frequency,
+                'light_needs': pt.light_needs
+            })
+        
+        return jsonify(types_data)
+    except Exception as e:
+        logging.error(f"Error getting plant types: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'Error retrieving plant types'
+        }), 500
+
+# Get water credits
+@plants_bp.route('/api/water-credits', methods=['GET'])
+@api_login_required
+def get_water_credits():
+    """Get water credits for the current user"""
+    user_id = session.get('user_id')
+    
+    try:
+        # Get the user
+        user = User.query.get(user_id)
+        
+        if not user:
+            return jsonify({
+                'success': True,
+                'water_credits': 20  # Default value
+            })
+        
+        return jsonify({
+            'success': True,
+            'water_credits': user.water_credits
+        })
+    except Exception as e:
+        logging.error(f"Error getting water credits: {str(e)}")
+        return jsonify({
+            'success': True,
+            'water_credits': 20,  # Default value on error
+            'error': str(e)
+        })

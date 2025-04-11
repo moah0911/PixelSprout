@@ -221,6 +221,43 @@ def logout():
         'message': 'Logout successful'
     })
 
+@auth_bp.route('/api/auth/test-login', methods=['GET'])
+def test_login():
+    """Test login route that sets a session for testing"""
+    try:
+        # Find the test user
+        test_user = User.query.filter_by(email="test@example.com").first()
+        
+        if not test_user:
+            return jsonify({
+                'success': False,
+                'message': 'Test user not found. Run create_tables.py first.'
+            }), 404
+        
+        # Set session
+        session['user_id'] = test_user.id
+        session['username'] = test_user.username
+        session['email'] = test_user.email
+        session['water_credits'] = test_user.water_credits
+        
+        return jsonify({
+            'success': True,
+            'message': 'Test login successful',
+            'user': {
+                'id': test_user.id,
+                'username': test_user.username,
+                'email': test_user.email,
+                'water_credits': test_user.water_credits,
+                'garden_score': test_user.garden_score
+            }
+        })
+    except Exception as e:
+        logging.error(f"Error in test login: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': f'Error in test login: {str(e)}'
+        }), 500
+
 @auth_bp.route('/api/auth/me', methods=['GET'])
 def get_current_user():
     """Get the current authenticated user"""

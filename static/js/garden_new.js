@@ -664,20 +664,58 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Initialize garden
+    // Initialize garden with improved error handling
     async function initGarden() {
         try {
             // Show loading indicator
-            showNotification('Loading your garden...', 'info', 2000);
+            if (window.showNotification) {
+                window.showNotification('Loading your garden...', 'info', 2000);
+            }
+            
+            // Create a status container if it doesn't exist
+            if (!document.getElementById('status-container')) {
+                const container = document.createElement('div');
+                container.id = 'status-container';
+                container.className = 'position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '9999';
+                container.style.marginTop = '80px';
+                document.body.appendChild(container);
+            }
             
             // Load plant types for the add plant form first (faster response)
-            await loadPlantTypes();
+            try {
+                await loadPlantTypes();
+                console.log('Plant types loaded successfully');
+            } catch (typeError) {
+                console.error('Error loading plant types:', typeError);
+                if (window.showNotification) {
+                    window.showNotification('Error loading plant types. Please try again.', 'warning');
+                }
+            }
             
             // Fetch water credits
-            await fetchWaterCredits();
+            try {
+                await fetchWaterCredits();
+                console.log('Water credits loaded successfully');
+            } catch (waterError) {
+                console.error('Error loading water credits:', waterError);
+                // Use default water credits
+                waterCredits = 20;
+                updateWaterCreditsDisplay();
+            }
             
             // Fetch and display plants
-            await fetchPlants();
+            try {
+                await fetchPlants();
+                console.log('Plants loaded successfully');
+            } catch (plantsError) {
+                console.error('Error loading plants:', plantsError);
+                if (window.showNotification) {
+                    window.showNotification('Error loading plants. Please try again.', 'warning');
+                }
+                // Show empty garden
+                renderGarden();
+            }
             
             // Initialize plant details panel
             updatePlantDetailsPanel();
@@ -693,7 +731,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Garden initialized successfully');
         } catch (error) {
             console.error('Error initializing garden:', error);
-            showNotification('Error loading garden', 'error');
+            if (window.showNotification) {
+                window.showNotification('Error loading garden. Please refresh the page.', 'error');
+            }
         }
         
         // Create animation effects panel if it doesn't exist
@@ -954,18 +994,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Fetch water credits
+    // Fetch water credits from the API
     async function fetchWaterCredits() {
         try {
             const response = await fetch('/api/water-credits');
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch water credits: ${response.status} ${response.statusText}`);
+            }
+            
             const data = await response.json();
             
             if (data.success) {
                 waterCredits = data.water_credits;
                 updateWaterCreditsDisplay();
+                return waterCredits;
+            } else {
+                throw new Error(data.message || 'Failed to fetch water credits');
             }
         } catch (error) {
             console.error('Error fetching water credits:', error);
+            // Use default value on error
+            waterCredits = 20;
+            updateWaterCreditsDisplay();
+            return waterCredits;
         }
     }
     
@@ -1037,26 +1089,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Fetch plants
+    // Fetch plants from the API
     async function fetchPlants() {
         try {
             const response = await fetch('/api/plants');
             
             if (!response.ok) {
-                throw new Error('Failed to fetch plants');
+                throw new Error(`Failed to fetch plants: ${response.status} ${response.statusText}`);
             }
             
             const data = await response.json();
             
-            // The API now returns an array directly
+            // The API returns an array directly
             plants = data;
             renderGarden();
             
             return plants;
         } catch (error) {
             console.error('Error fetching plants:', error);
-            showNotification('Failed to load garden', 'error');
-            return [];
+            if (window.showNotification) {
+                window.showNotification('Failed to load garden. Please try again.', 'error');
+            }
+            
+            // Empty plants array
+            plants = [];
+            renderGarden();
+            return plants;
         }
     }
     
@@ -1657,12 +1715,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 plantContainer.classList.add('plant-dancing');
             }
             
-            const response = await fetch(`/api/water-plant/${plantId}`, {
+            // Use the correct API endpoint
+            const response = await fetch(`/api/plants/${plantId}/water`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to water plant: ${response.status} ${response.statusText}`);
+            }
             
             const data = await response.json();
             
@@ -1684,7 +1747,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     updatePlantDetailsPanel();
                 }
                 
-                showNotification(data.message, 'success');
+                if (window.showNotification) {
+                    window.showNotification(data.message || 'Plant watered successfully!', 'success');
+                }
             } else {
                 // Remove watering effect if failed
                 if (plantContainer) {
@@ -1694,7 +1759,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     plantContainer.classList.remove('plant-dancing');
                 }
-                showNotification(data.message || 'Failed to water plant', 'error');
+                
+                if (window.showNotification) {
+                    window.showNotification(data.message || 'Failed to water plant', 'error');
+                }
             }
             
             // Remove effects after animation completes
@@ -1743,7 +1811,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('/api/plant-types');
             
             if (!response.ok) {
-                throw new Error('Failed to load plant types');
+                throw new Error(`Failed to load plant types: ${response.status} ${response.statusText}`);
             }
             
             const plantTypes = await response.json();
@@ -1760,9 +1828,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             console.log('Plant types loaded successfully');
+            return plantTypes;
         } catch (error) {
             console.error('Error loading plant types:', error);
-            showNotification('Error loading plant types', 'error');
+            if (window.showNotification) {
+                window.showNotification('Error loading plant types. Please try again.', 'error');
+            }
+            
+            // Remove loading option
+            const typeSelect = document.getElementById('plant-type');
+            if (typeSelect && typeSelect.options.length > 1) {
+                typeSelect.remove(typeSelect.options.length - 1);
+            }
+            
+            return [];
         }
     }
     
@@ -1777,16 +1856,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const type = typeSelect.value;
         
         if (!name) {
-            showNotification('Please enter a plant name', 'warning');
+            if (window.showNotification) {
+                window.showNotification('Please enter a plant name', 'warning');
+            }
             return;
         }
         
         if (!type) {
-            showNotification('Please select a plant type', 'warning');
+            if (window.showNotification) {
+                window.showNotification('Please select a plant type', 'warning');
+            }
             return;
         }
         
         try {
+            // Show loading notification
+            if (window.showNotification) {
+                window.showNotification('Adding your plant...', 'info', 2000);
+            }
+            
             const response = await fetch('/api/plants', {
                 method: 'POST',
                 headers: {
@@ -1804,7 +1892,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Refresh plants
                 await fetchPlants();
-                showNotification(`Added ${name} to your garden!`, 'success');
+                
+                if (window.showNotification) {
+                    window.showNotification(`Added ${name} to your garden!`, 'success');
+                }
                 
                 // Close modal if it exists
                 const modal = bootstrap.Modal.getInstance(document.getElementById('add-plant-modal'));
@@ -1812,11 +1903,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     modal.hide();
                 }
             } else {
-                showNotification(data.message || 'Failed to add plant', 'error');
+                if (window.showNotification) {
+                    window.showNotification(data.message || 'Failed to add plant', 'error');
+                }
             }
         } catch (error) {
             console.error('Error adding plant:', error);
-            showNotification('Error adding plant', 'error');
+            if (window.showNotification) {
+                window.showNotification('Error adding plant. Please try again.', 'error');
+            }
         }
     }
     

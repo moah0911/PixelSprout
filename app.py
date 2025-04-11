@@ -183,5 +183,9 @@ try:
     from routes_plants import plants_bp
     app.register_blueprint(plants_bp)
     logging.info("Plant API routes registered")
+    
+    from routes_test import test_bp
+    app.register_blueprint(test_bp)
+    logging.info("Test routes registered")
 except Exception as e:
     logging.error(f"Failed to register blueprints: {str(e)}")
