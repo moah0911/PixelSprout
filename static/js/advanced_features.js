@@ -693,22 +693,34 @@ class AdvancedFeatures {
      * Create AI Plant Advisor instance
      */
     async createAIAdvisor() {
-        // Create instance
-        this.aiAdvisor = new AIPlantAdvisor({
-            apiEndpoint: '/api/ai-advisor',
-            userDataEndpoint: '/api/user/data',
-            plantDataEndpoint: '/api/plants/data',
-            habitDataEndpoint: '/api/habits/data',
-            enablePredictions: true,
-            enableNotifications: this.userPreferences.enableNotifications,
-            enableVoiceInterface: this.userPreferences.enableVoiceInterface,
-            enableMoodTracking: this.userPreferences.enableMoodTracking,
-            enableWeatherIntegration: this.userPreferences.enableWeatherEffects,
-            debugMode: false
-        });
-        
-        // Initialize the advisor
-        await this.aiAdvisor.initialize();
+        try {
+            // Create instance
+            this.aiAdvisor = new AIPlantAdvisor({
+                apiEndpoint: '/api/ai-advisor',
+                userDataEndpoint: '/api/user/data',
+                plantDataEndpoint: '/api/plants/data',
+                habitDataEndpoint: '/api/habits/data',
+                enablePredictions: true,
+                enableNotifications: this.userPreferences.enableNotifications,
+                enableVoiceInterface: this.userPreferences.enableVoiceInterface,
+                enableMoodTracking: this.userPreferences.enableMoodTracking,
+                enableWeatherIntegration: this.userPreferences.enableWeatherEffects,
+                debugMode: false
+            });
+            
+            // Initialize the advisor
+            await this.aiAdvisor.initialize();
+        } catch (error) {
+            console.error(`Error creating or initializing AI Plant Advisor: ${error.message}`);
+            // Create a minimal advisor that won't cause errors
+            this.aiAdvisor = {
+                initialize: async () => Promise.resolve(),
+                getPersonalizedAdvice: async () => "Sorry, the AI advisor is currently unavailable.",
+                displayRecommendation: () => {},
+                recommendations: [],
+                log: (msg) => console.log(`AI Advisor (fallback): ${msg}`)
+            };
+        }
         
         // Populate recommendations
         if (this.containers.aiAdvisor) {
@@ -727,14 +739,36 @@ class AdvancedFeatures {
             if (inputField && sendButton) {
                 // Send button click
                 sendButton.addEventListener('click', async () => {
-                    const query = inputField.value ? inputField.value.trim() : '';
-                    if (query) {
-                        const topic = 
-                            query.includes('water') ? 'watering' : 
-                            query.includes('sun') ? 'sunlight' : 
-                            query.includes('habit') ? 'motivation' : 'general';
+                    try {
+                        if (!inputField || !inputField.value) {
+                            console.warn('Input field is empty or not found');
+                            return;
+                        }
                         
-                        const advice = await this.aiAdvisor.getPersonalizedAdvice(topic);
+                        const query = inputField.value.trim();
+                        if (!query) {
+                            console.warn('Query is empty after trimming');
+                            return;
+                        }
+                        
+                        // Determine topic based on query content
+                        let topic = 'general';
+                        if (query.includes('water')) {
+                            topic = 'watering';
+                        } else if (query.includes('sun')) {
+                            topic = 'sunlight';
+                        } else if (query.includes('habit')) {
+                            topic = 'motivation';
+                        }
+                        
+                        // Get advice with error handling
+                        let advice;
+                        try {
+                            advice = await this.aiAdvisor.getPersonalizedAdvice(topic);
+                        } catch (adviceError) {
+                            console.error(`Error getting advice: ${adviceError.message}`);
+                            advice = "Sorry, I couldn't process your request at this time.";
+                        }
                         
                         // Display response
                         const responseElement = document.createElement('div');
@@ -757,6 +791,20 @@ class AdvancedFeatures {
                         
                         // Scroll to bottom
                         recommendationsContainer.scrollTop = recommendationsContainer.scrollHeight;
+                    } catch (error) {
+                        console.error(`Error processing AI advisor request: ${error.message}`);
+                        // Display error message to user
+                        if (recommendationsContainer) {
+                            const errorElement = document.createElement('div');
+                            errorElement.className = 'ai-response error';
+                            errorElement.innerHTML = `
+                                <div class="ai-avatar">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="ai-message">Sorry, I encountered an error processing your request.</div>
+                            `;
+                            recommendationsContainer.appendChild(errorElement);
+                        }
                     }
                 });
                 

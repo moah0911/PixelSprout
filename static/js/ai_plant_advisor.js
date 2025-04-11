@@ -184,20 +184,54 @@ class AIPlantAdvisor {
         try {
             // Check if endpoint is available
             if (!this.config.userDataEndpoint) {
-                throw new Error('User data endpoint not configured');
+                this.log('User data endpoint not configured, using default data', true);
+                return this.userData || {
+                    id: 'default-user',
+                    name: 'Guest User',
+                    preferences: {},
+                    stats: {
+                        plantsGrown: 0,
+                        habitsCompleted: 0,
+                        wateringStreak: 0
+                    }
+                };
             }
             
-            const response = await fetch(this.config.userDataEndpoint);
-            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
-            
-            const data = await response.json();
-            this.userData = data;
-            this.log("User data fetched successfully");
-            return data;
+            try {
+                const response = await fetch(this.config.userDataEndpoint);
+                if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+                
+                const data = await response.json();
+                this.userData = data;
+                this.log("User data fetched successfully");
+                return data;
+            } catch (fetchError) {
+                this.log(`Error fetching user data: ${fetchError.message}`, true);
+                // Use cached data if available, or default data
+                return this.userData || {
+                    id: 'default-user',
+                    name: 'Guest User',
+                    preferences: {},
+                    stats: {
+                        plantsGrown: 0,
+                        habitsCompleted: 0,
+                        wateringStreak: 0
+                    }
+                };
+            }
         } catch (error) {
-            this.log(`Error fetching user data: ${error.message}`, true);
-            // Use cached data if available
-            return this.userData || {};
+            this.log(`Unexpected error in fetchUserData: ${error.message}`, true);
+            // Return a minimal default user object
+            return {
+                id: 'default-user',
+                name: 'Guest User',
+                preferences: {},
+                stats: {
+                    plantsGrown: 0,
+                    habitsCompleted: 0,
+                    wateringStreak: 0
+                }
+            };
         }
     }
 
@@ -325,10 +359,31 @@ class AIPlantAdvisor {
         try {
             this.log("Generating personalized recommendations...");
             
+            // Initialize recommendations array
             const recommendations = [];
             
+            // Validate data
+            if (!this.userData) {
+                this.log("No user data available for recommendations", true);
+                this.userData = {
+                    id: 'default-user',
+                    name: 'Guest User',
+                    preferences: {},
+                    stats: {
+                        plantsGrown: 0,
+                        habitsCompleted: 0,
+                        wateringStreak: 0
+                    }
+                };
+            }
+            
+            if (!this.plantData || !Array.isArray(this.plantData)) {
+                this.log("No plant data available for recommendations", true);
+                this.plantData = [];
+            }
+            
             // Check if we have enough data
-            if (!this.userData || !this.plantData.length) {
+            if (!this.userData || this.plantData.length === 0) {
                 recommendations.push({
                     type: "general",
                     priority: "medium",
@@ -827,7 +882,14 @@ class AIPlantAdvisor {
         try {
             // Validate input
             if (!topic || typeof topic !== 'string') {
-                console.warn('Invalid topic provided to getPersonalizedAdvice, using "general" instead');
+                this.log('Invalid topic provided to getPersonalizedAdvice, using "general" instead', true);
+                topic = 'general';
+            }
+            
+            // Ensure topic is one of the supported values
+            const validTopics = ['watering', 'sunlight', 'motivation', 'general'];
+            if (!validTopics.includes(topic)) {
+                this.log(`Unsupported topic "${topic}", using "general" instead`, true);
                 topic = 'general';
             }
             
