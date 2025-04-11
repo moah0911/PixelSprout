@@ -1,13 +1,27 @@
-from flask import Blueprint, request, jsonify, session, g
+from flask import Blueprint, request, jsonify, session, g, redirect, url_for
 import logging
 import json
 import os
 import time
 from datetime import datetime, timedelta
 import random
+from functools import wraps
 
 # Create blueprint
 advanced_bp = Blueprint('advanced', __name__)
+
+# Authentication decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            # Return 401 Unauthorized for API requests
+            if request.path.startswith('/api/'):
+                return jsonify({'error': 'Authentication required', 'code': 'auth_required'}), 401
+            # Redirect to login page for regular requests
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # Mock data storage (in a real app, this would be in a database)
 MOCK_DATA = {
@@ -180,16 +194,19 @@ init_mock_data()
 
 # User data endpoint
 @advanced_bp.route('/api/user/data', methods=['GET'])
+@login_required
 def user_data():
     """Get user data for advanced features"""
-    user_id = session.get('user_id', 'default_user')
+    user_id = session.get('user_id')
     user_data = get_user_data(user_id)
     return jsonify(user_data)
 
 # Plant data endpoint
 @advanced_bp.route('/api/plants/data', methods=['GET'])
+@login_required
 def plants_data():
     """Get plant data for advanced features"""
+    user_id = session.get('user_id')
     plant_id = request.args.get('id')
     plants = get_plant_data(plant_id)
     
@@ -197,7 +214,7 @@ def plants_data():
     if not plants and not plant_id:
         sample_plants = [
             {
-                'id': 'plant-1',
+                'id': f'plant-1-{user_id}',
                 'name': 'Emerald Fern',
                 'type': 'fern',
                 'growthStage': 3,
@@ -211,10 +228,11 @@ def plants_data():
                     {'stage': 1, 'date': (datetime.now() - timedelta(days=30)).isoformat()},
                     {'stage': 2, 'date': (datetime.now() - timedelta(days=20)).isoformat()},
                     {'stage': 3, 'date': (datetime.now() - timedelta(days=10)).isoformat()}
-                ]
+                ],
+                'userId': user_id
             },
             {
-                'id': 'plant-2',
+                'id': f'plant-2-{user_id}',
                 'name': 'Sunset Succulent',
                 'type': 'succulent',
                 'growthStage': 2,
@@ -227,7 +245,8 @@ def plants_data():
                 'growthHistory': [
                     {'stage': 1, 'date': (datetime.now() - timedelta(days=25)).isoformat()},
                     {'stage': 2, 'date': (datetime.now() - timedelta(days=15)).isoformat()}
-                ]
+                ],
+                'userId': user_id
             }
         ]
         
@@ -237,12 +256,20 @@ def plants_data():
         save_mock_data()
         plants = sample_plants
     
+    # Filter plants by user ID
+    if isinstance(plants, list):
+        plants = [p for p in plants if p.get('userId') == user_id]
+    elif plants and plants.get('userId') != user_id:
+        plants = []
+    
     return jsonify(plants if isinstance(plants, list) else [plants])
 
 # Habit data endpoint
 @advanced_bp.route('/api/habits/data', methods=['GET'])
+@login_required
 def habits_data():
     """Get habit data for advanced features"""
+    user_id = session.get('user_id')
     habit_id = request.args.get('id')
     habits = get_habit_data(habit_id)
     
@@ -253,7 +280,7 @@ def habits_data():
         
         sample_habits = [
             {
-                'id': 'habit-1',
+                'id': f'habit-1-{user_id}',
                 'name': 'Morning Watering',
                 'description': 'Water plants in the morning',
                 'type': 'daily',
@@ -266,10 +293,11 @@ def habits_data():
                 ],
                 'preferredTimeStart': 6,
                 'preferredTimeEnd': 10,
-                'tags': ['watering', 'morning', 'plant-care']
+                'tags': ['watering', 'morning', 'plant-care'],
+                'userId': user_id
             },
             {
-                'id': 'habit-2',
+                'id': f'habit-2-{user_id}',
                 'name': 'Sunlight Check',
                 'description': 'Check if plants are getting enough sunlight',
                 'type': 'daily',
@@ -280,7 +308,8 @@ def habits_data():
                 ],
                 'preferredTimeStart': 10,
                 'preferredTimeEnd': 14,
-                'tags': ['sunlight', 'plant-care', 'outdoor']
+                'tags': ['sunlight', 'plant-care', 'outdoor'],
+                'userId': user_id
             }
         ]
         
@@ -290,18 +319,26 @@ def habits_data():
         save_mock_data()
         habits = sample_habits
     
+    # Filter habits by user ID
+    if isinstance(habits, list):
+        habits = [h for h in habits if h.get('userId') == user_id]
+    elif habits and habits.get('userId') != user_id:
+        habits = []
+    
     return jsonify(habits if isinstance(habits, list) else [habits])
 
 # Achievement endpoints
 @advanced_bp.route('/api/gamification/achievements', methods=['GET'])
+@login_required
 def get_achievements():
     """Get achievements for gamification"""
     return jsonify(MOCK_DATA['achievements'])
 
 @advanced_bp.route('/api/gamification/achievements', methods=['POST'])
+@login_required
 def complete_achievements():
     """Mark achievements as completed"""
-    user_id = session.get('user_id', 'default_user')
+    user_id = session.get('user_id')
     user_data = get_user_data(user_id)
     
     data = request.json
@@ -316,14 +353,16 @@ def complete_achievements():
 
 # Challenge endpoints
 @advanced_bp.route('/api/gamification/challenges', methods=['GET'])
+@login_required
 def get_challenges():
     """Get challenges for gamification"""
     return jsonify(MOCK_DATA['challenges'])
 
 @advanced_bp.route('/api/gamification/challenges', methods=['POST'])
+@login_required
 def complete_challenge():
     """Complete a challenge"""
-    user_id = session.get('user_id', 'default_user')
+    user_id = session.get('user_id')
     user_data = get_user_data(user_id)
     
     data = request.json
@@ -350,14 +389,16 @@ def complete_challenge():
 
 # Reward endpoints
 @advanced_bp.route('/api/gamification/rewards', methods=['GET'])
+@login_required
 def get_rewards():
     """Get rewards for gamification"""
     return jsonify(MOCK_DATA['rewards'])
 
 @advanced_bp.route('/api/gamification/rewards', methods=['POST'])
+@login_required
 def unlock_reward():
     """Unlock a reward"""
-    user_id = session.get('user_id', 'default_user')
+    user_id = session.get('user_id')
     user_data = get_user_data(user_id)
     
     data = request.json
@@ -397,9 +438,10 @@ def unlock_reward():
 
 # XP endpoints
 @advanced_bp.route('/api/gamification/xp', methods=['POST'])
+@login_required
 def award_xp():
     """Award XP to user"""
-    user_id = session.get('user_id', 'default_user')
+    user_id = session.get('user_id')
     user_data = get_user_data(user_id)
     
     data = request.json
@@ -436,9 +478,10 @@ def award_xp():
 
 # Streak endpoints
 @advanced_bp.route('/api/gamification/streaks', methods=['POST'])
+@login_required
 def update_streak():
     """Update activity streak"""
-    user_id = session.get('user_id', 'default_user')
+    user_id = session.get('user_id')
     user_data = get_user_data(user_id)
     
     data = request.json
@@ -463,6 +506,7 @@ def update_streak():
 
 # AI Advisor endpoints
 @advanced_bp.route('/api/ai-advisor', methods=['GET'])
+@login_required
 def get_ai_advice():
     """Get AI advice"""
     topic = request.args.get('topic', 'general')
@@ -503,9 +547,10 @@ def get_ai_advice():
 
 # Water credits endpoint
 @advanced_bp.route('/api/water-credits/add', methods=['POST'])
+@login_required
 def add_water_credits():
     """Add water credits"""
-    user_id = session.get('user_id', 'default_user')
+    user_id = session.get('user_id')
     user_data = get_user_data(user_id)
     
     data = request.json

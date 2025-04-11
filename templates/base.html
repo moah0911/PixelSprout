@@ -518,12 +518,14 @@
     <!-- JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Advanced Features Scripts -->
+    <!-- Advanced Features Scripts - only load for authenticated users -->
+    {% if session.get('user_id') %}
     <script src="{{ url_for('static', filename='js/interactive_growth.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ai_plant_advisor.js') }}"></script>
     <script src="{{ url_for('static', filename='js/plant_3d_visualizer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/gamification_system.js') }}"></script>
     <script src="{{ url_for('static', filename='js/advanced_features.js') }}"></script>
+    {% endif %}
     
     <!-- Custom Scripts -->
     <script>
@@ -535,7 +537,8 @@
             updateLocalTime();
             setInterval(updateLocalTime, 60000); // Update every minute
             
-            // Initialize advanced features
+            // Initialize advanced features only for authenticated users
+            {% if session.get('user_id') %}
             if (window.pixelSproutFeatures) {
                 console.log("Advanced features already initialized");
             } else {
@@ -545,6 +548,7 @@
                     console.error('Failed to initialize advanced features:', error);
                 });
             }
+            {% endif %}
         });
         
         // Update local time based on user's timezone
@@ -674,7 +678,8 @@
             }
         }
         
-        // Simulate plant selection for demo purposes
+        // Simulate plant selection for demo purposes - only for authenticated users
+        {% if session.get('user_id') %}
         function simulatePlantSelection() {
             if (window.pixelSproutFeatures) {
                 // Create sample plant data
@@ -702,6 +707,7 @@
         
         // Run simulation after a delay to allow features to initialize
         setTimeout(simulatePlantSelection, 2000);
+        {% endif %}
     </script>
     
     <style>

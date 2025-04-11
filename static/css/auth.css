@@ -11,7 +11,7 @@
     padding: 2rem 0;
 }
 
-/* Animated background elements */
+/* Animated background elements - optimized for faster loading */
 .auth-bg {
     position: absolute;
     top: 0;
@@ -25,7 +25,7 @@
     position: absolute;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(76, 175, 80, 0.2) 0%, rgba(76, 175, 80, 0) 70%);
-    animation: pulse-grow 8s infinite alternate ease-in-out;
+    animation: pulse-grow 5s infinite alternate ease-in-out;
 }
 
 .auth-bg-circle:nth-child(1) {
@@ -41,7 +41,7 @@
     height: 500px;
     bottom: -150px;
     right: -100px;
-    animation-delay: 2s;
+    animation-delay: 1s;
 }
 
 .auth-bg-circle:nth-child(3) {
@@ -50,7 +50,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    animation-delay: 4s;
+    animation-delay: 2s;
 }
 
 .auth-bg-line {
@@ -61,7 +61,7 @@
         rgba(76, 175, 80, 0) 0%, 
         rgba(76, 175, 80, 0.3) 50%, 
         rgba(76, 175, 80, 0) 100%);
-    animation: line-move 15s infinite linear;
+    animation: line-move 8s infinite linear;
 }
 
 .auth-bg-line:nth-child(4) {
@@ -71,12 +71,12 @@
 
 .auth-bg-line:nth-child(5) {
     top: 45%;
-    animation-delay: 5s;
+    animation-delay: 2s;
 }
 
 .auth-bg-line:nth-child(6) {
     top: 75%;
-    animation-delay: 10s;
+    animation-delay: 4s;
 }
 
 @keyframes pulse-grow {
@@ -131,7 +131,7 @@
     padding: 1rem 2rem 2rem;
 }
 
-/* Logo animation */
+/* Logo animation - optimized for faster loading */
 .auth-logo-container {
     position: relative;
     width: 120px;
@@ -145,7 +145,7 @@
     object-fit: contain;
     position: relative;
     z-index: 2;
-    animation: float 6s infinite ease-in-out;
+    animation: float 4s infinite ease-in-out;
 }
 
 .auth-logo-glow {
@@ -158,7 +158,7 @@
     background: radial-gradient(circle, rgba(76, 175, 80, 0.6) 0%, rgba(76, 175, 80, 0) 70%);
     border-radius: 50%;
     z-index: 1;
-    animation: pulse 3s infinite alternate;
+    animation: pulse 2s infinite alternate;
 }
 
 .auth-logo-particles {
@@ -177,7 +177,7 @@
     background: rgba(76, 175, 80, 0.8);
     border-radius: 50%;
     opacity: 0;
-    animation: particle-rise 4s infinite;
+    animation: particle-rise 3s infinite;
 }
 
 .auth-particle:nth-child(1) {
@@ -187,17 +187,17 @@
 
 .auth-particle:nth-child(2) {
     left: 40%;
-    animation-delay: 1s;
+    animation-delay: 0.5s;
 }
 
 .auth-particle:nth-child(3) {
     left: 60%;
-    animation-delay: 2s;
+    animation-delay: 1s;
 }
 
 .auth-particle:nth-child(4) {
     left: 80%;
-    animation-delay: 3s;
+    animation-delay: 1.5s;
 }
 
 @keyframes float {
@@ -205,7 +205,7 @@
         transform: translateY(0);
     }
     50% {
-        transform: translateY(-10px);
+        transform: translateY(-8px);
     }
 }
 
@@ -504,11 +504,11 @@
     }
 }
 
-/* Animations for page transitions */
+/* Animations for page transitions - faster for better UX */
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
@@ -517,20 +517,20 @@
 }
 
 .auth-fade-in {
-    animation: fadeIn 0.8s ease forwards;
+    animation: fadeIn 0.3s ease forwards;
 }
 
 .auth-fade-in-delay-1 {
     opacity: 0;
-    animation: fadeIn 0.8s ease forwards 0.2s;
+    animation: fadeIn 0.3s ease forwards 0.1s;
 }
 
 .auth-fade-in-delay-2 {
     opacity: 0;
-    animation: fadeIn 0.8s ease forwards 0.4s;
+    animation: fadeIn 0.3s ease forwards 0.15s;
 }
 
 .auth-fade-in-delay-3 {
     opacity: 0;
-    animation: fadeIn 0.8s ease forwards 0.6s;
+    animation: fadeIn 0.3s ease forwards 0.2s;
 }

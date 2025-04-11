@@ -70,6 +70,14 @@ class AdvancedFeatures {
         try {
             console.log("Initializing PixelSprout Advanced Features...");
             
+            // Check if user is logged in
+            const isLoggedIn = this.checkUserLoggedIn();
+            
+            if (!isLoggedIn) {
+                console.log("User not logged in. Advanced features disabled.");
+                return Promise.resolve();
+            }
+            
             // Load user preferences
             await this.loadUserPreferences();
             
@@ -109,11 +117,69 @@ class AdvancedFeatures {
             return Promise.reject(error);
         }
     }
+    
+    /**
+     * Check if user is logged in
+     * @returns {boolean} True if user is logged in
+     */
+    checkUserLoggedIn() {
+        // Check for login indicators in the DOM
+        const userProfileElement = document.querySelector('.user-profile') || 
+                                  document.querySelector('.profile-header') ||
+                                  document.querySelector('.user-info');
+                                  
+        const logoutButton = document.querySelector('.logout-button') || 
+                            document.querySelector('a[href="/logout"]');
+                            
+        const loginForm = document.querySelector('.login-form') ||
+                         document.querySelector('form[action="/login"]');
+                         
+        // If login form is present, user is not logged in
+        if (loginForm) {
+            return false;
+        }
+        
+        // If user profile or logout button exists, user is logged in
+        if (userProfileElement || logoutButton) {
+            return true;
+        }
+        
+        // Check URL path - if on login or register page, user is not logged in
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/login') || 
+            currentPath.includes('/register') || 
+            currentPath.includes('/reset-password') ||
+            currentPath === '/') {
+            return false;
+        }
+        
+        // Check for auth token in localStorage as a fallback
+        const authToken = localStorage.getItem('pixelsprout_auth_token');
+        return !!authToken;
+    }
 
     /**
      * Create containers for features if they don't exist
      */
     createContainers() {
+        // Check if we're on a login/register page
+        const isLoginPage = window.location.pathname.includes('/login') || 
+                           window.location.pathname.includes('/register') ||
+                           window.location.pathname.includes('/reset-password') ||
+                           window.location.pathname === '/';
+                           
+        // Don't create containers on login pages
+        if (isLoginPage) {
+            console.log("On login/register page. Skipping container creation.");
+            return;
+        }
+        
+        // Check if we're on a dashboard or garden page
+        const isDashboardPage = window.location.pathname.includes('/dashboard') || 
+                               window.location.pathname.includes('/garden') ||
+                               window.location.pathname.includes('/plants') ||
+                               window.location.pathname.includes('/profile');
+                               
         // Create notification container
         if (!this.containers.notifications) {
             const notificationContainer = document.createElement('div');
@@ -124,6 +190,12 @@ class AdvancedFeatures {
             notificationContainer.style.zIndex = '9999';
             document.body.appendChild(notificationContainer);
             this.containers.notifications = notificationContainer;
+        }
+        
+        // Only create feature containers on dashboard/garden pages
+        if (!isDashboardPage) {
+            console.log("Not on dashboard/garden page. Skipping feature containers.");
+            return;
         }
         
         // Create 3D visualization container if enabled
@@ -396,8 +468,8 @@ class AdvancedFeatures {
                 this.containers.badges = badgesContainer;
             }
             
-            // Challenges container
-            if (!this.containers.challenges) {
+            // Challenges container - only on dashboard
+            if (!this.containers.challenges && window.location.pathname.includes('/dashboard')) {
                 const challengesContainer = document.createElement('div');
                 challengesContainer.id = 'challenge-container';
                 challengesContainer.className = 'gamification-challenges-container';
@@ -416,7 +488,7 @@ class AdvancedFeatures {
                         const challengesSection = document.createElement('div');
                         challengesSection.className = 'challenges-section';
                         challengesSection.innerHTML = '<h3>Active Challenges</h3>';
-                        challengesSection.appendChild(challengesContainer);
+                        challengesSection.appendChild(challengesSection);
                         mainContent.appendChild(challengesSection);
                     } else {
                         document.body.appendChild(challengesContainer);
@@ -426,8 +498,8 @@ class AdvancedFeatures {
                 this.containers.challenges = challengesContainer;
             }
             
-            // Rewards container
-            if (!this.containers.rewards) {
+            // Rewards container - only on dashboard
+            if (!this.containers.rewards && window.location.pathname.includes('/dashboard')) {
                 const rewardsContainer = document.createElement('div');
                 rewardsContainer.id = 'reward-container';
                 rewardsContainer.className = 'gamification-rewards-container';
