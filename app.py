@@ -1,13 +1,20 @@
 import os
 import logging
 import secrets
-from flask import Flask
+import time
+from datetime import timedelta
+from flask import Flask, request, g
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from werkzeug.middleware.proxy_fix import ProxyFix
 
-# Set up logging
-logging.basicConfig(level=logging.DEBUG)
+# Set up logging with more detailed format
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 # Create SQLAlchemy instance with older style configuration
 db = SQLAlchemy()
@@ -59,16 +66,68 @@ def get_or_create_secret_key():
 app = Flask(__name__)
 app.secret_key = get_or_create_secret_key()
 
-# Enable CORS
-CORS(app)
+# Fix for proper IP detection when behind a proxy
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
-# Configure app
+# Enable CORS with more restrictive settings
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:5000", 
+            "https://pixelsprout.vercel.app",
+            "https://pixelsprout.onrender.com"
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
+
+# Configure app with enhanced security settings
 app.config.update(
     SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE='Lax',
+    PERMANENT_SESSION_LIFETIME=timedelta(days=7),  # Session expires after 7 days
     MAX_CONTENT_LENGTH=16 * 1024 * 1024,  # 16MB max upload size
 )
+
+# Security headers middleware
+@app.after_request
+def add_security_headers(response):
+    # Content Security Policy
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https://via.placeholder.com; connect-src 'self'"
+    
+    # Prevent MIME type sniffing
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    
+    # Prevent clickjacking
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    
+    # Enable XSS protection
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    
+    # Referrer policy
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    
+    # Permissions policy
+    response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
+    
+    return response
+
+# Request logging middleware
+@app.before_request
+def log_request_info():
+    if request.path.startswith('/api/'):
+        logging.debug(f"Request: {request.method} {request.path} from {request.remote_addr}")
+        g.request_start_time = time.time()
+
+@app.after_request
+def log_response_info(response):
+    if hasattr(g, 'request_start_time') and request.path.startswith('/api/'):
+        duration = time.time() - g.request_start_time
+        logging.debug(f"Response: {response.status_code} in {duration:.4f}s")
+    return response
 
 # Configure database connection
 database_url = os.environ.get("DATABASE_URL")
@@ -116,5 +175,9 @@ try:
     
     from routes_storage import storage_bp
     app.register_blueprint(storage_bp)
+    
+    from routes_advanced import advanced_bp
+    app.register_blueprint(advanced_bp)
+    logging.info("Advanced features API routes registered")
 except Exception as e:
     logging.error(f"Failed to register blueprints: {str(e)}")

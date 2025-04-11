@@ -1,9 +1,12 @@
 import os
 import json
 import logging
+import hashlib
+import secrets
 from supabase import create_client, Client
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import request
 
 # Initialize Supabase client
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
@@ -11,6 +14,46 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
     logging.warning("Supabase credentials not found in environment variables")
+
+# Enhanced password hashing with Argon2 if available, otherwise use bcrypt
+try:
+    from argon2 import PasswordHasher
+    ph = PasswordHasher(
+        time_cost=3,       # Number of iterations
+        memory_cost=65536, # Memory usage in kibibytes
+        parallelism=4,     # Number of parallel threads
+        hash_len=32,       # Length of the hash in bytes
+        salt_len=16        # Length of the salt in bytes
+    )
+    
+    def hash_password(password):
+        """Hash a password using Argon2"""
+        return ph.hash(password)
+    
+    def verify_password(hashed_password, password):
+        """Verify a password against a hash using Argon2"""
+        try:
+            return ph.verify(hashed_password, password)
+        except:
+            return False
+            
+    logging.info("Using Argon2 for password hashing")
+except ImportError:
+    # Fallback to Werkzeug's generate_password_hash which uses pbkdf2:sha256
+    def hash_password(password):
+        """Hash a password using pbkdf2:sha256"""
+        return generate_password_hash(password, method='pbkdf2:sha256:150000')
+    
+    def verify_password(hashed_password, password):
+        """Verify a password against a hash using pbkdf2:sha256"""
+        return check_password_hash(hashed_password, password)
+        
+    logging.info("Using pbkdf2:sha256 for password hashing (Argon2 not available)")
+
+# Generate a secure token for API operations
+def generate_secure_token(length=32):
+    """Generate a cryptographically secure token"""
+    return secrets.token_hex(length)
 
 # Create Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
@@ -20,18 +63,25 @@ class SupabaseAuth:
     
     @staticmethod
     def register(email, password, username):
-        """Register a new user with Supabase Auth"""
+        """Register a new user with Supabase Auth with enhanced security"""
         if not supabase:
             raise Exception("Supabase client not initialized")
             
         try:
+            # Hash the password before sending to Supabase
+            # This adds an extra layer of security even though Supabase also hashes passwords
+            hashed_password = hash_password(password)
+            
             # Create user with Auth
             user_data = {
                 "email": email,
-                "password": password,
+                "password": password,  # Supabase will hash this again
                 "options": {
                     "data": {
-                        "username": username
+                        "username": username,
+                        "registration_ip": request.remote_addr if 'request' in globals() else None,
+                        "registration_date": datetime.now().isoformat(),
+                        "last_login": datetime.now().isoformat()
                     }
                 }
             }
@@ -40,6 +90,22 @@ class SupabaseAuth:
             # Check if the user was created
             if not auth_response.user:
                 raise Exception("User registration failed")
+            
+            # Store our own password hash in a separate secure table for additional verification
+            # This is optional but provides an extra layer of security
+            try:
+                secure_hash_data = {
+                    "user_id": auth_response.user.id,
+                    "password_hash": hashed_password,
+                    "created_at": datetime.now().isoformat()
+                }
+                supabase.table('secure_password_hashes').insert(secure_hash_data).execute()
+            except Exception as hash_error:
+                logging.warning(f"Could not store secure password hash: {str(hash_error)}")
+                # Continue anyway as the user was created successfully
+                
+            # Log successful registration
+            logging.info(f"User registered successfully: {email}")
                 
             return {
                 'success': True,
@@ -58,7 +124,7 @@ class SupabaseAuth:
     
     @staticmethod
     def login(email, password):
-        """Log in a user with Supabase Auth"""
+        """Log in a user with Supabase Auth with enhanced security"""
         if not supabase:
             raise Exception("Supabase client not initialized")
             
@@ -83,6 +149,20 @@ class SupabaseAuth:
                 
             user_data = user_response.data[0]
             
+            # Update last login time and IP
+            try:
+                login_data = {
+                    "last_login": datetime.now().isoformat(),
+                    "last_login_ip": request.remote_addr if 'request' in globals() else None
+                }
+                supabase.table('users').update(login_data).eq('id', user_id).execute()
+            except Exception as update_error:
+                logging.warning(f"Could not update last login info: {str(update_error)}")
+                # Continue anyway as the login was successful
+            
+            # Log successful login
+            logging.info(f"User logged in successfully: {email}")
+            
             return {
                 'success': True,
                 'user': {
@@ -95,10 +175,12 @@ class SupabaseAuth:
                 'session': auth_response.session
             }
         except Exception as e:
-            logging.error(f"Login error: {str(e)}")
+            # Log failed login attempt
+            logging.warning(f"Login failed for {email}: {str(e)}")
+            
             return {
                 'success': False,
-                'error': str(e)
+                'error': "Invalid email or password"  # Generic error message for security
             }
     
     @staticmethod

@@ -4,6 +4,9 @@
     {% block head %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#0a1f0a">
+    <meta name="description" content="PixelSprout - Grow your virtual garden with real-life habits">
     <title>{% block title %}PixelSprout{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet">
@@ -12,37 +15,54 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <style>
         /* Base styles - Will be extended by specific CSS files */
+        :root {
+            --primary-green: #4CAF50;
+            --light-green: #7deb7d;
+            --dark-green: #2E7D32;
+            --bg-dark: #0a1f0a;
+            --bg-darker: #071407;
+            --bg-lighter: #0f2a0f;
+            --text-light: #e9ecef;
+            --glow-shadow: 0 0 15px rgba(76, 175, 80, 0.8);
+        }
+        
         body {
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background-color: #0a1f0a;
-            color: #e9ecef;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
         }
         
         .main-content {
             flex: 1;
+            position: relative;
+            z-index: 1;
         }
         
-        /* Logo animation */
+        /* Logo animation with enhanced effects */
         .navbar-brand {
-            transition: transform 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
         .navbar-brand:hover {
-            transform: scale(1.05);
+            transform: scale(1.08) translateY(-2px);
         }
         
-        /* Custom footer */
+        /* Custom footer with improved mobile styling */
         .footer {
-            background-color: rgba(8, 32, 8, 0.9);
-            padding: 1rem 0;
+            background-color: rgba(8, 32, 8, 0.95);
+            padding: 1.5rem 0;
             margin-top: 2rem;
-            border-top: 1px solid rgba(76, 175, 80, 0.2);
+            border-top: 1px solid rgba(76, 175, 80, 0.3);
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.3);
         }
         
-        /* Animated background */
+        /* Enhanced animated background */
         .bg-animated {
             position: fixed;
             top: 0;
@@ -50,8 +70,16 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: linear-gradient(to bottom, #071407, #0f2a0f);
+            background: linear-gradient(135deg, var(--bg-darker), var(--bg-dark), var(--bg-lighter));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             overflow: hidden;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
         
         .bg-plants {
@@ -59,11 +87,19 @@
             width: 100%;
             height: 100%;
             background-image: 
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 5C15 10 15 20 20 25C25 20 25 10 20 5Z' fill='%23194d19' fill-opacity='0.1'/%3E%3C/svg%3E"),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 10C22 20 22 40 30 50C38 40 38 20 30 10Z' fill='%23194d19' fill-opacity='0.1'/%3E%3C/svg%3E");
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M20 5C15 10 15 20 20 25C25 20 25 10 20 5Z' fill='%23194d19' fill-opacity='0.15'/%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 10C22 20 22 40 30 50C38 40 38 20 30 10Z' fill='%23194d19' fill-opacity='0.15'/%3E%3C/svg%3E"),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M40 15C30 25 30 55 40 65C50 55 50 25 40 15Z' fill='%23194d19' fill-opacity='0.1'/%3E%3C/svg%3E");
             background-repeat: repeat;
             background-position: center;
-            opacity: 0.5;
+            opacity: 0.6;
+            animation: floatingPlants 120s linear infinite;
+        }
+        
+        @keyframes floatingPlants {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(1deg); }
+            100% { transform: translateY(0) rotate(0deg); }
         }
         
         .bg-stars {
@@ -74,108 +110,178 @@
             width: 100%;
             height: 100%;
             background-image: 
-                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0)),
-                radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0)),
-                radial-gradient(2px 2px at 50px 160px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0)),
-                radial-gradient(2px 2px at 90px 40px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0)),
-                radial-gradient(2px 2px at 130px 80px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0)),
-                radial-gradient(2px 2px at 160px 120px, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0));
+                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 50px 160px, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 90px 40px, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 130px 80px, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 160px 120px, rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0)),
+                radial-gradient(3px 3px at 200px 200px, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0)),
+                radial-gradient(3px 3px at 300px 300px, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0));
             background-repeat: repeat;
-            background-size: 200px 200px;
-            opacity: 0.3;
-            animation: starsAnimation 300s linear infinite;
+            background-size: 400px 400px;
+            opacity: 0.4;
+            animation: starsAnimation 240s linear infinite;
         }
         
         @keyframes starsAnimation {
-            from {
-                transform: translateY(0);
-            }
-            to {
-                transform: translateY(-1000px);
-            }
+            from { transform: translateY(0) rotate(0deg); }
+            to { transform: translateY(-1000px) rotate(5deg); }
         }
         
-        /* App name styling */
+        /* Enhanced app name styling */
         .app-name {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
             font-weight: 700;
-            background: linear-gradient(to right, #7deb7d, #4CAF50, #2E7D32);
+            background: linear-gradient(to right, var(--light-green), var(--primary-green), var(--dark-green));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-left: 15px;
-            text-shadow: 0 0 10px rgba(76, 175, 80, 0.8);
+            text-shadow: var(--glow-shadow);
             letter-spacing: 1px;
+            position: relative;
+        }
+        
+        .app-name::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--primary-green), transparent);
+            opacity: 0.6;
         }
         
         .logo-img {
             height: 50px;
             width: auto;
             margin-right: 0.5rem;
-            filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.8));
-            animation: pulse 3s infinite;
+            filter: drop-shadow(var(--glow-shadow));
+            animation: floatingLogo 4s ease-in-out infinite;
         }
         
-        @keyframes pulse {
+        @keyframes floatingLogo {
             0%, 100% {
                 filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.8));
+                transform: translateY(0);
             }
             50% {
-                filter: drop-shadow(0 0 15px rgba(76, 175, 80, 1));
+                filter: drop-shadow(0 0 20px rgba(76, 175, 80, 1));
+                transform: translateY(-5px);
             }
         }
         
-        /* Enhanced Navbar */
+        /* Enhanced Navbar with mobile improvements */
         .navbar {
-            background: rgba(8, 32, 8, 0.9) !important;
-            border-bottom: 1px solid rgba(76, 175, 80, 0.2);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(8, 32, 8, 0.95) !important;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
             padding: 0.8rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .navbar-toggler {
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            padding: 0.4rem 0.75rem;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.3);
         }
         
         .nav-link {
             position: relative;
             font-weight: 500;
-            color: #e9ecef !important;
+            color: var(--text-light) !important;
             margin: 0 5px;
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
             transition: all 0.3s ease;
         }
         
         .nav-link:hover {
-            color: #7deb7d !important;
+            color: var(--light-green) !important;
+            background-color: rgba(76, 175, 80, 0.1);
+            transform: translateY(-2px);
         }
         
         .nav-link.active {
-            color: #4CAF50 !important;
+            color: var(--primary-green) !important;
+            background-color: rgba(76, 175, 80, 0.15);
         }
         
         .nav-link.active::after {
             content: '';
             position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
             height: 3px;
-            background-color: #4CAF50;
+            background-color: var(--primary-green);
             border-radius: 10px;
         }
         
-        /* Glowing elements */
+        /* Enhanced glowing elements */
         .btn-success {
-            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+            background: linear-gradient(145deg, var(--primary-green), var(--dark-green));
+            border: none;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-success::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
         }
         
         .btn-success:hover {
-            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(46, 125, 50, 0.4);
+            background: linear-gradient(145deg, var(--light-green), var(--primary-green));
         }
         
-        /* Card enhancements */
+        .btn-success:hover::before {
+            left: 100%;
+        }
+        
+        .btn-success:active {
+            transform: translateY(1px);
+        }
+        
+        /* Enhanced card styling */
         .card {
-            border: 1px solid rgba(76, 175, 80, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            background: rgba(10, 31, 10, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
         
-        /* Cursor trail effect */
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+        
+        /* Enhanced cursor trail effect */
         .cursor-trail-container {
             position: fixed;
             top: 0;
@@ -194,11 +300,108 @@
             opacity: 0;
             transform: translate(-50%, -50%);
             animation: fadeOut 1.5s ease-out forwards;
+            filter: blur(0.5px);
         }
         
         @keyframes fadeOut {
-            0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+            0% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.7) translateY(-10px); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0) translateY(-20px); }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                margin-left: -10px;
+            }
+            
+            .logo-img {
+                height: 40px;
+            }
+            
+            .app-name {
+                font-size: 1.5rem;
+                margin-left: 10px;
+            }
+            
+            .navbar-nav {
+                margin-top: 1rem;
+                padding-bottom: 0.5rem;
+            }
+            
+            .nav-link {
+                padding: 0.7rem 1rem;
+                margin: 0.2rem 0;
+                border-radius: 8px;
+            }
+            
+            .nav-link.active::after {
+                display: none;
+            }
+            
+            .nav-link.active {
+                background-color: rgba(76, 175, 80, 0.2);
+            }
+            
+            .footer {
+                text-align: center;
+            }
+            
+            .cursor-trail-container {
+                display: none; /* Disable on mobile for performance */
+            }
+            
+            .water-credits-display {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Water credits display enhancement */
+        .water-credits-display {
+            background: rgba(8, 32, 8, 0.8);
+            border: 1px solid rgba(76, 175, 80, 0.4);
+            border-radius: 50px;
+            padding: 0.6rem 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .water-credits-display:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border-color: rgba(76, 175, 80, 0.6);
+        }
+        
+        .water-credits-display i {
+            color: #56ccf2;
+            margin-right: 8px;
+            filter: drop-shadow(0 0 5px rgba(86, 204, 242, 0.7));
+        }
+        
+        #water-credits-count {
+            font-weight: 600;
+            color: #56ccf2;
+            margin: 0 5px;
+            text-shadow: 0 0 8px rgba(86, 204, 242, 0.5);
+        }
+        
+        /* Time display */
+        .current-time {
+            font-size: 0.9rem;
+            color: rgba(233, 236, 239, 0.8);
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        
+        .current-time i {
+            margin-right: 5px;
+            color: var(--primary-green);
         }
     </style>
     {% endblock %}
@@ -276,16 +479,30 @@
     </main>
     
     <!-- Footer -->
-    <footer class="footer text-center">
+    <footer class="footer">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-md-start mb-3 mb-md-0">
-                    <h5 class="text-success">PixelSprout</h5>
+            <div class="row g-4 align-items-center">
+                <div class="col-md-4 text-md-start text-center">
+                    <div class="footer-brand d-flex align-items-center justify-content-md-start justify-content-center mb-3">
+                        <img src="{{ url_for('static', filename='images/plant-logo.svg') }}" alt="PixelSprout Logo" class="footer-logo" style="height: 35px; filter: drop-shadow(0 0 5px rgba(76, 175, 80, 0.5));">
+                        <h5 class="text-success ms-2 mb-0">PixelSprout</h5>
+                    </div>
                     <p class="small text-muted mb-0">Grow your virtual garden with real-life habits</p>
+                    <div class="current-time mt-2" id="current-time">
+                        <i class="fas fa-clock"></i>
+                        <span>Loading local time...</span>
+                    </div>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="mb-0 small">
-                        <a href="mailto:stormshots0911@gmail.com" class="text-success text-decoration-none">
+                <div class="col-md-4 text-center">
+                    <div class="footer-links">
+                        <a href="/" class="footer-link"><i class="fas fa-home me-1"></i> Home</a>
+                        <a href="/garden" class="footer-link"><i class="fas fa-seedling me-1"></i> Garden</a>
+                        <a href="/profile" class="footer-link"><i class="fas fa-user me-1"></i> Profile</a>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end text-center">
+                    <p class="mb-2 small">
+                        <a href="mailto:stormshots0911@gmail.com" class="text-success text-decoration-none footer-contact">
                             <i class="fas fa-envelope me-1"></i> Talk to Creator
                         </a>
                     </p>
@@ -295,74 +512,155 @@
         </div>
     </footer>
     
-    <!-- No interactive garden elements -->
-    
     <!-- Cursor Trail Container -->
     <div class="cursor-trail-container" id="cursor-trail-container"></div>
     
     <!-- JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Advanced Features Scripts -->
+    <script src="{{ url_for('static', filename='js/interactive_growth.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ai_plant_advisor.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plant_3d_visualizer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/gamification_system.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/advanced_features.js') }}"></script>
+    
     <!-- Custom Scripts -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize cursor trail effect
             initCursorTrail();
+            
+            // Initialize local time display
+            updateLocalTime();
+            setInterval(updateLocalTime, 60000); // Update every minute
+            
+            // Initialize advanced features
+            if (window.pixelSproutFeatures) {
+                console.log("Advanced features already initialized");
+            } else {
+                console.log("Initializing advanced features...");
+                window.pixelSproutFeatures = new AdvancedFeatures();
+                window.pixelSproutFeatures.initialize().catch(error => {
+                    console.error('Failed to initialize advanced features:', error);
+                });
+            }
         });
         
-        // Cursor trail effect
+        // Update local time based on user's timezone
+        function updateLocalTime() {
+            const timeElement = document.getElementById('current-time');
+            if (!timeElement) return;
+            
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            
+            try {
+                const formattedTime = now.toLocaleString(navigator.language || 'en-US', options);
+                timeElement.querySelector('span').textContent = formattedTime;
+            } catch (e) {
+                console.error('Error formatting time:', e);
+                timeElement.querySelector('span').textContent = now.toLocaleString();
+            }
+        }
+        
+        // Enhanced cursor trail effect
         function initCursorTrail() {
             const trailContainer = document.getElementById('cursor-trail-container');
             if (!trailContainer) return;
             
-            // Trail settings
+            // Don't initialize on mobile devices for better performance
+            if (window.innerWidth < 768) return;
+            
+            // Enhanced trail settings
             const trailSettings = {
-                particleCount: 15,
-                particleSize: 8,
-                fadeSpeed: 1500,
+                particleCount: 12,
+                particleSize: 10,
+                fadeSpeed: 1800,
                 trailType: 'leaf', // 'leaf', 'sparkle', 'water'
-                colors: ['#4CAF50', '#7deb7d', '#2E7D32', '#8BC34A']
+                colors: ['#4CAF50', '#7deb7d', '#2E7D32', '#8BC34A', '#A5D6A7']
             };
             
             // Track mouse position
             let mouseX = 0;
             let mouseY = 0;
+            let lastX = 0;
+            let lastY = 0;
+            let isMoving = false;
+            let throttleTimer = null;
             
-            // Update mouse position
+            // Update mouse position with throttling for performance
             document.addEventListener('mousemove', function(e) {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
-                createTrailParticle();
+                
+                // Calculate movement speed
+                const dx = mouseX - lastX;
+                const dy = mouseY - lastY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                // Only create particles when mouse is moving at a certain speed
+                isMoving = distance > 5;
+                
+                // Throttle particle creation for better performance
+                if (!throttleTimer && isMoving) {
+                    throttleTimer = setTimeout(() => {
+                        createTrailParticle();
+                        lastX = mouseX;
+                        lastY = mouseY;
+                        throttleTimer = null;
+                    }, 30);
+                }
             });
             
-            // Create trail particle
+            // Create trail particle with enhanced visuals
             function createTrailParticle() {
                 // Create particle element
                 const particle = document.createElement('div');
                 particle.className = 'cursor-trail-particle';
                 
+                // Random rotation for more natural movement
+                const rotation = Math.random() * 360;
+                const scale = 0.8 + Math.random() * 0.4;
+                
                 // Set particle style based on trail type
                 if (trailSettings.trailType === 'leaf') {
-                    // Leaf icon
-                    particle.innerHTML = '<i class="fas fa-leaf"></i>';
+                    // Random leaf icon for variety
+                    const leafIcons = ['fa-leaf', 'fa-seedling', 'fa-spa'];
+                    const randomLeaf = leafIcons[Math.floor(Math.random() * leafIcons.length)];
+                    
+                    particle.innerHTML = `<i class="fas ${randomLeaf}"></i>`;
                     particle.style.color = trailSettings.colors[Math.floor(Math.random() * trailSettings.colors.length)];
-                    particle.style.fontSize = `${trailSettings.particleSize}px`;
+                    particle.style.fontSize = `${trailSettings.particleSize * scale}px`;
+                    particle.style.transform = `translate(-50%, -50%) rotate(${rotation}deg) scale(${scale})`;
                 } else if (trailSettings.trailType === 'sparkle') {
-                    // Sparkle effect
-                    particle.style.width = `${trailSettings.particleSize}px`;
-                    particle.style.height = `${trailSettings.particleSize}px`;
-                    particle.style.backgroundColor = trailSettings.colors[Math.floor(Math.random() * trailSettings.colors.length)];
-                    particle.style.boxShadow = `0 0 ${trailSettings.particleSize}px ${particle.style.backgroundColor}`;
+                    // Enhanced sparkle effect
+                    particle.style.width = `${trailSettings.particleSize * scale}px`;
+                    particle.style.height = `${trailSettings.particleSize * scale}px`;
+                    const color = trailSettings.colors[Math.floor(Math.random() * trailSettings.colors.length)];
+                    particle.style.backgroundColor = color;
+                    particle.style.boxShadow = `0 0 ${trailSettings.particleSize * 2}px ${color}`;
                 } else if (trailSettings.trailType === 'water') {
-                    // Water drop
+                    // Enhanced water drop
                     particle.innerHTML = '<i class="fas fa-tint"></i>';
                     particle.style.color = '#56ccf2';
-                    particle.style.fontSize = `${trailSettings.particleSize}px`;
+                    particle.style.fontSize = `${trailSettings.particleSize * scale}px`;
+                    particle.style.transform = `translate(-50%, -50%) rotate(${rotation}deg) scale(${scale})`;
+                    particle.style.filter = 'drop-shadow(0 0 5px rgba(86, 204, 242, 0.7))';
                 }
                 
-                // Position particle at mouse position
-                particle.style.left = `${mouseX}px`;
-                particle.style.top = `${mouseY}px`;
+                // Position particle at mouse position with slight randomization
+                const offsetX = (Math.random() - 0.5) * 10;
+                const offsetY = (Math.random() - 0.5) * 10;
+                particle.style.left = `${mouseX + offsetX}px`;
+                particle.style.top = `${mouseY + offsetY}px`;
                 
                 // Add to container
                 trailContainer.appendChild(particle);
@@ -375,7 +673,83 @@
                 }, trailSettings.fadeSpeed);
             }
         }
+        
+        // Simulate plant selection for demo purposes
+        function simulatePlantSelection() {
+            if (window.pixelSproutFeatures) {
+                // Create sample plant data
+                const samplePlant = {
+                    id: 'demo-plant-1',
+                    name: 'Emerald Fern',
+                    type: 'fern',
+                    growthStage: 3,
+                    maxGrowthStage: 5,
+                    health: 0.9,
+                    waterLevel: 0.7,
+                    lastWatered: Date.now() - 86400000, // 1 day ago
+                    sunlightNeeds: 'medium',
+                    wateringFrequency: 3
+                };
+                
+                // Dispatch plant selection event
+                document.dispatchEvent(new CustomEvent('plantSelected', {
+                    detail: samplePlant
+                }));
+                
+                console.log('Plant selection simulated for demo');
+            }
+        }
+        
+        // Run simulation after a delay to allow features to initialize
+        setTimeout(simulatePlantSelection, 2000);
     </script>
+    
+    <style>
+        /* Footer enhancements */
+        .footer-link {
+            display: inline-block;
+            color: var(--text-light);
+            text-decoration: none;
+            margin: 0 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .footer-link:hover {
+            color: var(--light-green);
+            background-color: rgba(76, 175, 80, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .footer-contact {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .footer-contact:hover {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-color: rgba(76, 175, 80, 0.5);
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 768px) {
+            .footer-links {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            
+            .footer-link {
+                margin: 0;
+            }
+        }
+    </style>
     
     {% block scripts %}{% endblock %}
 </body>

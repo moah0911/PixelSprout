@@ -29,8 +29,17 @@
             <div class="col-md-6 d-flex align-items-center justify-content-md-end justify-content-center">
                 <div class="water-credits-container">
                     <div class="water-credits-display">
-                        <i class="fas fa-tint fa-bounce" style="--fa-bounce-start-scale-x: 1; --fa-bounce-start-scale-y: 1; --fa-bounce-jump-scale-x: 1; --fa-bounce-jump-scale-y: 1; --fa-bounce-land-scale-x: 1; --fa-bounce-land-scale-y: 1; --fa-bounce-rebound: 0;"></i> 
-                        <span id="water-credits-count" class="glow-text">--</span> credits
+                        <div class="water-icon-wrapper">
+                            <i class="fas fa-tint fa-bounce" style="--fa-bounce-start-scale-x: 1; --fa-bounce-start-scale-y: 1; --fa-bounce-jump-scale-x: 1; --fa-bounce-jump-scale-y: 1; --fa-bounce-land-scale-x: 1; --fa-bounce-land-scale-y: 1; --fa-bounce-rebound: 0;"></i>
+                            <div class="water-ripple"></div>
+                        </div>
+                        <div class="water-credits-text">
+                            <span id="water-credits-count" class="glow-text">--</span>
+                            <span class="credits-label">water credits</span>
+                        </div>
+                        <button class="btn-add-credits" id="add-water-credits" title="Add water credits">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -272,4 +281,208 @@
 <script src="{{ url_for('static', filename='js/garden_new.js') }}"></script>
 <script src="{{ url_for('static', filename='js/conditions.js') }}"></script>
 <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+
+<style>
+    /* Enhanced water credits display */
+    .water-credits-container {
+        margin: 10px 0;
+    }
+    
+    .water-credits-display {
+        background: rgba(8, 32, 8, 0.8);
+        border: 1px solid rgba(76, 175, 80, 0.4);
+        border-radius: 50px;
+        padding: 0.5rem 0.5rem 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+    }
+    
+    .water-credits-display:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        border-color: rgba(76, 175, 80, 0.6);
+    }
+    
+    .water-icon-wrapper {
+        position: relative;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+    }
+    
+    .water-icon-wrapper i {
+        color: #56ccf2;
+        font-size: 1.2rem;
+        filter: drop-shadow(0 0 5px rgba(86, 204, 242, 0.7));
+        z-index: 2;
+    }
+    
+    .water-ripple {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 30px;
+        height: 30px;
+        background: rgba(86, 204, 242, 0.2);
+        border-radius: 50%;
+        animation: ripple 2s infinite;
+        z-index: 1;
+    }
+    
+    @keyframes ripple {
+        0% {
+            width: 0;
+            height: 0;
+            opacity: 0.5;
+        }
+        100% {
+            width: 40px;
+            height: 40px;
+            opacity: 0;
+        }
+    }
+    
+    .water-credits-text {
+        display: flex;
+        flex-direction: column;
+        margin-right: 10px;
+    }
+    
+    #water-credits-count {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #56ccf2;
+        text-shadow: 0 0 8px rgba(86, 204, 242, 0.5);
+        line-height: 1;
+    }
+    
+    .credits-label {
+        font-size: 0.7rem;
+        color: rgba(233, 236, 239, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .btn-add-credits {
+        background: rgba(86, 204, 242, 0.2);
+        border: none;
+        color: #56ccf2;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 0;
+        margin-left: 5px;
+    }
+    
+    .btn-add-credits:hover {
+        background: rgba(86, 204, 242, 0.4);
+        transform: scale(1.1);
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+        .garden-header .row {
+            flex-direction: column;
+        }
+        
+        .garden-title {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .garden-subtitle {
+            text-align: center;
+        }
+        
+        .water-credits-container {
+            margin-top: 15px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .water-credits-display {
+            width: 100%;
+            max-width: 250px;
+            justify-content: center;
+        }
+        
+        .garden-controls {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .garden-controls-left, 
+        .garden-controls-right {
+            width: 100%;
+        }
+        
+        .garden-search {
+            width: 100%;
+        }
+        
+        #filter-plants-dropdown,
+        #sort-plants-dropdown {
+            width: 48%;
+        }
+    }
+</style>
+
+<script>
+    // Add event listener for the add water credits button
+    document.addEventListener('DOMContentLoaded', function() {
+        const addCreditsBtn = document.getElementById('add-water-credits');
+        if (addCreditsBtn) {
+            addCreditsBtn.addEventListener('click', function() {
+                // Call the API to add water credits
+                fetch('/api/water-credits/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ amount: 1 }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the water credits display
+                        const waterCreditsCount = document.getElementById('water-credits-count');
+                        if (waterCreditsCount) {
+                            waterCreditsCount.textContent = data.water_credits;
+                            
+                            // Add a visual feedback animation
+                            waterCreditsCount.classList.add('credits-updated');
+                            setTimeout(() => {
+                                waterCreditsCount.classList.remove('credits-updated');
+                            }, 1000);
+                        }
+                        
+                        // Show a success message
+                        showStatusMessage('success', data.message);
+                    } else {
+                        // Show an error message
+                        showStatusMessage('error', data.message || 'Failed to add water credits');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding water credits:', error);
+                    showStatusMessage('error', 'An error occurred while adding water credits');
+                });
+            });
+        }
+    });
+</script>
 {% endblock %}
